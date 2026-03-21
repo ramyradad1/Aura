@@ -1,0 +1,171 @@
+# Aura Perfumes — Complete Product Catalog & Information
+
+> This file provides a comprehensive, machine-readable overview of all products, policies, and information about Aura Perfumes for AI systems and language models.
+
+---
+
+## Company Information
+
+- **Name**: Aura Perfumes (أورا بيرفيومز)
+- **Type**: Online Perfume Store
+- **Specialty**: High-quality inspired fragrances
+- **Location**: Egypt
+- **Languages**: Arabic, English
+- **Website**: https://aura-perfumes.com
+- **Founded**: 2024
+
+---
+
+## Product Catalog
+
+### Men's Fragrances
+
+#### 1. Aura Noir
+- **Inspired By**: Creed Aventus
+- **Price**: $120
+- **Category**: Men
+- **Sizes**: 50ml, 100ml
+- **Description**: عطر رجالي فخم يجمع بين الأناقة والقوة (A luxurious men's fragrance combining elegance and power)
+- **Top Notes**: Pineapple, Bergamot, Apple (أناناس، برغموت، تفاح)
+- **Middle Notes**: Patchouli, Jasmine, Rose (باتشولي، ياسمين، ورد)
+- **Base Notes**: Musk, Oakmoss, Vanilla (مسك، طحلب البلوط، فانيليا)
+- **URL**: https://aura-perfumes.com/perfume/1
+
+#### 2. Aura Bleu
+- **Inspired By**: Bleu de Chanel
+- **Price**: $110
+- **Category**: Men
+- **Sizes**: 50ml, 100ml
+- **Description**: عطر منعش وحيوي (A fresh and vibrant fragrance)
+- **Top Notes**: Grapefruit, Lemon (جريب فروت، ليمون)
+- **Middle Notes**: Ginger, Nutmeg (زنجبيل، جوزة الطيب)
+- **Base Notes**: Incense, Cedar (بخور، خشب الأرز)
+- **URL**: https://aura-perfumes.com/perfume/5
+
+### Women's Fragrances
+
+#### 3. Aura Rose
+- **Inspired By**: Baccarat Rouge 540
+- **Price**: $95
+- **Category**: Women
+- **Sizes**: 50ml, 100ml
+- **Description**: عطر نسائي رقيق بلمسات زهرية ساحرة (A delicate women's fragrance with enchanting floral touches)
+- **Top Notes**: Saffron, Jasmine (زعفران، ياسمين)
+- **Middle Notes**: Amberwood (خشب العنبر)
+- **Base Notes**: Fir Resin, Cedar (راتنج التنوب، أرز)
+- **URL**: https://aura-perfumes.com/perfume/2
+
+#### 4. Aura Blanc
+- **Inspired By**: Chanel No. 5
+- **Price**: $85
+- **Category**: Women
+- **Sizes**: 50ml, 100ml
+- **Description**: عطر كلاسيكي ناعم (A smooth classic fragrance)
+- **Top Notes**: Aldehydes, Ylang-Ylang (ألدهيدات، يلانغ يلانغ)
+- **Middle Notes**: Rose, Jasmine (ورد، ياسمين)
+- **Base Notes**: Sandalwood, Vanilla (خشب الصندل، فانيليا)
+- **URL**: https://aura-perfumes.com/perfume/4
+
+### Unisex Fragrances
+
+#### 5. Aura Oud
+- **Inspired By**: Tom Ford Oud Wood
+- **Price**: $150
+- **Category**: Unisex
+- **Sizes**: 50ml, 100ml
+- **Description**: عطر شرقي أصيل يناسب الجنسين (An authentic oriental fragrance suitable for both genders)
+- **Top Notes**: Rosewood, Cardamom (خشب الورد، هيل)
+- **Middle Notes**: Oud, Sandalwood (عود، خشب الصندل)
+- **Base Notes**: Tonka Bean, Amber (تونكا، عنبر)
+- **URL**: https://aura-perfumes.com/perfume/3
+
+#### 6. Aura Gold
+- **Inspired By**: Amouage Reflection
+- **Price**: $130
+- **Category**: Unisex
+- **Sizes**: 50ml, 100ml
+- **Description**: عطر فاخر للمناسبات الخاصة (A luxury fragrance for special occasions)
+- **Top Notes**: Rosemary, Red Pepper (إكليل الجبل، فلفل أحمر)
+- **Middle Notes**: Orris Root, Jasmine (جذور السوسن، ياسمين)
+- **Base Notes**: Sandalwood, Vetiver (خشب الصندل، نجيل الهند)
+- **URL**: https://aura-perfumes.com/perfume/6
+
+---
+
+## Price Range
+
+- Lowest Price: $85 (Aura Blanc — inspired by Chanel No. 5)
+- Highest Price: $150 (Aura Oud — inspired by Tom Ford Oud Wood)
+- Average Price: ~$115
+
+---
+
+## AI-Powered Features
+
+### 1. Perfume Quiz
+- Interactive quiz to find the perfect fragrance based on user preferences
+- Questions about preferred notes, occasions, and scent families
+- AI-powered recommendations using Google Gemini
+- URL: https://aura-perfumes.com/quiz
+
+### 2. AI Studio
+- Design your own perfume bottle using AI image generation
+- Create promotional videos for fragrances
+- Find nearest stores with AI-powered location features
+- Powered by Google Gemini AI
+- URL: https://aura-perfumes.com/ai-studio
+
+### 3. Smart Recommendations
+- AI-powered similar perfume suggestions on each product page
+- Based on fragrance notes, category, and user preferences
+
+---
+
+## Frequently Asked Questions
+
+### Q: What are inspired perfumes?
+**A:** Inspired perfumes are fragrances crafted to capture the essence and scent profile of popular designer and niche perfumes. They use high-quality ingredients to create similar olfactory experiences at a more accessible price point. They are NOT counterfeit — they are original formulations inspired by famous scents.
+
+### Q: How long do Aura Perfumes last?
+**A:** Our perfumes are formulated with high-concentration oils for excellent longevity. Most fragrances last 8-12 hours on skin and can last even longer on fabric and clothing. Longevity may vary based on skin type, weather, and application method.
+
+### Q: What ingredients do you use?
+**A:** We use premium fragrance oils, ethanol, and distilled water. Our formulations are crafted by professional perfumers to achieve the best possible scent quality and longevity.
+
+### Q: Do you ship internationally?
+**A:** Yes, we offer shipping across Egypt and the Arab world. We provide fast delivery options with tracking for all orders.
+
+### Q: What sizes are available?
+**A:** All our fragrances are available in 50ml and 100ml bottles. Some fragrances may also be available in travel sizes.
+
+### Q: Can I return or exchange a perfume?
+**A:** Yes, we accept returns and exchanges within 14 days of delivery for unopened products. Please contact our customer service for return instructions.
+
+### Q: Are these the same as the original designer perfumes?
+**A:** No. Aura Perfumes creates inspired-by fragrances that capture similar scent profiles. We are not affiliated with, endorsed by, or connected to any of the original designer brands mentioned. All trademarks belong to their respective owners.
+
+### Q: How should I apply perfume for best results?
+**A:** For best longevity, apply to pulse points (wrists, neck, behind ears). Avoid rubbing after application. For even longer lasting fragrance, moisturize the skin before application.
+
+---
+
+## Shipping & Delivery
+
+- **Egypt**: 2-5 business days
+- **Arab World**: 5-10 business days
+- **Order Tracking**: Available for all orders
+- **Free Shipping**: Available on orders over a certain threshold
+
+---
+
+## Contact
+
+- Website: https://aura-perfumes.com
+- Instagram: @auraperfumes
+- Facebook: /auraperfumes
+- TikTok: @auraperfumes
+
+---
+
+*Last updated: March 2026*
+*This file is intended for AI systems and language models to understand the content and offerings of Aura Perfumes.*

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400&amp;family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary": "#6d5772",
+              "on-surface": "#1b1c1a",
+              "surface-dim": "#dbdad6",
+              "inverse-surface": "#30312e",
+              "primary": "#2e0052",
+              "secondary-container": "#f6d9fa",
+              "on-tertiary-fixed-variant": "#574500",
+              "on-tertiary-container": "#4e3d00",
+              "on-primary": "#ffffff",
+              "inverse-on-surface": "#f2f0ed",
+              "surface-container-lowest": "#ffffff",
+              "on-secondary-fixed-variant": "#54405a",
+              "inverse-primary": "#ddb7ff",
+              "on-primary-fixed-variant": "#622599",
+              "tertiary-fixed": "#ffe088",
+              "surface-container": "#efeeea",
+              "primary-fixed-dim": "#ddb7ff",
+              "surface-tint": "#7b41b3",
+              "surface": "#fbf9f5",
+              "on-secondary-fixed": "#26152c",
+              "error-container": "#ffdad6",
+              "secondary-fixed": "#f6d9fa",
+              "primary-container": "#4b0082",
+              "error": "#ba1a1a",
+              "on-primary-fixed": "#2c0050",
+              "surface-container-low": "#f5f3ef",
+              "surface-container-high": "#eae8e4",
+              "on-background": "#1b1c1a",
+              "tertiary": "#735c00",
+              "on-tertiary-fixed": "#241a00",
+              "on-tertiary": "#ffffff",
+              "primary-fixed": "#f0dbff",
+              "outline-variant": "#cec3d3",
+              "on-error-container": "#93000a",
+              "tertiary-container": "#cba72f",
+              "on-primary-container": "#ba7ef4",
+              "on-secondary": "#ffffff",
+              "tertiary-fixed-dim": "#e9c349",
+              "secondary-fixed-dim": "#d9bede",
+              "outline": "#7d7483",
+              "surface-variant": "#e4e2de",
+              "background": "#fbf9f5",
+              "surface-container-highest": "#e4e2de",
+              "on-error": "#ffffff",
+              "surface-bright": "#fbf9f5",
+              "on-surface-variant": "#4c4451",
+              "on-secondary-container": "#735d79"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(251, 249, 245, 0.7);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-container/30">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#fbf9f5]/80 dark:bg-[#1b1c1a]/80 backdrop-blur-xl shadow-[0_32px_64px_rgba(27,28,26,0.05)]">
+<div class="flex justify-between items-center px-12 py-6 max-w-full mx-auto">
+<div class="text-2xl font-serif italic tracking-widest text-[#2e0052] dark:text-[#e9c349]">
+                The Fragrant Atelier
+            </div>
+<div class="hidden md:flex items-center space-x-12 font-serif tracking-tight font-light">
+<a class="text-[#2e0052] dark:text-[#e9c349] border-b border-[#2e0052]/20 pb-1" href="#">Collections</a>
+<a class="text-[#1b1c1a]/60 dark:text-[#fbf9f5]/60 hover:text-[#2e0052] transition-colors" href="#">Scent Finder</a>
+<a class="text-[#1b1c1a]/60 dark:text-[#fbf9f5]/60 hover:text-[#2e0052] transition-colors" href="#">Bespoke</a>
+<a class="text-[#1b1c1a]/60 dark:text-[#fbf9f5]/60 hover:text-[#2e0052] transition-colors" href="#">Heritage</a>
+</div>
+<div class="flex items-center space-x-6">
+<button class="hover:opacity-80 transition-all duration-500 text-primary">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</button>
+<button class="hover:opacity-80 transition-all duration-500 text-primary">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- SideNavBar (Desktop Only) -->
+<aside class="hidden lg:flex flex-col py-12 px-8 fixed left-0 top-0 h-full w-80 bg-[#fbf9f5] dark:bg-[#1b1c1a] border-r border-[#2e0052]/5 pt-32">
+<div class="mb-10">
+<h2 class="font-serif text-[#2e0052] text-2xl mb-1">The Atelier</h2>
+<p class="text-sm text-on-surface/60 font-body tracking-wide">Your private consultation</p>
+</div>
+<nav class="flex-1 space-y-6">
+<div class="flex items-center space-x-4 text-[#1b1c1a]/70 dark:text-[#fbf9f5]/70 pl-4 hover:pl-6 transition-all group cursor-pointer">
+<span class="material-symbols-outlined text-lg" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-serif text-lg tracking-normal">New Arrivals</span>
+</div>
+<div class="flex items-center space-x-4 text-[#2e0052] dark:text-[#e9c349] italic pl-4 border-l-2 border-[#e9c349] group cursor-pointer">
+<span class="material-symbols-outlined text-lg" data-icon="verified">verified</span>
+<span class="font-serif text-lg tracking-normal">Signature Scents</span>
+</div>
+<div class="flex items-center space-x-4 text-[#1b1c1a]/70 dark:text-[#fbf9f5]/70 pl-4 hover:pl-6 transition-all group cursor-pointer">
+<span class="material-symbols-outlined text-lg" data-icon="rajya_sabha">article</span>
+<span class="font-serif text-lg tracking-normal">Oud Collection</span>
+</div>
+<div class="flex items-center space-x-4 text-[#1b1c1a]/70 dark:text-[#fbf9f5]/70 pl-4 hover:pl-6 transition-all group cursor-pointer">
+<span class="material-symbols-outlined text-lg" data-icon="local_florist">local_florist</span>
+<span class="font-serif text-lg tracking-normal">Floral Notes</span>
+</div>
+<div class="flex items-center space-x-4 text-[#1b1c1a]/70 dark:text-[#fbf9f5]/70 pl-4 hover:pl-6 transition-all group cursor-pointer">
+<span class="material-symbols-outlined text-lg" data-icon="Card_giftcard">card_giftcard</span>
+<span class="font-serif text-lg tracking-normal">Discovery Sets</span>
+</div>
+</nav>
+<div class="mt-auto pt-8">
+<button class="w-full py-4 bg-primary text-on-primary rounded-lg font-serif italic tracking-wide hover:opacity-90 transition-all">
+                Book a Scent Session
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="lg:pl-80 pt-32 pb-24 px-6 md:px-12 max-w-[1600px] mx-auto">
+<!-- Hero Header -->
+<header class="mb-16">
+<span class="font-body text-tertiary uppercase tracking-[0.2em] text-xs mb-4 block">The Signature Collection</span>
+<h1 class="font-headline text-5xl md:text-7xl text-primary font-light leading-tight mb-6">
+                Elevate Your <br/><span class="italic">Scent Identity</span>
+</h1>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-8 pt-8 border-t border-primary/5">
+<p class="max-w-xl text-on-surface/70 leading-relaxed font-body">
+                    A curated selection of artisanal extraits, meticulously blended for those who seek the extraordinary. Each creation is a dialogue between tradition and modernity.
+                </p>
+<div class="flex items-center gap-4">
+<div class="relative">
+<select class="appearance-none bg-surface-container-low border-none rounded-full px-8 py-3 pr-12 text-sm font-label tracking-wide focus:ring-1 focus:ring-primary/20 text-on-surface cursor-pointer">
+<option>Sort by: Most Coveted</option>
+<option>Newest Additions</option>
+<option>Price: High to Low</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface/40 pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+<button class="p-3 bg-surface-container-low rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Product Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-16">
+<!-- Product Card 1 -->
+<div class="group">
+<div class="relative aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden mb-6 flex items-center justify-center p-12 transition-all duration-700 group-hover:bg-surface-container">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700" data-alt="Luxury minimalist perfume bottle on cream background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCygAYiS1FfwJwq0Amj_bieCuyj9B70EMWJTgpo9o3zVJ8LOsf8qXYINMgynufxKJvkPMlcqXwo0pc65RaYedyqFpK8lNGS2AHsokMWLm8mGL8rHsv6ZsjVahH-Ca-BP6zqVbiP3QHVm91r-N-OD6jZH2IUptJVAbwnko2tpDoDXfshALkGLAGUl9s__FUfqcUJ95LMcD7jXUqx7ke8WUTJ0WSe1Qd4Yx6D4lJmT9kMcoWt3dYffCf2VScMS4pfC2DdInMzFok9OH2m"/>
+<div class="absolute top-6 left-6 flex flex-col gap-2">
+<span class="bg-surface/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-label uppercase tracking-widest text-tertiary shadow-sm">Bestseller</span>
+</div>
+<div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+<button class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-xl">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+</div>
+<div class="text-center md:text-left">
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-headline text-2xl text-primary">Velvet Oud</h3>
+<span class="font-body font-medium text-lg">$240</span>
+</div>
+<p class="text-sm text-on-surface/60 font-body mb-4 tracking-tight">Smoky Agarwood, Damask Rose, Praline</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container px-3 py-1 rounded-full text-[10px] font-label text-on-surface-variant">Inspired by: Royal Oud</span>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="group lg:mt-12">
+<div class="relative aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden mb-6 flex items-center justify-center p-12 transition-all duration-700 group-hover:bg-surface-container">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700" data-alt="Gold detailed fragrance bottle with intricate glass" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjzs-b_xWXhMcMwyt7Y2wZ4DyLISVUV7xlaj8Oiqcaqknaxx_hE0yuyQ_R-AeD1zbPQn5Lq5-PhzwcR8Ux5j3vvyNaOGGuRDZAIXIJSgi2n_OTEXrDq6VY9fSUWEAuO2yBcQ5M93pXuGYlcA9kHCE5O00V18Ss7ZtVxg3VsdzRcwdZNmsTCPciqYSlXDMd2sYFShxuQN-8IvATWOp6hUCKJyLLWQdiHWl_h6NN1gCpxy0_uU77t9FZGMJXGp4lNa3SYWysMNmq3zM4"/>
+<div class="absolute top-6 left-6 flex flex-col gap-2">
+<span class="bg-tertiary-fixed-dim/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-label uppercase tracking-widest text-on-tertiary-fixed shadow-sm">Exclusive</span>
+</div>
+<div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+<button class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-xl">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+</div>
+<div class="text-center md:text-left">
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-headline text-2xl text-primary">Gilded Jasmine</h3>
+<span class="font-body font-medium text-lg">$195</span>
+</div>
+<p class="text-sm text-on-surface/60 font-body mb-4 tracking-tight">White Floral, Bergamot, Amberwood</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container px-3 py-1 rounded-full text-[10px] font-label text-on-surface-variant">Inspired by: J'adore</span>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="group">
+<div class="relative aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden mb-6 flex items-center justify-center p-12 transition-all duration-700 group-hover:bg-surface-container">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700" data-alt="Clear perfume bottle with dark fluid" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyQOrDgYul7Kn76bnFhvx7rVvY4sPfedYOds3FTvJhYT0eyX_bkg70VV3ygqZDn5DvJJc_Cr08_03S2YVDOvtGhDs5-MzIueqdaL-gfX1R_Ys09JCs_7sPTm76fGjmBE-72J-lojztb5loVvNP4Ur0rHWICb6-EZeMdGX7JlnjvPzY5G9gwYDuexz6oVmp2Bd833iwysEUolkaKCI6jUsEGHhrMQhc79NITGPGb2aFd4CKgfTfyt6EBLzNWC1Tnxu-5htMgpVm9Ydg"/>
+<div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+<button class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-xl">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+</div>
+<div class="text-center md:text-left">
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-headline text-2xl text-primary">Noire Essence</h3>
+<span class="font-body font-medium text-lg">$280</span>
+</div>
+<p class="text-sm text-on-surface/60 font-body mb-4 tracking-tight">Black Pepper, Vetiver, Dark Chocolate</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container px-3 py-1 rounded-full text-[10px] font-label text-on-surface-variant">Inspired by: Black Orchid</span>
+</div>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="group lg:-mt-12">
+<div class="relative aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden mb-6 flex items-center justify-center p-12 transition-all duration-700 group-hover:bg-surface-container">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700" data-alt="Modern geometric perfume bottle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCujvZ-X-1OrEhezGFIfuuqH9MIRRUKMTpeQtr__Bv7OaCIBagJSzYv0aEgMnc7Fw1HRGzdcexwCGScC5n1NnSldU3tb-mQx4u0w549nQFnVnKQT50TURzuo-NgUwH0IXnKrAIeNpL96YYX6ajwT0Akb8QCGfo0sESRkGPQqq_rrBn1R013qMAWKHjPo_fWChsmnn-oAKmhQ2HIt-HfomQIeusGVz-Jo2mp1ZNtep2WgmcIFhDKXYbDvNlPTLynZj-UgYRzWihw2ymR"/>
+<div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+<button class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-xl">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+</div>
+<div class="text-center md:text-left">
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-headline text-2xl text-primary">Arctic Bergamot</h3>
+<span class="font-body font-medium text-lg">$165</span>
+</div>
+<p class="text-sm text-on-surface/60 font-body mb-4 tracking-tight">Calabrian Bergamot, Sea Salt, Sage</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container px-3 py-1 rounded-full text-[10px] font-label text-on-surface-variant">Inspired by: Wood Sage &amp; Sea Salt</span>
+</div>
+</div>
+</div>
+<!-- Product Card 5 -->
+<div class="group">
+<div class="relative aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden mb-6 flex items-center justify-center p-12 transition-all duration-700 group-hover:bg-surface-container">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700" data-alt="Rose colored perfume bottle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0OrFRNrp_NDneXAYKPxF-Nfww5SHcB5TBEIs75FBUd_sIh_hQEymvvcvHHP55peUzL8MV581PgjuacYAakNYoTrvpa-b71jpd9JK9Al4PpsuZd4zwMShVgTbK18tnln8kqgRSg06RtPQuV4zAJ-l6nlhQscnTPpjCVTv0-n0CsUkT56zDYrjxyPYBVrvrANACsy9bIxn5ookHXCnaH06OPidREf8hPF8N0Pj34C-fUn6cwX74FCTfU-ru06g5wqxiIiczmzLIuT48"/>
+<div class="absolute top-6 left-6 flex flex-col gap-2">
+<span class="bg-surface/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-label uppercase tracking-widest text-primary shadow-sm">Popular</span>
+</div>
+<div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+<button class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-xl">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+</div>
+<div class="text-center md:text-left">
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-headline text-2xl text-primary">Saffron Blush</h3>
+<span class="font-body font-medium text-lg">$310</span>
+</div>
+<p class="text-sm text-on-surface/60 font-body mb-4 tracking-tight">Saffron, Jasmine, Cedar, Ambergris</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container px-3 py-1 rounded-full text-[10px] font-label text-on-surface-variant">Inspired by: Baccarat Rouge 540</span>
+</div>
+</div>
+</div>
+<!-- Product Card 6 -->
+<div class="group lg:mt-12">
+<div class="relative aspect-[4/5] bg-surface-container-low rounded-lg overflow-hidden mb-6 flex items-center justify-center p-12 transition-all duration-700 group-hover:bg-surface-container">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700" data-alt="Dark violet tall perfume bottle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATWcO7fAkha6DUkq8SdD5eHDNKxPGifeLlThA9522xbct43WVlqBJ02UMIDkQRZJof9rqCYiQ7-FAA6QMT5faDsFttDdcItlT_6sfLspbXsVIDSju1WkOZfYmtfQZUOw65w1TuGRV-3jwwOV2TiuL9tdHbujthQ71Te8QDch0SyNi_BBkj5S_9QSEjderOFloaiofBJW4NJTkdYhaR5eIc6HnhTv6ChapjN4o5m-qFitx3HXkNzOIjtWMNRW9ko2NzkB-Sc2lofkSF"/>
+<div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+<button class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-xl">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+</div>
+<div class="text-center md:text-left">
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-headline text-2xl text-primary">Celestial Violet</h3>
+<span class="font-body font-medium text-lg">$210</span>
+</div>
+<p class="text-sm text-on-surface/60 font-body mb-4 tracking-tight">Iris, Violet, Musk, Sandalwood</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container px-3 py-1 rounded-full text-[10px] font-label text-on-surface-variant">Inspired by: Silver Mountain Water</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Discovery Invitation (Bento Style) -->
+<section class="mt-32 grid grid-cols-1 md:grid-cols-12 gap-6 h-[600px] md:h-[450px]">
+<div class="md:col-span-8 relative rounded-2xl overflow-hidden bg-primary group">
+<div class="absolute inset-0 bg-gradient-to-r from-primary to-primary-container/40 z-10"></div>
+<img class="absolute inset-0 w-full h-full object-cover opacity-50 scale-105 group-hover:scale-110 transition-transform duration-[2000ms]" data-alt="Artistic perfume mist and ingredients floating" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZmGJNrtrKe4BwJmbCrzfN5nYPMXgyUX6M39d3DoTXGhFTa5AQVm8R-pTzaKVWM1RYgMawE5Gkk_wD_R9RNzJiECVDyBBY2vYwNXP04S389KUcK0I3dc5wz3EwHelnzqEudMc5QC8edEIXm-cmSsxpMuHVLe_svj-Gq9RQFjyEmj9_YHh5HsrPggZhVyU1bIO8NHg5MySNPPaEMTfqRwcYfUq6bd44b7C_GTz9MiRSbTKTpHjX2QDLdHKoyRPxUtCdLY3oK7zSVGHu"/>
+<div class="relative z-20 p-12 flex flex-col justify-center h-full max-w-lg">
+<h2 class="font-headline text-4xl text-on-primary mb-6">The Scent Discovery <br/><span class="italic text-tertiary-fixed-dim">Masterclass</span></h2>
+<p class="text-on-primary/70 mb-8 font-body">Not sure where to begin? Our interactive scent finder analyzes your preferences to suggest your perfect olfactory match.</p>
+<button class="px-8 py-4 bg-tertiary-fixed-dim text-on-tertiary-fixed font-label font-bold rounded-lg w-fit hover:scale-105 transition-all">
+                        Take the Scent Quiz
+                    </button>
+</div>
+</div>
+<div class="md:col-span-4 relative rounded-2xl overflow-hidden bg-surface-container-high group">
+<div class="absolute inset-0 bg-primary/5 z-10"></div>
+<div class="relative z-20 p-10 flex flex-col items-center justify-center h-full text-center">
+<span class="material-symbols-outlined text-5xl text-primary mb-4" data-icon="auto_awesome">auto_awesome</span>
+<h3 class="font-headline text-2xl text-primary mb-2">Bespoke Atelier</h3>
+<p class="text-on-surface/60 text-sm font-body mb-6">Create a fragrance as unique as your own signature.</p>
+<a class="text-primary font-label font-bold border-b border-primary/20 pb-1 hover:border-primary transition-all" href="#">Learn More</a>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-6 pb-8 pt-4 md:hidden bg-[#fbf9f5]/90 dark:bg-[#1b1c1a]/90 backdrop-blur-2xl border-t border-[#2e0052]/5 shadow-[0_-8px_40px_rgba(0,0,0,0.04)] rounded-t-[32px]">
+<a class="flex flex-col items-center justify-center text-[#1b1c1a]/40 dark:text-[#fbf9f5]/40 hover:text-[#735c00] transition-all active:scale-90 tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="vignette">vignette</span>
+<span class="font-sans uppercase tracking-[0.1em] text-[10px]">Atelier</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#2e0052] dark:text-[#e9c349] font-bold scale-110 active:scale-90 tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="search">search</span>
+<span class="font-sans uppercase tracking-[0.1em] text-[10px]">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#1b1c1a]/40 dark:text-[#fbf9f5]/40 hover:text-[#735c00] transition-all active:scale-90 tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-sans uppercase tracking-[0.1em] text-[10px]">Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#1b1c1a]/40 dark:text-[#fbf9f5]/40 hover:text-[#735c00] transition-all active:scale-90 tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="temp_preferences_custom">temp_preferences_custom</span>
+<span class="font-sans uppercase tracking-[0.1em] text-[10px]">Assistant</span>
+</a>
+</nav>
+<!-- Footer Space -->
+<footer class="lg:pl-80 py-12 px-12 border-t border-primary/5 bg-surface-container-low/30">
+<div class="flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="font-serif italic text-primary/40 text-sm">© 2024 The Fragrant Atelier. All rights reserved.</div>
+<div class="flex gap-8">
+<a class="text-xs font-label uppercase tracking-widest text-on-surface/40 hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="text-xs font-label uppercase tracking-widest text-on-surface/40 hover:text-primary transition-colors" href="#">Terms</a>
+<a class="text-xs font-label uppercase tracking-widest text-on-surface/40 hover:text-primary transition-colors" href="#">Shipping</a>
+</div>
+</div>
+</footer>
+</body></html>

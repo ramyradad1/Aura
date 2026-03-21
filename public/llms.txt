@@ -1,0 +1,55 @@
+# Aura Perfumes
+
+> Aura Perfumes is an online perfume store specializing in high-quality inspired fragrances. We offer luxury-inspired perfumes for men, women, and unisex at affordable prices with long-lasting performance.
+
+## About
+
+Aura Perfumes (أورا بيرفيومز) is an Egyptian-based online fragrance retailer that creates inspired versions of world-renowned designer and niche perfumes. Our mission is to make luxury scents accessible to everyone without compromising on quality, longevity, or packaging.
+
+## What We Offer
+
+- **Men's Fragrances**: Inspired by Creed Aventus, Bleu de Chanel, Dior Sauvage, and more
+- **Women's Fragrances**: Inspired by Baccarat Rouge 540, Chanel No. 5, and more
+- **Unisex Fragrances**: Inspired by Tom Ford Oud Wood, Amouage Reflection, and more
+- **AI-Powered Tools**: Perfume quiz, AI recommendations, and bottle design studio powered by Gemini AI
+- **Available Sizes**: 50ml, 100ml
+
+## Key Features
+
+- High-quality inspired perfumes with long-lasting performance
+- Affordable luxury pricing
+- AI-powered perfume recommendations
+- Interactive perfume finder quiz
+- Customer reviews and ratings
+- Fast shipping across Egypt and the Arab world
+
+## Product Catalog
+
+See `/llms-full.txt` for the complete product catalog with detailed notes, pricing, and descriptions.
+
+## Links
+
+- Website: https://aura-perfumes.com
+- Shop All: https://aura-perfumes.com/shop/all
+- Men's Collection: https://aura-perfumes.com/shop/men
+- Women's Collection: https://aura-perfumes.com/shop/women
+- Unisex Collection: https://aura-perfumes.com/shop/unisex
+- AI Studio: https://aura-perfumes.com/ai-studio
+- Perfume Quiz: https://aura-perfumes.com/quiz
+
+## FAQ
+
+### What are inspired perfumes?
+Inspired perfumes are fragrances crafted to smell similar to popular designer and niche perfumes, using high-quality ingredients at a fraction of the original price.
+
+### How long do Aura Perfumes last?
+Our perfumes are formulated for high longevity, typically lasting 8-12 hours on skin and even longer on fabric.
+
+### Do you ship internationally?
+Yes, we offer shipping across Egypt and the Arab world with fast delivery options.
+
+### What sizes are available?
+We offer 50ml and 100ml bottles for all our fragrances.
+
+### Are these original perfumes?
+No, these are inspired-by fragrances. They are not affiliated with or endorsed by the original brands.

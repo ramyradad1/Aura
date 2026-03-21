@@ -1,0 +1,31 @@
+{
+  "name": "Aura Perfumes — عطور مستوحاة بجودة عالمية",
+  "short_name": "Aura Perfumes",
+  "description": "متجر عطور مستوحاة من أشهر الماركات العالمية بجودة عالية وثبات يدوم. تسوق عطور رجالية ونسائية وللجنسين.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F9FAFB",
+  "theme_color": "#4F46E5",
+  "orientation": "portrait-primary",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

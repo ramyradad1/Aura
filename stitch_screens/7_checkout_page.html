@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@300;400;600;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "error": "#ba1a1a",
+              "primary-fixed-dim": "#ddb7ff",
+              "on-primary": "#ffffff",
+              "on-secondary-fixed": "#26152c",
+              "on-surface": "#1b1c1a",
+              "tertiary-fixed": "#ffe088",
+              "secondary": "#6d5772",
+              "primary": "#2e0052",
+              "on-secondary-fixed-variant": "#54405a",
+              "surface-variant": "#e4e2de",
+              "surface": "#fbf9f5",
+              "surface-dim": "#dbdad6",
+              "on-primary-container": "#ba7ef4",
+              "tertiary-fixed-dim": "#e9c349",
+              "surface-tint": "#7b41b3",
+              "on-tertiary-fixed": "#241a00",
+              "background": "#fbf9f5",
+              "on-primary-fixed": "#2c0050",
+              "surface-bright": "#fbf9f5",
+              "tertiary": "#735c00",
+              "on-tertiary": "#ffffff",
+              "error-container": "#ffdad6",
+              "secondary-fixed-dim": "#d9bede",
+              "surface-container-highest": "#e4e2de",
+              "secondary-fixed": "#f6d9fa",
+              "outline": "#7d7483",
+              "primary-fixed": "#f0dbff",
+              "on-background": "#1b1c1a",
+              "primary-container": "#4b0082",
+              "on-primary-fixed-variant": "#622599",
+              "inverse-on-surface": "#f2f0ed",
+              "on-tertiary-container": "#4e3d00",
+              "inverse-surface": "#30312e",
+              "on-error-container": "#93000a",
+              "on-error": "#ffffff",
+              "surface-container-high": "#eae8e4",
+              "surface-container": "#efeeea",
+              "on-secondary": "#ffffff",
+              "surface-container-low": "#f5f3ef",
+              "on-tertiary-fixed-variant": "#574500",
+              "on-secondary-container": "#735d79",
+              "inverse-primary": "#ddb7ff",
+              "on-surface-variant": "#4c4451",
+              "tertiary-container": "#cba72f",
+              "surface-container-lowest": "#ffffff",
+              "secondary-container": "#f6d9fa",
+              "outline-variant": "#cec3d3"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #fbf9f5;
+            color: #1b1c1a;
+        }
+        .luxury-input {
+            background-color: #efeeea;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .luxury-input:focus {
+            background-color: #eae8e4;
+            box-shadow: 0 0 0 2px rgba(46, 0, 82, 0.1);
+            outline: none;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary/10">
+<!-- Top Navigation Bar (Suppressed Main Nav, Transactional Mode) -->
+<nav class="fixed top-0 w-full z-50 bg-[#fbf9f5]/80 backdrop-blur-xl shadow-[0_32px_64px_-12px_rgba(46,0,82,0.06)]">
+<div class="flex justify-between items-center w-full px-12 py-6 max-w-[1920px] mx-auto">
+<div class="text-2xl font-serif italic text-[#2e0052] tracking-widest">Aura Ethereal</div>
+<div class="flex items-center gap-4 text-on-surface-variant/70 text-sm font-label uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">lock</span>
+                Secure Concierge Checkout
+            </div>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</a>
+</div>
+</nav>
+<main class="pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+<!-- Left Column: Checkout Forms -->
+<div class="lg:col-span-7 space-y-16">
+<!-- Shipping Section -->
+<section>
+<div class="flex items-center gap-4 mb-8">
+<span class="text-xs font-label text-tertiary-fixed-dim bg-primary px-3 py-1 rounded-full">01</span>
+<h2 class="font-headline text-3xl text-primary tracking-tight italic">Shipping Information</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="col-span-2">
+<label class="block text-[10px] font-label uppercase tracking-[0.15em] text-on-surface-variant mb-2">Full Name</label>
+<input class="luxury-input w-full px-6 py-4 rounded-lg text-on-surface placeholder:text-outline/50" placeholder="Julianne Vane" type="text"/>
+</div>
+<div class="col-span-2 md:col-span-1">
+<label class="block text-[10px] font-label uppercase tracking-[0.15em] text-on-surface-variant mb-2">Email Address</label>
+<input class="luxury-input w-full px-6 py-4 rounded-lg text-on-surface" placeholder="julianne@ethereal.com" type="email"/>
+</div>
+<div class="col-span-2 md:col-span-1">
+<label class="block text-[10px] font-label uppercase tracking-[0.15em] text-on-surface-variant mb-2">Phone Number</label>
+<input class="luxury-input w-full px-6 py-4 rounded-lg text-on-surface" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+<div class="col-span-2">
+<label class="block text-[10px] font-label uppercase tracking-[0.15em] text-on-surface-variant mb-2">Delivery Address</label>
+<input class="luxury-input w-full px-6 py-4 rounded-lg text-on-surface" placeholder="Rue de la Paix, 75002 Paris" type="text"/>
+</div>
+</div>
+</section>
+<!-- Payment Method Section -->
+<section>
+<div class="flex items-center gap-4 mb-8">
+<span class="text-xs font-label text-tertiary-fixed-dim bg-primary px-3 py-1 rounded-full">02</span>
+<h2 class="font-headline text-3xl text-primary tracking-tight italic">Payment Method</h2>
+</div>
+<div class="space-y-4">
+<!-- Visa/Mastercard -->
+<label class="group flex items-center justify-between p-6 rounded-xl bg-surface-container-low cursor-pointer hover:bg-surface-container transition-all duration-300">
+<div class="flex items-center gap-4">
+<input checked="" class="w-5 h-5 text-primary border-outline-variant focus:ring-primary/20" name="payment" type="radio"/>
+<span class="font-label text-on-surface tracking-wide">Credit or Debit Card</span>
+</div>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="credit_card">credit_card</span>
+</div>
+</label>
+<!-- Apple Pay -->
+<label class="group flex items-center justify-between p-6 rounded-xl bg-surface-container-low cursor-pointer hover:bg-surface-container transition-all duration-300">
+<div class="flex items-center gap-4">
+<input class="w-5 h-5 text-primary border-outline-variant focus:ring-primary/20" name="payment" type="radio"/>
+<span class="font-label text-on-surface tracking-wide">Apple Pay</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="contactless">contactless</span>
+</label>
+<!-- Cash on Delivery -->
+<label class="group flex items-center justify-between p-6 rounded-xl bg-surface-container-low cursor-pointer hover:bg-surface-container transition-all duration-300">
+<div class="flex items-center gap-4">
+<input class="w-5 h-5 text-primary border-outline-variant focus:ring-primary/20" name="payment" type="radio"/>
+<span class="font-label text-on-surface tracking-wide">Cash on Delivery</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="payments">payments</span>
+</label>
+</div>
+</section>
+</div>
+<!-- Right Column: Order Summary (Sticky) -->
+<div class="lg:col-span-5">
+<div class="sticky top-32 p-10 rounded-xl bg-surface-container-lowest shadow-[0_32px_64px_-12px_rgba(46,0,82,0.04)] border border-outline-variant/10">
+<h3 class="font-headline text-2xl text-primary mb-10 tracking-tight">Order Summary</h3>
+<!-- Item List -->
+<div class="space-y-8 mb-10">
+<div class="flex gap-6 items-center">
+<div class="w-20 h-24 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Midnight Jasmine" class="w-full h-full object-cover" data-alt="Luxury perfume bottle in deep purple glass" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI9moMXpNOsE1rsik6wxNlLC1syWbuIDU-99rtRCafgIse8wsP4_UJlcGg75eUkHV6T_crrZWyzd8ZcwMOouTizY-OhxE1gTyD0MxfDvZv9yP4N_Kj2y6QVkUk7hNutbLX5BzJulAN1BYt2RH5JOPUsWL7qYux6AfEfxrhseKHkOcIyAB4FbGUETz_z8CArJ6rtJP4A6adlIXSk4q9gOHwYhBf5GaH_p2KIJ07qa0ZhqNbpcGTRCK6F1YbV9FHBOK5spyi8Ty-FpTb"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-headline text-lg text-on-surface italic">Midnight Jasmine 100ml</h4>
+<p class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant/60 mt-1">Ref. AE-9920</p>
+</div>
+<div class="text-on-surface font-label">$340.00</div>
+</div>
+<div class="flex gap-6 items-center">
+<div class="w-20 h-24 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Amber &amp; Silk" class="w-full h-full object-cover" data-alt="Clear perfume bottle with gold liquid" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_Xt5v_uNRfxrZd44noFOPkYT-SRuzkU3pLxiRBCMOMUoCPYywjNq2pTNvJ2BMqqewzK3cj6rwX6LJO1KBbfihOKyQEbbVaibOukxNj8o0IeIg5Zi6euMi1aSNDsfDuTAZoxeIVUTkoDkcJr8QxGdgcC612gBMVArwvDqmIKuh8THDf5dTMmGlM0hvOaKr5awwFOr-pmfADYR2Ilgdzv_NlcOyjSn8g6mS9d7NtBNfYNEEa-oSY2luWsjMQVMjxEU83WyDJKfzvOIi"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-headline text-lg text-on-surface italic">Amber &amp; Silk 50ml</h4>
+<p class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant/60 mt-1">Ref. AE-4412</p>
+</div>
+<div class="text-on-surface font-label">$285.00</div>
+</div>
+</div>
+<!-- Breakdown -->
+<div class="space-y-4 pt-8 border-t border-outline-variant/20 mb-8">
+<div class="flex justify-between text-sm font-label text-on-surface-variant">
+<span>Subtotal</span>
+<span>$625.00</span>
+</div>
+<div class="flex justify-between text-sm font-label text-tertiary">
+<span>Luxury Gift Wrap</span>
+<span class="uppercase tracking-widest">FREE</span>
+</div>
+<div class="flex justify-between text-sm font-label text-on-surface-variant">
+<span>Taxes</span>
+<span>$56.25</span>
+</div>
+<div class="flex justify-between text-xl font-headline text-primary pt-4 border-t border-outline-variant/10">
+<span>Grand Total</span>
+<span class="italic">$681.25</span>
+</div>
+</div>
+<!-- CTA Button -->
+<button class="w-full bg-primary text-tertiary-fixed-dim py-5 rounded-lg font-label uppercase tracking-[0.2em] text-xs font-bold hover:bg-primary-container transition-all duration-500 shadow-xl shadow-primary/10 active:scale-95">
+                        PLACE SECURE ORDER
+                    </button>
+<div class="mt-8 flex items-center justify-center gap-4 text-outline text-[10px] uppercase tracking-widest opacity-60">
+<span class="material-symbols-outlined text-sm" data-icon="verified_user">verified_user</span>
+                        256-Bit SSL Encrypted
+                    </div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer (Simplified for Checkout) -->
+<footer class="w-full border-t border-[#2e0052]/10 pt-16 pb-8 bg-[#fbf9f5]">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 w-full max-w-7xl mx-auto space-y-4 md:space-y-0">
+<div class="font-manrope uppercase tracking-[0.15em] text-[10px] text-[#1b1c1a]/50 antialiased">
+                © 2024 Aura Ethereal. All Rights Reserved.
+            </div>
+<div class="flex gap-8">
+<a class="font-manrope uppercase tracking-[0.15em] text-[10px] text-[#1b1c1a]/50 hover:text-[#2e0052] transition-colors" href="#">Privacy Policy</a>
+<a class="font-manrope uppercase tracking-[0.15em] text-[10px] text-[#1b1c1a]/50 hover:text-[#2e0052] transition-colors" href="#">Terms of Service</a>
+<a class="font-manrope uppercase tracking-[0.15em] text-[10px] text-[#1b1c1a]/50 hover:text-[#2e0052] transition-colors" href="#">Contact Us</a>
+</div>
+</div>
+</footer>
+</body></html>

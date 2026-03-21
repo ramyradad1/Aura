@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Your Selection | The Fragrant Atelier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400&amp;family=Manrope:wght@200;300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary": "#6d5772",
+                        "on-surface": "#1b1c1a",
+                        "surface-dim": "#dbdad6",
+                        "inverse-surface": "#30312e",
+                        "primary": "#2e0052",
+                        "secondary-container": "#f6d9fa",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "on-tertiary-container": "#4e3d00",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f2f0ed",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#54405a",
+                        "inverse-primary": "#ddb7ff",
+                        "on-primary-fixed-variant": "#622599",
+                        "tertiary-fixed": "#ffe088",
+                        "surface-container": "#efeeea",
+                        "primary-fixed-dim": "#ddb7ff",
+                        "surface-tint": "#7b41b3",
+                        "surface": "#fbf9f5",
+                        "on-secondary-fixed": "#26152c",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#f6d9fa",
+                        "primary-container": "#4b0082",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#2c0050",
+                        "surface-container-low": "#f5f3ef",
+                        "surface-container-high": "#eae8e4",
+                        "on-background": "#1b1c1a",
+                        "tertiary": "#735c00",
+                        "on-tertiary-fixed": "#241a00",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#f0dbff",
+                        "outline-variant": "#cec3d3",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#cba72f",
+                        "on-primary-container": "#ba7ef4",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#e9c349",
+                        "secondary-fixed-dim": "#d9bede",
+                        "outline": "#7d7483",
+                        "surface-variant": "#e4e2de",
+                        "background": "#fbf9f5",
+                        "surface-container-highest": "#e4e2de",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#fbf9f5",
+                        "on-surface-variant": "#4c4451",
+                        "on-secondary-container": "#735d79"
+                    },
+                    fontFamily: {
+                        "headline": ["Noto Serif"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #fbf9f5;
+        }
+        h1, h2, h3, .font-serif {
+            font-family: 'Noto Serif', serif;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased">
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-[#fbf9f5]/80 dark:bg-[#1b1c1a]/80 backdrop-blur-xl flex justify-between items-center px-12 py-6 max-w-full mx-auto shadow-[0_32px_64px_rgba(27,28,26,0.05)]">
+<div class="text-2xl font-serif italic tracking-widest text-[#2e0052] dark:text-[#e9c349]">
+            The Fragrant Atelier
+        </div>
+<div class="hidden md:flex items-center space-x-12 font-serif tracking-tight font-light">
+<a class="text-[#1b1c1a]/60 dark:text-[#fbf9f5]/60 hover:text-[#2e0052] transition-colors" href="#">Collections</a>
+<a class="text-[#1b1c1a]/60 dark:text-[#fbf9f5]/60 hover:text-[#2e0052] transition-colors" href="#">Scent Finder</a>
+<a class="text-[#1b1c1a]/60 dark:text-[#fbf9f5]/60 hover:text-[#2e0052] transition-colors" href="#">Bespoke</a>
+<a class="text-[#1b1c1a]/60 dark:text-[#fbf9f5]/60 hover:text-[#2e0052] transition-colors" href="#">Heritage</a>
+</div>
+<div class="flex items-center space-x-6 text-[#2e0052] dark:text-[#e9c349]">
+<span class="material-symbols-outlined cursor-pointer hover:opacity-80 transition-all duration-500">search</span>
+<div class="relative">
+<span class="material-symbols-outlined cursor-pointer hover:opacity-80 transition-all duration-500" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+<span class="absolute -top-1 -right-1 bg-tertiary-fixed-dim text-on-tertiary-fixed text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">2</span>
+</div>
+<span class="material-symbols-outlined cursor-pointer hover:opacity-80 transition-all duration-500">person</span>
+</div>
+</nav>
+<main class="pt-32 pb-24 px-6 md:px-12 lg:px-24 max-w-7xl mx-auto">
+<div class="flex flex-col lg:flex-row gap-16">
+<!-- Cart Items Section -->
+<div class="flex-grow">
+<div class="mb-12">
+<h1 class="text-4xl md:text-5xl font-serif font-light tracking-tight text-primary mb-2">Your Selection</h1>
+<p class="text-on-surface-variant font-light italic">Curated essences for your personal olfactory journey.</p>
+</div>
+<div class="space-y-12">
+<!-- Cart Item 1 -->
+<div class="flex flex-col md:flex-row gap-8 items-center md:items-start group">
+<div class="w-full md:w-48 aspect-[3/4] bg-surface-container-low rounded-lg overflow-hidden relative shadow-[0_32px_64px_rgba(27,28,26,0.05)] transition-transform duration-700 group-hover:scale-[1.02]">
+<img alt="Amber &amp; Silk perfume bottle" class="w-full h-full object-cover" data-alt="Minimalist luxury perfume bottle on marble" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCL8WvDNeSrM8bEp7UQg_vuGkx8gY6sIn5Srmd2CRANm7s2rdCWip3bLXcdMBBrEJO0YWJn0ojpPQZ-muCs62j1Uj39n3CTlsaDelk6TtYDRH0P8Nx_p_ecwFsx4uC6LuNei3lavXjQgWKpGHPHbYwUsJRgm4pvrGLw7FS7GZZ3bXbR51Sammr2Vh-jz5XqcepV3_ZwT21GgnKKvCAfdeuMAImbCsCd-L9_KvUdiwj3NF9xA4KJ3NWjmWz73rv3MPmkKptsG4xaA7dZ"/>
+</div>
+<div class="flex-grow space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-2xl font-serif text-primary">Amber &amp; Silk</h3>
+<p class="text-sm text-on-surface-variant tracking-wider uppercase">Extrait de Parfum | 50ml</p>
+</div>
+<span class="text-xl font-serif text-primary">$285.00</span>
+</div>
+<p class="text-on-surface-variant font-light leading-relaxed max-w-md">
+                                A celestial blend of warm Baltic amber and raw silk fibers, grounded by Madagascan vanilla and smoked oud.
+                            </p>
+<div class="flex items-center space-x-6 pt-4">
+<div class="flex items-center space-x-4 bg-surface-container rounded-full px-4 py-1">
+<button class="text-primary hover:opacity-50 transition-opacity"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="text-sm font-medium w-4 text-center">1</span>
+<button class="text-primary hover:opacity-50 transition-opacity"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+<button class="text-xs uppercase tracking-widest text-on-surface-variant hover:text-error transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">delete</span> Remove
+                                </button>
+</div>
+</div>
+</div>
+<!-- Cart Item 2 -->
+<div class="flex flex-col md:flex-row gap-8 items-center md:items-start group">
+<div class="w-full md:w-48 aspect-[3/4] bg-surface-container-low rounded-lg overflow-hidden relative shadow-[0_32px_64px_rgba(27,28,26,0.05)] transition-transform duration-700 group-hover:scale-[1.02]">
+<img alt="Midnight Jasmine perfume bottle" class="w-full h-full object-cover" data-alt="Elegant dark perfume bottle with gold accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIt4z6Mn2gzxgbhIKt2ENBc9IZK0_X8yxM7S3JsctnfvrwhBC9ZZ8MVc06Zp5oLd_WafOlnVuRppjHPzyOAILdGteu3W2LVWihmU8ANY5PuKzWwPkB9-bPr4FCSsKeWxQp8Dm5BgVpSlOs3HAJs1-xeJaLfpOG18UH4WmnlheKh318BH2yMhAzTDCciKcgK5qk04Z5lLp3qke8_3YC8UW2apKdYgWSn6WnanRhlPFscJtAtTcH2QwDq5kpfZGf7RSiU91NqbCI74vW"/>
+</div>
+<div class="flex-grow space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-2xl font-serif text-primary">Midnight Jasmine</h3>
+<p class="text-sm text-on-surface-variant tracking-wider uppercase">Eau de Parfum | 100ml</p>
+</div>
+<span class="text-xl font-serif text-primary">$340.00</span>
+</div>
+<p class="text-on-surface-variant font-light leading-relaxed max-w-md">
+                                Night-blooming jasmine petals suspended in a mist of silver rain and white musk.
+                            </p>
+<div class="flex items-center space-x-6 pt-4">
+<div class="flex items-center space-x-4 bg-surface-container rounded-full px-4 py-1">
+<button class="text-primary hover:opacity-50 transition-opacity"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="text-sm font-medium w-4 text-center">1</span>
+<button class="text-primary hover:opacity-50 transition-opacity"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+<button class="text-xs uppercase tracking-widest text-on-surface-variant hover:text-error transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">delete</span> Remove
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Suggested Addition (Bento-style Upsell) -->
+<div class="mt-20 p-8 rounded-2xl bg-surface-container-low border-none relative overflow-hidden">
+<div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+<div>
+<span class="text-[10px] uppercase tracking-[0.2em] text-tertiary font-bold mb-2 block">Complete the Experience</span>
+<h4 class="text-2xl font-serif text-primary mb-2">Discovery Set Vol. I</h4>
+<p class="text-on-surface-variant text-sm max-w-xs font-light">Explore five iconic scents in miniature form. Perfect for travel or gifting.</p>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-xl font-serif text-primary">$85.00</span>
+<button class="bg-primary text-on-primary px-8 py-3 rounded-full text-sm font-medium tracking-wide hover:opacity-90 transition-all active:scale-95">Add to Order</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Summary Section -->
+<div class="w-full lg:w-96">
+<div class="sticky top-32 p-10 rounded-[32px] bg-white dark:bg-zinc-900 shadow-[0_32px_64px_rgba(27,28,26,0.03)] backdrop-blur-xl border border-white/20">
+<h2 class="text-2xl font-serif text-primary mb-8">Order Summary</h2>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between text-on-surface-variant font-light">
+<span>Subtotal</span>
+<span class="font-medium">$625.00</span>
+</div>
+<div class="flex justify-between text-on-surface-variant font-light">
+<span>Complimentary Shipping</span>
+<span class="text-tertiary italic">Included</span>
+</div>
+<div class="flex justify-between text-on-surface-variant font-light">
+<span>Taxes (Estimated)</span>
+<span class="font-medium">$48.75</span>
+</div>
+</div>
+<div class="pt-6 border-t border-outline-variant/20 mb-10">
+<div class="flex justify-between items-baseline">
+<span class="text-lg font-serif text-primary">Total</span>
+<span class="text-3xl font-serif text-primary tracking-tight">$673.75</span>
+</div>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest mt-2">Prices in USD</p>
+</div>
+<div class="space-y-4">
+<button class="w-full bg-primary text-on-primary py-5 rounded-full font-medium tracking-[0.1em] text-sm uppercase hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 active:scale-[0.98]">
+                            Proceed to Checkout
+                        </button>
+<div class="flex justify-center items-center gap-3 py-4 opacity-40">
+<span class="material-symbols-outlined text-xl">lock</span>
+<span class="text-[10px] uppercase tracking-widest">Secure Concierge Checkout</span>
+</div>
+</div>
+<!-- Promo Code -->
+<div class="mt-8 pt-8 border-t border-outline-variant/10">
+<label class="block text-[10px] uppercase tracking-[0.15em] text-on-surface-variant mb-3">Promotional Code</label>
+<div class="flex gap-2">
+<input class="flex-grow bg-surface-container-low border-none rounded-full px-4 text-sm focus:ring-1 focus:ring-primary/20 placeholder:text-on-surface-variant/40" placeholder="Enter code" type="text"/>
+<button class="text-xs font-bold uppercase tracking-widest text-primary px-4 py-2">Apply</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Visual Accents -->
+<footer class="mt-24 py-16 px-12 bg-surface-container-low flex flex-col items-center justify-center space-y-8 text-center">
+<div class="w-16 h-[1px] bg-primary/20"></div>
+<div class="max-w-xl">
+<h5 class="font-serif italic text-primary text-xl mb-4">"Perfume is the art that makes memory speak."</h5>
+<p class="text-on-surface-variant text-sm font-light tracking-wide leading-relaxed">
+                Every bottle from The Fragrant Atelier is hand-poured in our glassworks using ancestral techniques and the world's most elusive botanicals.
+            </p>
+</div>
+<div class="flex gap-12 pt-8">
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-tertiary">workspace_premium</span>
+<span class="text-[10px] uppercase tracking-widest text-on-surface-variant">Authentic Reserve</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-tertiary">eco</span>
+<span class="text-[10px] uppercase tracking-widest text-on-surface-variant">Sustainably Sourced</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-tertiary">redeem</span>
+<span class="text-[10px] uppercase tracking-widest text-on-surface-variant">Artisanal Packaging</span>
+</div>
+</div>
+</footer>
+<!-- Bottom Navigation (Mobile Only) -->
+<div class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-6 pb-8 pt-4 md:hidden bg-[#fbf9f5]/90 dark:bg-[#1b1c1a]/90 backdrop-blur-2xl border-t border-[#2e0052]/5 shadow-[0_-8px_40px_rgba(0,0,0,0.04)]">
+<a class="flex flex-col items-center justify-center text-[#1b1c1a]/40 dark:text-[#fbf9f5]/40 font-sans uppercase tracking-[0.1em] text-[10px]" href="#">
+<span class="material-symbols-outlined">vignette</span>
+<span>Atelier</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#1b1c1a]/40 dark:text-[#fbf9f5]/40 font-sans uppercase tracking-[0.1em] text-[10px]" href="#">
+<span class="material-symbols-outlined">search</span>
+<span>Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#2e0052] dark:text-[#e9c349] font-bold scale-110 font-sans uppercase tracking-[0.1em] text-[10px]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span>Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#1b1c1a]/40 dark:text-[#fbf9f5]/40 font-sans uppercase tracking-[0.1em] text-[10px]" href="#">
+<span class="material-symbols-outlined">temp_preferences_custom</span>
+<span>Assistant</span>
+</a>
+</div>
+</body></html>

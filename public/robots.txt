@@ -1,0 +1,38 @@
+# Aura Perfumes - Robots.txt
+# https://www.aura-perfumes.online
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+
+# AI Crawlers Welcome
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Sitemaps
+Sitemap: https://www.aura-perfumes.online/api/sitemap
+
+# LLM Info
+# See /llms.txt for AI-readable site summary
+# See /llms-full.txt for complete product catalog

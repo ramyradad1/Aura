@@ -1,0 +1,175 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the perfume app",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "User ID" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "createdAt"]
+    },
+    "Perfume": {
+      "title": "Perfume",
+      "description": "A perfume product",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string", "enum": ["men", "women", "unisex"] },
+        "inspiredBy": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "notes": {
+          "type": "object",
+          "properties": {
+            "top": { "type": "string" },
+            "middle": { "type": "string" },
+            "base": { "type": "string" }
+          }
+        },
+        "sizes": { "type": "array", "items": { "type": "string" } },
+        "rating": { "type": "number" },
+        "reviewCount": { "type": "number" },
+        "stock": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "price", "category", "inspiredBy", "stock"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "A user review for a perfume",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "perfumeId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "rating": { "type": "number" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["perfumeId", "userId", "userName", "rating", "text", "createdAt"]
+    },
+    "Supplier": {
+      "title": "Supplier",
+      "description": "A supplier for procurement",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "contact": { "type": "string" },
+        "materials": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "contact"]
+    },
+    "PurchaseOrder": {
+      "title": "Purchase Order",
+      "description": "A purchase order for procurement",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "supplierId": { "type": "string" },
+        "itemName": { "type": "string" },
+        "quantity": { "type": "number" },
+        "totalCost": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "received"] },
+        "date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["supplierId", "itemName", "quantity", "totalCost", "status", "date"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "An accounting expense",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "amount": { "type": "number" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["amount", "category", "date"]
+    },
+    "CRMInteraction": {
+      "title": "CRM Interaction",
+      "description": "A record of customer interaction",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["support", "inquiry", "feedback"] },
+        "notes": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "type", "notes", "date"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "A user's order",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "perfumeId": { "type": "string" },
+              "quantity": { "type": "number" },
+              "price": { "type": "number" }
+            }
+          }
+        },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "processing", "shipped", "delivered", "cancelled"] },
+        "paymentMethod": { "type": "string", "enum": ["cod", "card"] },
+        "shippingAddress": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "items", "totalAmount", "status", "paymentMethod", "shippingAddress", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles"
+    },
+    "/perfumes/{perfumeId}": {
+      "schema": { "$ref": "#/entities/Perfume" },
+      "description": "Perfume inventory"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "User orders"
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/Review" },
+      "description": "Perfume reviews"
+    },
+    "/suppliers/{supplierId}": {
+      "schema": { "$ref": "#/entities/Supplier" },
+      "description": "Procurement suppliers"
+    },
+    "/purchase_orders/{purchaseOrderId}": {
+      "schema": { "$ref": "#/entities/PurchaseOrder" },
+      "description": "Procurement purchase orders"
+    },
+    "/expenses/{expenseId}": {
+      "schema": { "$ref": "#/entities/Expense" },
+      "description": "Accounting expenses"
+    },
+    "/crm_interactions/{interactionId}": {
+      "schema": { "$ref": "#/entities/CRMInteraction" },
+      "description": "CRM interactions"
+    }
+  }
+}
