@@ -1,31 +1,24 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, User, LogOut, Sparkles, Heart, GitCompare, HelpCircle, Menu, X, Search, AlertCircle, Globe } from 'lucide-react';
+import { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { ShoppingBag, User, LogOut, Sparkles, Heart, GitCompare, HelpCircle, Search, AlertCircle, Globe, Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useUserPreferences } from '../context/UserPreferencesContext';
 import { useTranslation } from '../context/TranslationContext';
 import { motion, AnimatePresence } from 'motion/react';
+import { Badge, Button, Input, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar } from '@heroui/react';
 import AuthModal from './AuthModal';
 
-export default function Navbar() {
+export default function AppNavbar() {
   const { user, isAdmin, logout, loginError, isAuthModalOpen, setIsAuthModalOpen, openAuthModal } = useAuth();
   const { items } = useCart();
   const { wishlist, compareList } = useUserPreferences();
   const { t, language, setLanguage } = useTranslation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
-
-  const dir = language === 'ar' ? 'rtl' : 'ltr';
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const location = useLocation();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,259 +42,256 @@ export default function Navbar() {
     { name: t('استوديو الذكاء'), path: '/ai-studio', icon: Sparkles, highlight: true, adminOnly: true },
   ];
 
-  const Badge = ({ count }: { count: number }) => count > 0 ? (
-    <motion.span 
-      initial={{ scale: 0 }} animate={{ scale: 1 }}
-      className={`absolute -top-1 ${dir === 'rtl' ? '-left-1' : '-right-1'} bg-tertiary-gold text-[#241a00] text-[10px] font-bold rounded-full h-[18px] w-[18px] flex items-center justify-center shadow-md`}
-    >
-      {count}
-    </motion.span>
-  ) : null;
+  const visibleLinks = navLinks.filter(link => !link.adminOnly || isAdmin);
 
   return (
     <>
-      <nav 
-        dir={dir}
-        className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-          scrolled 
-            ? 'bg-surface/95 backdrop-blur-2xl shadow-[0_32px_64px_-15px_rgba(46,0,82,0.05)] border-b border-primary/5' 
-            : 'bg-surface/80 backdrop-blur-xl border-b border-transparent'
-        }`} 
-      >
-        <div className="max-w-[1920px] mx-auto px-6 sm:px-8 lg:px-12">
-          <div className="flex justify-between items-center py-5">
-            {/* Logo + Nav Links */}
-            <div className="flex items-center gap-10">
-              <Link to="/" className="flex items-center gap-2 group">
-                <span className="font-serif text-3xl tracking-widest text-primary">Aura</span>
-              </Link>
-              <div className="hidden lg:flex items-center gap-8">
-                {navLinks.filter(link => !link.adminOnly || isAdmin).map((link) => (
+      <header className="sticky top-0 z-50 w-full bg-surface/80 backdrop-blur-xl border-b border-primary/5">
+        <nav className="max-w-[1920px] mx-auto px-6 sm:px-8 lg:px-12 h-16 flex items-center justify-between gap-4">
+          
+          {/* Mobile Menu Toggle & Brand */}
+          <div className="flex items-center gap-4">
+            <button
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              className="lg:hidden text-primary/80 hover:text-primary transition-colors p-1"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+            <Link to="/" className="flex items-center gap-2 group">
+              <span className="font-serif text-2xl sm:text-3xl tracking-widest text-primary">Aura</span>
+            </Link>
+          </div>
+
+          {/* Desktop Links */}
+          <ul className="hidden lg:flex items-center gap-8 justify-center flex-1">
+            {visibleLinks.map((link) => {
+              const isActive = location.pathname.startsWith(link.path);
+              return (
+                <li key={link.path}>
                   <Link
-                    key={link.path}
                     to={link.path}
-                    className={`uppercase text-xs font-semibold tracking-[0.05em] flex items-center gap-1.5 transition-all duration-200 ${
-                      link.highlight 
-                        ? 'text-tertiary hover:text-[#4e3d00]' 
-                        : 'text-primary/70 hover:text-primary-container'
+                    className={`uppercase text-xs font-semibold tracking-[0.05em] flex items-center gap-1.5 transition-colors ${
+                      isActive ? (link.highlight ? 'text-[#4e3d00]' : 'text-primary') : (link.highlight ? 'text-tertiary hover:text-[#4e3d00]' : 'text-primary/70 hover:text-primary')
                     }`}
                   >
                     {link.icon && <link.icon className="h-3.5 w-3.5" />}
                     {link.name}
                   </Link>
-                ))}
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2 sm:gap-4 justify-end">
+            <Button
+              variant="secondary"
+              onPress={handleLanguageToggle}
+              className="bg-surface-container-low text-primary min-w-0 px-3 hover:bg-surface-container h-8 sm:h-9 rounded-lg"
+            >
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4" />
+                <span className="hidden sm:inline-block font-bold">
+                  {language === 'ar' ? 'English' : 'عربي'}
+                </span>
               </div>
+            </Button>
+
+            <Button
+              isIconOnly
+              variant="light"
+              onPress={() => setIsSearchOpen(!isSearchOpen)}
+              className="text-primary/60 hover:text-primary min-w-8 w-8 h-8 sm:w-9 sm:h-9"
+            >
+              <Search className="w-5 h-5" />
+            </Button>
+
+            <div className="hidden sm:flex items-center">
+              <Badge content={compareList.length} isInvisible={compareList.length === 0} color="primary" size="sm">
+                <Button isIconOnly variant="light" className="text-primary/60 hover:text-primary w-9 h-9" onPress={() => navigate('/compare')}>
+                  <GitCompare className="w-5 h-5" />
+                </Button>
+              </Badge>
             </div>
-            
-            {/* Actions */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleLanguageToggle}
-                className="px-3 py-2 bg-surface-container-low hover:bg-surface-container border border-primary/10 text-primary hover:scale-95 rounded-xl transition-all duration-200 flex items-center gap-1.5 font-bold text-sm"
-                title={t('تغيير اللغة')}
-              >
-                <Globe className="h-4 w-4" />
-                <span className="hidden sm:inline-block">{language === 'ar' ? 'English' : 'عربي'}</span>
-              </button>
 
-              <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2.5 text-primary/60 hover:text-primary hover:scale-95 rounded-xl transition-all duration-200"
-                title={t('البحث')}
-              >
-                <Search className="h-[18px] w-[18px]" />
-              </button>
+            <div className="hidden sm:flex items-center">
+              <Badge content={wishlist.length} isInvisible={wishlist.length === 0} color="primary" size="sm">
+                <Button isIconOnly variant="light" className="text-primary/60 hover:text-primary w-9 h-9" onPress={() => navigate('/wishlist')}>
+                  <Heart className="w-5 h-5" />
+                </Button>
+              </Badge>
+            </div>
 
-              <Link to="/compare" className="relative p-2.5 text-primary/60 hover:text-primary hover:scale-95 rounded-xl transition-all duration-200 hidden sm:flex" title={t('المقارنة')}>
-                <GitCompare className="h-[18px] w-[18px]" />
-                <Badge count={compareList.length} />
-              </Link>
+            <div className="flex items-center">
+              <Badge content={items.length} isInvisible={items.length === 0} color="primary" size="sm">
+                <Button isIconOnly variant="light" className="text-primary/60 hover:text-primary w-8 h-8 sm:w-9 sm:h-9" onPress={() => navigate('/cart')}>
+                  <ShoppingBag className="w-5 h-5" />
+                </Button>
+              </Badge>
+            </div>
 
-              <Link to="/wishlist" className="relative p-2.5 text-primary/60 hover:text-primary hover:scale-95 rounded-xl transition-all duration-200 hidden sm:flex" title={t('المفضلة')}>
-                <Heart className="h-[18px] w-[18px]" />
-                <Badge count={wishlist.length} />
-              </Link>
-
-              <Link to="/cart" className="relative p-2.5 text-primary/60 hover:text-primary hover:scale-95 rounded-xl transition-all duration-200" title={t('السلة')}>
-                <ShoppingBag className="h-[18px] w-[18px]" />
-                <Badge count={items.length} />
-              </Link>
-
-              {/* Separator */}
-              <div className="hidden sm:block w-px h-6 bg-primary/10 mx-1" />
-              
+            {/* User / Profile */}
+            <div className="hidden sm:flex ml-2 items-center">
               {user ? (
-                <div className="flex items-center gap-1">
-                  {isAdmin && (
-                    <Link 
-                      to="/admin" 
-                      className="hidden sm:flex items-center gap-1.5 text-xs font-bold bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-lg shadow-primary/20"
-                    >
-                      {t('لوحة التحكم')}
-                    </Link>
-                  )}
-                  <Link to="/profile" className="p-1" title={t('الملف الشخصي')}>
-                    {user.photoURL ? (
-                      <img 
-                        src={user.photoURL} 
-                        alt="Profile" 
-                        className="w-8 h-8 rounded-full ring-2 ring-secondary-container hover:ring-[#ddb7ff] transition-all" 
-                        referrerPolicy="no-referrer" 
-                      />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-primary font-bold text-sm ring-2 ring-[#f0dbff]">
-                        {user.displayName?.charAt(0) || <User className="h-4 w-4" />}
+                <Dropdown>
+                  <DropdownTrigger>
+                    <button className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-transparent hover:ring-secondary-container transition-transform focus:outline-none flex items-center justify-center bg-primary/10 text-primary font-bold">
+                      {user.photoURL ? (
+                        <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
+                      ) : (
+                        <span>{(user.displayName?.charAt(0) || "U").toUpperCase()}</span>
+                      )}
+                    </button>
+                  </DropdownTrigger>
+                  <DropdownMenu aria-label="Profile Actions">
+                    <DropdownItem key="profile" textValue="Profile" className="h-14 gap-2">
+                      <div className="flex flex-col text-primary font-bold">
+                        <span className="font-semibold">{t('مرحباً')}</span>
+                        <span className="font-semibold text-primary/70">{user.email}</span>
                       </div>
+                    </DropdownItem>
+                    {isAdmin && (
+                      <DropdownItem key="admin" textValue="Admin" onPress={() => navigate('/admin')}>
+                        <div className="flex items-center gap-2 text-primary">
+                          <Sparkles className="w-4 h-4" />
+                          <span>{t('لوحة التحكم')}</span>
+                        </div>
+                      </DropdownItem>
                     )}
-                  </Link>
-                  <button 
-                    onClick={logout} 
-                    className="p-2 text-primary/40 hover:text-error hover:bg-[#ffdad6]/40 rounded-xl transition-all duration-200" 
-                    title={t('تسجيل الخروج')}
-                  >
-                    <LogOut className="h-[18px] w-[18px]" />
-                  </button>
-                </div>
+                    <DropdownItem key="settings" textValue="Settings" onPress={() => navigate('/profile')}>
+                      <div className="flex items-center gap-2 text-primary">
+                        <User className="w-4 h-4" />
+                        <span>{t('الملف الشخصي')}</span>
+                      </div>
+                    </DropdownItem>
+                    <DropdownItem key="logout" textValue="Logout" className="text-danger" onPress={logout}>
+                      <div className="flex items-center gap-2 text-danger">
+                        <LogOut className="w-4 h-4" />
+                        <span>{t('تسجيل الخروج')}</span>
+                      </div>
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
               ) : (
-                <motion.button 
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={openAuthModal} 
-                  className="hidden sm:flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white px-6 py-2.5 rounded-lg transition-all duration-300 bg-primary shadow-lg shadow-primary/20 hover:opacity-90"
+                <Button
+                  onPress={openAuthModal}
+                  variant="primary"
+                  className="font-bold tracking-widest uppercase shadow-lg shadow-primary/20 bg-primary text-white h-9 px-4 rounded-md"
                 >
-                  <User className="h-4 w-4" />
-                  {t('تسجيل الدخول')}
-                </motion.button>
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    <span>{t('تسجيل الدخول')}</span>
+                  </div>
+                </Button>
               )}
-
-              <button
-                className="lg:hidden p-2.5 text-primary/60 hover:text-primary rounded-xl transition-all"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                title={t('القائمة')}
-              >
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </button>
             </div>
           </div>
+        </nav>
 
-          {/* Login Error Toast */}
-          <AnimatePresence>
-            {loginError && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="py-3 px-4 bg-[#ffdad6] border border-error/20 rounded-xl mb-2 flex items-center gap-3 text-sm text-[#93000a]"
-              >
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                {loginError}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Search Bar */}
-          <AnimatePresence>
-            {isSearchOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
-              >
-                <form onSubmit={handleSearch} className="py-4 border-t border-primary/5">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder={t('ابحث عن عطر أو ماركة...')}
-                      className={`w-full py-3.5 border border-outline-variant/30 rounded-full focus:ring-2 focus:ring-primary/10 focus:border-primary/30 bg-surface-container-low outline-none transition-all text-sm ${
-                        dir === 'rtl' ? 'pr-5 pl-12 text-right' : 'pl-5 pr-12 text-left'
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="lg:hidden border-t border-primary/10 overflow-hidden bg-surface/95 backdrop-blur-xl"
+            >
+              <ul className="flex flex-col px-6 py-6 gap-2">
+                {visibleLinks.map((link, index) => (
+                  <li key={`${link.name}-${index}`}>
+                    <Link
+                      className={`w-full text-lg flex items-center gap-3 py-2 ${
+                        location.pathname.startsWith(link.path) ? (link.highlight ? 'text-tertiary font-bold' : 'text-primary font-bold') : 'text-primary/80'
                       }`}
-                      autoFocus
-                    />
-                    <Search className={`absolute top-3.5 h-5 w-5 text-outline ${dir === 'rtl' ? 'left-4' : 'right-4'}`} />
-                  </div>
-                </form>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                      to={link.path}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {link.icon && <link.icon className="w-5 h-5" />}
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+                <li className="mt-4 pt-4 border-t border-primary/10 flex flex-col gap-4">
+                  <Link to="/compare" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-primary/80 py-2">
+                    <GitCompare className="w-5 h-5" />
+                    {t('المقارنة')}
+                  </Link>
+                  <Link to="/wishlist" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-primary/80 py-2">
+                    <Heart className="w-5 h-5" />
+                    {t('المفضلة')}
+                  </Link>
+                  {!user && (
+                    <Button
+                      variant="primary"
+                      className="mt-2 bg-primary text-white w-full h-12"
+                      onPress={() => { setIsMenuOpen(false); openAuthModal(); }}
+                    >
+                      <div className="flex items-center gap-2 justify-center">
+                        <User className="w-4 h-4" />
+                        <span>{t('تسجيل الدخول')}</span>
+                      </div>
+                    </Button>
+                  )}
+                </li>
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
 
-          {/* Mobile Menu */}
-          <AnimatePresence>
-            {isMobileMenuOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="lg:hidden overflow-hidden border-t border-primary/5"
-              >
-                <div className="py-4 space-y-1">
-                  {navLinks.filter(link => !link.adminOnly || isAdmin).map((link, i) => (
-                    <motion.div 
-                      key={link.path}
-                      initial={{ opacity: 0, x: dir === 'rtl' ? 10 : -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                    >
-                      <Link
-                        to={link.path}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                          link.highlight ? 'text-tertiary bg-tertiary-fixed/20' : 'text-primary/70 hover:bg-surface-container-low'
-                        }`}
-                      >
-                        {link.icon && <link.icon className="h-5 w-5" />}
-                        {link.name}
-                      </Link>
-                    </motion.div>
-                  ))}
-                  
-                  <div className="border-t border-primary/5 pt-3 mt-3 space-y-1 px-1">
-                    <Link to="/compare" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl text-primary/60 hover:bg-surface-container-low transition-colors">
-                      <GitCompare className="h-5 w-5" />
-                      {t('المقارنة')} {compareList.length > 0 && <span className="text-xs bg-secondary-container text-primary px-2 py-0.5 rounded-full font-bold">{compareList.length}</span>}
-                    </Link>
-                    <Link to="/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl text-primary/60 hover:bg-surface-container-low transition-colors">
-                      <Heart className="h-5 w-5" />
-                      {t('المفضلة')} {wishlist.length > 0 && <span className="text-xs bg-secondary-container text-primary px-2 py-0.5 rounded-full font-bold">{wishlist.length}</span>}
-                    </Link>
-                    <button 
-                      onClick={() => { handleLanguageToggle(); setIsMobileMenuOpen(false); }} 
-                      className="w-full flex items-center justify-center gap-3 px-3 py-3 rounded-xl text-primary font-bold mt-2 transition-all bg-surface-container-low border border-primary/10 hover:bg-surface-container-high"
-                    >
-                      <Globe className="h-5 w-5" />
-                      {language === 'ar' ? 'Switch to English' : 'التبديل للعربية'}
-                    </button>
-                    {!user && (
-                      <button 
-                        onClick={() => { openAuthModal(); setIsMobileMenuOpen(false); }} 
-                        className="w-full flex items-center justify-center gap-3 px-3 py-3 rounded-xl text-white font-bold mt-2 transition-all bg-primary shadow-lg shadow-primary/20"
-                      >
-                        <User className="h-5 w-5" />
-                        {t('تسجيل الدخول')}
-                      </button>
-                    )}
-                    {user && isAdmin && (
-                      <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl text-primary font-bold hover:bg-secondary-container/30 transition-colors">
-                        <Sparkles className="h-5 w-5" />
-                        {t('لوحة التحكم')}
-                      </Link>
-                    )}
-                  </div>
+      {/* Login Error Toast */}
+      <AnimatePresence>
+        {loginError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-60 py-3 px-4 bg-[#ffdad6] border border-error/20 rounded-xl flex items-center gap-3 text-sm text-[#93000a] shadow-lg"
+          >
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            {loginError}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Search Bar */}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="fixed top-16 left-0 w-full z-40 bg-surface/90 backdrop-blur-md border-b border-primary/5 shadow-luxury"
+          >
+            <div className="max-w-2xl mx-auto px-6 py-4">
+              <form onSubmit={handleSearch}>
+                <div className="relative flex items-center w-full">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-default-400">
+                    <Search className="w-5 h-5" />
+                  </span>
+                  <input
+                    autoFocus
+                    placeholder={t('ابحث عن عطر أو ماركة...')}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-surface-container-low border border-outline-variant/30 hover:bg-surface-container rounded-full h-12 pl-12 pr-12 outline-none focus:ring-2 focus:ring-primary/20 text-primary transition-all"
+                  />
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2">
+                    <Button isIconOnly variant="ghost" onPress={() => setIsSearchOpen(false)} className="text-default-400 opacity-70 hover:opacity-100">
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </span>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </nav>
+              </form>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Spacer for fixed nav */}
-      <div className="h-[76px]" />
-
-      {/* Modal rendered via portal (inside AuthModal component) */}
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </>
   );
 }
+

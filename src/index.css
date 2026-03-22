@@ -1,5 +1,6 @@
 /* Google Fonts loaded via <link> in index.html for non-blocking render */
 @import "tailwindcss";
+@plugin "../tailwind-heroui-plugin.js";
 
 @theme {
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
