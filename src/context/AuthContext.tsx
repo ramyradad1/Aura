@@ -37,40 +37,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const openAuthModal = () => setIsAuthModalOpen(true);
 
   const checkAndSetUserRole = async (currentUser: User) => {
+    const adminEmails = [
+      (import.meta.env.VITE_ADMIN_EMAIL || 'ramyradad@gmail.com').toLowerCase(),
+      'ramyradad10@gmail.com'
+    ];
+    const isAdminByEmail = adminEmails.includes(currentUser.email?.toLowerCase() || '');
+
     try {
       const userRef = doc(db, 'users', currentUser.uid);
       const userSnap = await getDoc(userRef);
 
       if (!userSnap.exists()) {
-        const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || 'ramyradad@gmail.com';
-        const isAdminUser = currentUser.email === adminEmail || currentUser.email === 'ramyradad10@gmail.com';
         try {
           const userData: any = {
             uid: currentUser.uid,
             email: currentUser.email,
-            role: isAdminUser ? 'admin' : 'user',
+            role: isAdminByEmail ? 'admin' : 'user',
             createdAt: new Date().toISOString()
           };
           if (currentUser.displayName) {
             userData.displayName = currentUser.displayName;
           }
           await setDoc(userRef, userData);
-          setIsAdmin(isAdminUser);
+          setIsAdmin(isAdminByEmail);
         } catch (createError) {
-          handleFirestoreError(createError, OperationType.CREATE, `users/${currentUser.uid}`);
+          // Failed to create user doc - log but don't crash
+          console.warn('Could not create user document:', createError);
+          // Still grant admin by email check so the user isn't locked out
+          setIsAdmin(isAdminByEmail);
         }
       } else {
         setIsAdmin(userSnap.data().role === 'admin');
       }
     } catch (error) {
-      try {
-        if (error instanceof Error && error.message.includes('authInfo')) {
-          throw error;
-        }
-        handleFirestoreError(error, OperationType.GET, `users/${currentUser.uid}`);
-      } catch (e: any) {
-        setAuthError(e);
-      }
+      // Failed to read user doc - log but don't crash the app
+      console.warn('Could not read user document, falling back to email check:', error);
+      // Fallback: use email-based admin check so the site remains usable
+      setIsAdmin(isAdminByEmail);
     }
   };
 
