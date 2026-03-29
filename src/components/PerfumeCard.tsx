@@ -31,12 +31,12 @@ export default function PerfumeCard({ id, name, price, category, inspiredBy, ima
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        whileHover={{ y: -4 }}
-        transition={{ duration: 0.3 }}
+        whileHover={{ y: -8, scale: 1.02 }}
+        transition={{ duration: 0.4, type: 'spring', stiffness: 300, damping: 20 }}
         className="group relative flex flex-col items-center"
       >
         {/* Image Container */}
-        <div className="w-full aspect-4/5 bg-white rounded-lg overflow-hidden mb-6 relative shadow-sm transition-shadow duration-500 group-hover:shadow-xl group-hover:shadow-primary/5">
+        <div className="w-full aspect-4/5 bg-white rounded-lg overflow-hidden mb-6 relative shadow-sm transition-all duration-500 group-hover:shadow-glow group-hover:shadow-primary/20">
           <Link to={`/perfume/${generateProductSlug(name, id)}`} className="block w-full h-full">
             <img 
               src={imageUrl || `https://picsum.photos/seed/${id}/400/500`} 
@@ -112,10 +112,10 @@ export default function PerfumeCard({ id, name, price, category, inspiredBy, ima
           
           {/* Add to Cart — reveals on hover */}
           <motion.button 
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => addToCart({ id, name, price, quantity: 1, imageUrl })}
-            className="mt-4 px-6 py-2.5 bg-tertiary-gold text-[#241a00] rounded-lg text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 mx-auto"
+            className="mt-4 px-6 py-2.5 bg-tertiary-gold text-[#241a00] rounded-lg text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2 mx-auto shadow-md hover:shadow-glow hover:shadow-tertiary-gold/40"
           >
             <ShoppingCart className="h-3.5 w-3.5" />
             أضف للسلة

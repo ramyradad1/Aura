@@ -385,8 +385,16 @@ export default function Shop() {
               )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-              {filteredPerfumes.slice(0, visibleCount).map((perfume) => (
-                <PerfumeCard key={perfume.id} {...perfume} />
+              {filteredPerfumes.slice(0, visibleCount).map((perfume, idx) => (
+                <motion.div
+                  key={perfume.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: (idx % 12) * 0.08 }}
+                >
+                  <PerfumeCard {...perfume} />
+                </motion.div>
               ))}
               {filteredPerfumes.length === 0 && (
                 <motion.div 

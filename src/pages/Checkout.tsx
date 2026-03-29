@@ -81,10 +81,12 @@ export default function Checkout() {
 
         const data = await response.json();
         if (data.iframeUrl) {
-          window.location.href = data.iframeUrl; // Redirect to Paymob Iframe
-          return; // Prevents clearing cart locally before callback
+          window.location.href = data.iframeUrl;
+          return;
         } else {
-          throw new Error(data.error || "حدث خطأ في بوابة الدفع");
+          // Show detailed error for debugging
+          const detailStr = data.details ? ` | Details: ${JSON.stringify(data.details)}` : '';
+          throw new Error((data.error || "حدث خطأ في بوابة الدفع") + detailStr);
         }
       }
 

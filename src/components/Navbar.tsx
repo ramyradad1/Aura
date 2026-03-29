@@ -46,8 +46,8 @@ export default function AppNavbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-surface/80 backdrop-blur-xl border-b border-primary/5">
-        <nav className="max-w-[1920px] mx-auto px-6 sm:px-8 lg:px-12 h-16 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-50 w-full bg-surface/70 backdrop-blur-2xl border-b border-white/20 shadow-sm transition-all duration-300">
+        <nav className="max-w-[1920px] mx-auto px-6 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between gap-4">
           
           {/* Mobile Menu Toggle & Brand */}
           <div className="flex items-center gap-4">
@@ -71,12 +71,13 @@ export default function AppNavbar() {
                 <li key={link.path}>
                   <Link
                     to={link.path}
-                    className={`uppercase text-xs font-semibold tracking-[0.05em] flex items-center gap-1.5 transition-colors ${
+                    className={`relative uppercase text-xs font-bold tracking-[0.08em] flex items-center gap-1.5 py-2 transition-colors group ${
                       isActive ? (link.highlight ? 'text-[#4e3d00]' : 'text-primary') : (link.highlight ? 'text-tertiary hover:text-[#4e3d00]' : 'text-primary/70 hover:text-primary')
                     }`}
                   >
-                    {link.icon && <link.icon className="h-3.5 w-3.5" />}
+                    {link.icon && <link.icon className="h-4 w-4" />}
                     {link.name}
+                    <span className={`absolute -bottom-1 left-0 w-full h-[2px] rounded-full transition-transform origin-left duration-300 ${isActive ? 'scale-x-100 bg-primary' : 'scale-x-0 bg-primary/40 group-hover:scale-x-100'}`}></span>
                   </Link>
                 </li>
               );
@@ -84,50 +85,60 @@ export default function AppNavbar() {
           </ul>
 
           {/* Actions */}
-          <div className="flex items-center gap-2 sm:gap-4 justify-end">
-            <Button
-              variant="secondary"
-              onPress={handleLanguageToggle}
-              className="bg-surface-container-low text-primary min-w-0 px-3 hover:bg-surface-container h-8 sm:h-9 rounded-lg"
-            >
-              <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4" />
-                <span className="hidden sm:inline-block font-bold">
-                  {language === 'ar' ? 'English' : 'عربي'}
-                </span>
-              </div>
-            </Button>
+          <div className="flex items-center gap-2 sm:gap-3 justify-end">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="ghost"
+                onPress={handleLanguageToggle}
+                className="bg-primary/5 text-primary min-w-0 px-3 hover:bg-primary/10 h-10 rounded-xl font-bold border-0"
+              >
+                <div className="flex items-center gap-2">
+                  <Globe className="w-4 h-4" />
+                  <span className="hidden sm:inline-block">
+                    {language === 'ar' ? 'English' : 'عربي'}
+                  </span>
+                </div>
+              </Button>
+            </motion.div>
 
-            <Button
-              isIconOnly
-              variant="light"
-              onPress={() => setIsSearchOpen(!isSearchOpen)}
-              className="text-primary/60 hover:text-primary min-w-8 w-8 h-8 sm:w-9 sm:h-9"
-            >
-              <Search className="w-5 h-5" />
-            </Button>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Button
+                isIconOnly
+                variant="ghost"
+                onPress={() => setIsSearchOpen(!isSearchOpen)}
+                className="text-primary/70 hover:text-primary bg-transparent hover:bg-primary/5 min-w-10 w-10 h-10 rounded-full border-0"
+              >
+                <Search className="w-5 h-5" />
+              </Button>
+            </motion.div>
 
             <div className="hidden sm:flex items-center">
-              <Badge content={compareList.length} isInvisible={compareList.length === 0} color="primary" size="sm">
-                <Button isIconOnly variant="light" className="text-primary/60 hover:text-primary w-9 h-9" onPress={() => navigate('/compare')}>
-                  <GitCompare className="w-5 h-5" />
-                </Button>
+              <Badge content={compareList.length.toString()} isInvisible={compareList.length === 0} color="default" size="sm" shape="circle">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                  <Button isIconOnly variant="ghost" className="text-primary/70 hover:text-primary bg-transparent hover:bg-primary/5 min-w-10 w-10 h-10 rounded-full border-0" onPress={() => navigate('/compare')}>
+                    <GitCompare className="w-5 h-5" />
+                  </Button>
+                </motion.div>
               </Badge>
             </div>
 
             <div className="hidden sm:flex items-center">
-              <Badge content={wishlist.length} isInvisible={wishlist.length === 0} color="primary" size="sm">
-                <Button isIconOnly variant="light" className="text-primary/60 hover:text-primary w-9 h-9" onPress={() => navigate('/wishlist')}>
-                  <Heart className="w-5 h-5" />
-                </Button>
+              <Badge content={wishlist.length.toString()} isInvisible={wishlist.length === 0} color="danger" size="sm" shape="circle">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                  <Button isIconOnly variant="ghost" className="text-primary/70 hover:text-danger bg-transparent hover:bg-danger/10 min-w-10 w-10 h-10 rounded-full border-0" onPress={() => navigate('/wishlist')}>
+                    <Heart className="w-5 h-5" />
+                  </Button>
+                </motion.div>
               </Badge>
             </div>
 
             <div className="flex items-center">
-              <Badge content={items.length} isInvisible={items.length === 0} color="primary" size="sm">
-                <Button isIconOnly variant="light" className="text-primary/60 hover:text-primary w-8 h-8 sm:w-9 sm:h-9" onPress={() => navigate('/cart')}>
-                  <ShoppingBag className="w-5 h-5" />
-                </Button>
+              <Badge content={items.length > 0 ? items.length.toString() : undefined} color="default" size="sm">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                  <Button isIconOnly title={t('سلة التسوق')} variant="ghost" className="text-primary/70 hover:text-primary bg-transparent hover:bg-primary/5 min-w-10 w-10 h-10 rounded-full border-0 shadow-none" onPress={() => navigate('/cart')}>
+                    <ShoppingBag className="w-5 h-5" />
+                  </Button>
+                </motion.div>
               </Badge>
             </div>
 
@@ -136,54 +147,78 @@ export default function AppNavbar() {
               {user ? (
                 <Dropdown>
                   <DropdownTrigger>
-                    <button className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-transparent hover:ring-secondary-container transition-transform focus:outline-none flex items-center justify-center bg-primary/10 text-primary font-bold">
+                    <motion.button 
+                      whileHover={{ scale: 1.05 }} 
+                      whileTap={{ scale: 0.95 }} 
+                      className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary/20 hover:ring-primary/50 transition-all focus:outline-none outline-none flex items-center justify-center bg-primary/5 text-primary font-bold shadow-sm"
+                    >
                       {user.photoURL ? (
                         <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
                       ) : (
                         <span>{(user.displayName?.charAt(0) || "U").toUpperCase()}</span>
                       )}
-                    </button>
+                    </motion.button>
                   </DropdownTrigger>
-                  <DropdownMenu aria-label="Profile Actions">
-                    <DropdownItem key="profile" textValue="Profile" className="h-14 gap-2">
-                      <div className="flex flex-col text-primary font-bold">
-                        <span className="font-semibold">{t('مرحباً')}</span>
-                        <span className="font-semibold text-primary/70">{user.email}</span>
+                  <DropdownMenu aria-label="Profile Actions" className="p-2 min-w-[240px]">
+                    <DropdownItem key="profile" textValue="Profile" className="h-auto py-3 opacity-100 cursor-default mb-2 border-b border-primary/10 rounded-none focus:outline-none outline-none ring-0 active:bg-transparent hover:bg-transparent">
+                      <div className="flex flex-col gap-1 select-none pointer-events-none">
+                        <span className="text-[10px] uppercase tracking-widest text-primary/50 font-bold">{t('مرحباً')}</span>
+                        <span className="text-sm font-bold text-primary truncate max-w-[200px]">{user.displayName || user.email?.split('@')[0]}</span>
+                        <span className="text-[10px] text-primary/40 font-medium truncate">{user.email}</span>
                       </div>
                     </DropdownItem>
+                    
                     {isAdmin && (
-                      <DropdownItem key="admin" textValue="Admin" onPress={() => navigate('/admin')}>
-                        <div className="flex items-center gap-2 text-primary">
-                          <Sparkles className="w-4 h-4" />
-                          <span>{t('لوحة التحكم')}</span>
+                      <DropdownItem 
+                        key="admin" 
+                        textValue="Admin" 
+                        onPress={() => navigate('/admin')}
+                        className="py-2.5"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Sparkles className="w-4 h-4 text-tertiary" />
+                          <span className="text-sm font-bold text-primary">{t('لوحة التحكم')}</span>
                         </div>
                       </DropdownItem>
                     )}
-                    <DropdownItem key="settings" textValue="Settings" onPress={() => navigate('/profile')}>
-                      <div className="flex items-center gap-2 text-primary">
-                        <User className="w-4 h-4" />
-                        <span>{t('الملف الشخصي')}</span>
+                    
+                    <DropdownItem 
+                      key="settings" 
+                      textValue="Settings" 
+                      onPress={() => navigate('/profile')}
+                      className="py-2.5"
+                    >
+                      <div className="flex items-center gap-3">
+                        <User className="w-4 h-4 text-primary/60" />
+                        <span className="text-sm font-bold text-primary">{t('الملف الشخصي')}</span>
                       </div>
                     </DropdownItem>
-                    <DropdownItem key="logout" textValue="Logout" className="text-danger" onPress={logout}>
-                      <div className="flex items-center gap-2 text-danger">
+                    
+                    <DropdownItem 
+                      key="logout" 
+                      textValue="Logout" 
+                      className="text-danger mt-1 py-2.5" 
+                      onPress={logout}
+                    >
+                      <div className="flex items-center gap-3 text-danger">
                         <LogOut className="w-4 h-4" />
-                        <span>{t('تسجيل الخروج')}</span>
+                        <span className="text-sm font-bold">{t('تسجيل الخروج')}</span>
                       </div>
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               ) : (
-                <Button
-                  onPress={openAuthModal}
-                  variant="primary"
-                  className="font-bold tracking-widest uppercase shadow-lg shadow-primary/20 bg-primary text-white h-9 px-4 rounded-md"
-                >
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    <span>{t('تسجيل الدخول')}</span>
-                  </div>
-                </Button>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    onPress={openAuthModal}
+                    className="font-bold tracking-widest uppercase shadow-luxury bg-gradient-to-r from-primary to-primary-container text-white h-10 px-5 rounded-xl border border-white/20"
+                  >
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      <span>{t('تسجيل الدخول')}</span>
+                    </div>
+                  </Button>
+                </motion.div>
               )}
             </div>
           </div>
@@ -263,25 +298,27 @@ export default function AppNavbar() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="fixed top-16 left-0 w-full z-40 bg-surface/90 backdrop-blur-md border-b border-primary/5 shadow-luxury"
+            className="fixed top-24 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl z-40 bg-surface/80 backdrop-blur-2xl border border-white/30 rounded-3xl shadow-luxury-lg overflow-hidden"
           >
-            <div className="max-w-2xl mx-auto px-6 py-4">
+            <div className="p-2">
               <form onSubmit={handleSearch}>
                 <div className="relative flex items-center w-full">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-default-400">
-                    <Search className="w-5 h-5" />
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/50">
+                    <Search className="w-6 h-6" />
                   </span>
                   <input
                     autoFocus
                     placeholder={t('ابحث عن عطر أو ماركة...')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-surface-container-low border border-outline-variant/30 hover:bg-surface-container rounded-full h-12 pl-12 pr-12 outline-none focus:ring-2 focus:ring-primary/20 text-primary transition-all"
+                    className="w-full bg-transparent h-14 pl-14 pr-14 outline-none text-lg text-primary placeholder:text-primary/40 font-medium"
                   />
                   <span className="absolute right-2 top-1/2 -translate-y-1/2">
-                    <Button isIconOnly variant="ghost" onPress={() => setIsSearchOpen(false)} className="text-default-400 opacity-70 hover:opacity-100">
-                      <X className="w-4 h-4" />
-                    </Button>
+                    <motion.div whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }}>
+                      <Button isIconOnly variant="ghost" onPress={() => setIsSearchOpen(false)} className="text-primary/50 hover:text-primary rounded-full border-0 shadow-none">
+                        <X className="w-5 h-5" />
+                      </Button>
+                    </motion.div>
                   </span>
                 </div>
               </form>

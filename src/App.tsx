@@ -13,6 +13,7 @@ import Navbar from './components/Navbar';
 import Chatbot from './components/Chatbot';
 import WhatsAppButton from './components/WhatsAppButton';
 import { lazy, Suspense } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 
 const Home = lazy(() => import('./pages/Home'));
 const Shop = lazy(() => import('./pages/Shop'));
@@ -56,31 +57,42 @@ function AppContent() {
       {!isAdminRoute && <Navbar />}
       <main className="flex-1">
         <Suspense fallback={<FallbackLoader />}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/shop/:category" element={<Shop />} />
-            <Route path="/perfume/:id" element={<PerfumeDetails />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/ai-studio" element={<AIStudio />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/compare" element={<Compare />} />
-            <Route path="/quiz" element={<PerfumeQuiz />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/refund" element={<Refund />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/عطور-رجالي-مصر" element={<LandingMenPerfumes />} />
-            <Route path="/عطور-نسائية-فاخرة" element={<LandingWomenPerfumes />} />
-            <Route path="/عطور-هدايا" element={<LandingGiftPerfumes />} />
-            <Route path="/مقارنة-العطور" element={<PerfumeComparison />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="h-full"
+            >
+              <Routes location={location}>
+                <Route path="/" element={<Home />} />
+                <Route path="/shop/:category" element={<Shop />} />
+                <Route path="/perfume/:id" element={<PerfumeDetails />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/ai-studio" element={<AIStudio />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/compare" element={<Compare />} />
+                <Route path="/quiz" element={<PerfumeQuiz />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/refund" element={<Refund />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/عطور-رجالي-مصر" element={<LandingMenPerfumes />} />
+                <Route path="/عطور-نسائية-فاخرة" element={<LandingWomenPerfumes />} />
+                <Route path="/عطور-هدايا" element={<LandingGiftPerfumes />} />
+                <Route path="/مقارنة-العطور" element={<PerfumeComparison />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </motion.div>
+          </AnimatePresence>
         </Suspense>
       </main>
       {!isAdminRoute && <Chatbot />}

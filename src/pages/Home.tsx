@@ -6,9 +6,13 @@ import AIRecommendations from '../components/AIRecommendations';
 import PerfumeCard from '../components/PerfumeCard';
 import { useState, useEffect } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
+import Lottie from 'lottie-react';
 import { db } from '../firebase';
 import { mockPerfumes } from '../data/mockData';
 import { useTranslation } from '../context/TranslationContext';
+
+// We import the locally downloaded lottie JSON
+import sparklesAnimation from '../../public/sparkles.json';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -143,10 +147,10 @@ export default function Home() {
       />
 
       {/* ══════════════ Section 1: Hero ══════════════ */}
-      <section className="relative h-screen min-h-[700px] flex items-center overflow-hidden">
+      <section className="relative h-screen min-h-[700px] flex flex-col justify-center overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-l from-[#1a0a2e]/90 via-[#1a0a2e]/70 to-[#1a0a2e]/50 z-10" />
+          <div className="absolute inset-0 bg-gradient-to-l from-[#1a0a2e]/90 via-[#1a0a2e]/75 to-[#1a0a2e]/40 z-10" />
           <img 
             src="/images/hero_bg.png" 
             alt="عطور فاخرة مستوحاة من أشهر الماركات العالمية - Aura Perfumes" 
@@ -155,8 +159,18 @@ export default function Home() {
             fetchPriority="high"
           />
         </div>
+        
+        {/* Lottie Overlay */}
+        <div className="absolute inset-0 z-10 pointer-events-none opacity-50 mix-blend-screen flex items-center justify-center">
+          <Lottie 
+            animationData={sparklesAnimation} 
+            loop={true} 
+            className="w-[150%] h-[150%] max-w-none opacity-60"
+          />
+        </div>
+
         {/* Content */}
-        <div className="relative z-20 px-8 md:px-24 w-full max-w-[1400px] mx-auto">
+        <div className="relative z-20 px-8 md:px-24 w-full max-w-[1400px] mx-auto mt-20">
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
