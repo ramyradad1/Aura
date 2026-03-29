@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from '../context/TranslationContext';
@@ -16,14 +16,24 @@ export default function Checkout() {
   const { user, openAuthModal } = useAuth();
   const navigate = useNavigate();
   
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const isPaymobSuccess = queryParams.get('success') === 'true';
+  const isPaymobFailed = queryParams.get('success') === 'false';
+
   const [address, setAddress] = useState({ city: '', street: '', phone: '' });
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card'>('cod');
-  const [cardDetails, setCardDetails] = useState({ number: '', expiry: '', cvv: '' });
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState(isPaymobSuccess);
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState(isPaymobFailed ? t('عفواً، لم تنجح عملية الدفع. يرجى المحاولة مرة أخرى.') : '');
   const [errorState, setErrorState] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (isPaymobSuccess && items.length > 0) {
+      clearCart();
+    }
+  }, [isPaymobSuccess]);
 
   if (errorState) {
     throw errorState;
@@ -42,39 +52,61 @@ export default function Checkout() {
       return;
     }
 
-    if (paymentMethod === 'card') {
-      if (!cardDetails.number || !cardDetails.expiry || !cardDetails.cvv) {
-        setError(t('يرجى إدخال جميع بيانات البطاقة الائتمانية'));
-        return;
-      }
-      if (cardDetails.number.length < 16) {
-        setError(t('رقم البطاقة غير صالح'));
-        return;
-      }
-    }
-    
     setLoading(true);
     try {
-      await addDoc(collection(db, 'orders'), {
+      const orderRef = await addDoc(collection(db, 'orders'), {
         userId: user.uid,
-        items: items.map(i => ({ perfumeId: i.id, quantity: i.quantity, price: i.price })),
+        items: items.map(i => ({ perfumeId: i.id, quantity: i.quantity, name: i.name, price: i.price })),
         totalAmount: total,
         status: 'pending',
         paymentMethod,
+        paymentStatus: 'pending',
         shippingAddress: `المدينة: ${address.city}، الشارع: ${address.street}، هاتف: ${address.phone}`,
         createdAt: new Date().toISOString()
       });
       
+      if (paymentMethod === 'card') {
+        const response = await fetch('/api/paymob/create-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: total,
+            orderId: orderRef.id,
+            items: items.map(i => ({ name: i.name, amount_cents: i.price * 100, description: i.name, quantity: i.quantity })),
+            billingData: {
+              first_name: user.displayName?.split(' ')[0] || "Customer",
+              last_name: user.displayName?.split(' ')[1] || "Aura",
+              email: user.email || "test@test.com",
+              phone_number: address.phone,
+              apartment: "NA", floor: "NA", street: address.street, building: "NA",
+              shipping_method: "NA", postal_code: "NA", city: address.city,
+              country: "EG", state: "NA"
+            }
+          })
+        });
+
+        const data = await response.json();
+        if (data.iframeUrl) {
+          window.location.href = data.iframeUrl; // Redirect to Paymob Iframe
+          return; // Prevents clearing cart locally before callback
+        } else {
+          throw new Error(data.error || "حدث خطأ في بوابة الدفع");
+        }
+      }
+
       setSuccess(true);
       clearCart();
-    } catch (error) {
+    } catch (error: any) {
+      setError(error.message);
       try {
         handleFirestoreError(error, OperationType.CREATE, 'orders');
       } catch (e: any) {
         setErrorState(e);
       }
     } finally {
-      setLoading(false);
+      if (paymentMethod !== 'card') {
+        setLoading(false);
+      }
     }
   };
 
@@ -173,54 +205,21 @@ export default function Checkout() {
                   onChange={() => setPaymentMethod('card')}
                   className={`w-5 h-5 text-primary ${language === 'ar' ? 'ml-4' : 'mr-4'}`}
                 />
-                <span className="font-medium text-primary">{t('البطاقة الائتمانية (تجريبي)')}</span>
+                <span className="font-medium text-primary">{t('البطاقة الائتمانية / تقسيط (Paymob)')}</span>
               </label>
             </div>
-            
             {paymentMethod === 'card' && (
               <div className="mt-6 p-6 bg-surface-container-low border border-outline-variant/20 rounded-lg space-y-4">
-                <h3 className="font-serif text-primary mb-4">{t('بيانات البطاقة (محاكاة)')}</h3>
-                <div>
-                  <label className="block text-xs text-primary/60 mb-1 uppercase tracking-widest font-bold">{t('رقم البطاقة')}</label>
-                  <input 
-                    type="text" 
-                    maxLength={16}
-                    placeholder="1234 5678 9101 1121"
-                    value={cardDetails.number}
-                    onChange={(e) => setCardDetails({...cardDetails, number: e.target.value.replace(/\D/g, '')})}
-                    className={`w-full p-3 bg-white border border-outline-variant/20 rounded-lg outline-none focus:border-primary/30 text-${language === 'ar' ? 'left' : 'right'} text-sm`}
-                    dir="ltr"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs text-primary/60 mb-1 uppercase tracking-widest font-bold">{t('تاريخ الانتهاء')}</label>
-                    <input 
-                      type="text" 
-                      maxLength={5}
-                      placeholder="MM/YY"
-                      value={cardDetails.expiry}
-                      onChange={(e) => setCardDetails({...cardDetails, expiry: e.target.value})}
-                      className={`w-full p-3 bg-white border border-outline-variant/20 rounded-lg outline-none focus:border-primary/30 text-${language === 'ar' ? 'left' : 'right'} text-sm`}
-                      dir="ltr"
-                    />
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-[#c4eed0] rounded-full flex items-center justify-center shrink-0">
+                    <CheckCircle className="w-6 h-6 text-[#006d3b]" />
                   </div>
                   <div>
-                    <label className="block text-xs text-primary/60 mb-1 uppercase tracking-widest font-bold">{t('رمز الأمان (CVV)')}</label>
-                    <input 
-                      type="text" 
-                      maxLength={3}
-                      placeholder="123"
-                      value={cardDetails.cvv}
-                      onChange={(e) => setCardDetails({...cardDetails, cvv: e.target.value.replace(/\D/g, '')})}
-                      className={`w-full p-3 bg-white border border-outline-variant/20 rounded-lg outline-none focus:border-primary/30 text-${language === 'ar' ? 'left' : 'right'} text-sm`}
-                      dir="ltr"
-                    />
+                    <h3 className="font-serif text-lg text-primary mb-2">{t('الدفع الآمن عبر Paymob')}</h3>
+                    <p className="text-sm text-on-surface/70 leading-relaxed font-light">
+                      {t('عند النقر على "تأكيد الطلب"، سيتم توجيهك بأمان إلى بوابة الدفع الرسمية (Paymob) لإتمام عملية الدفع الخاصة بك. بمجرد الانتهاء، ستعود تلقائياً إلى موقعنا.')}
+                    </p>
                   </div>
-                </div>
-                <div className="mt-4 p-3 bg-tertiary-fixed/20 text-tertiary text-sm rounded-lg flex items-start gap-2">
-                  <CheckCircle className={`h-5 w-5 shrink-0 ${language === 'ar' ? 'ml-2' : 'mr-2'}`} />
-                  <p>{t('هذه محاكاة لعملية الدفع. لن يتم خصم أي مبالغ حقيقية. سيتم تسجيل الطلب بنجاح عند إدخال بيانات وهمية.')}</p>
                 </div>
               </div>
             )}
@@ -229,7 +228,7 @@ export default function Checkout() {
           <div className="bg-white p-8 rounded-2xl shadow-luxury border border-outline-variant/10 flex flex-col sm:flex-row justify-between items-center gap-6">
             <div>
               <p className="text-on-surface/40 text-xs uppercase tracking-widest font-bold mb-1">{t('الإجمالي المطلوب')}</p>
-              <p className="text-3xl font-serif text-tertiary">${total}</p>
+              <p className="text-3xl font-serif text-tertiary">{total} {t('ج.م')}</p>
             </div>
             <button 
               type="submit" 
