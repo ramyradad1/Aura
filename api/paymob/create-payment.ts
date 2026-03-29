@@ -67,7 +67,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const paymentToken = paymentKeyData.token;
 
     if (!paymentToken) {
-      return res.status(400).json({ error: 'Failed to generate payment token', details: paymentKeyData });
+      // Return specific error message from Paymob to help debug (e.g., "Invalid integration ID" or "Incomplete billing data")
+      const errorMessage = paymentKeyData.message || paymentKeyData.detail || 'Failed to generate payment token';
+      return res.status(400).json({ 
+        error: `Paymob Error: ${errorMessage}`,
+        details: paymentKeyData 
+      });
     }
 
     // Step 4: Return Iframe URL
