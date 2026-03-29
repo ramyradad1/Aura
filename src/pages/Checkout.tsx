@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from '../context/TranslationContext';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { handleFirestoreError, OperationType } from '../utils/firebaseUtils';
 import { CreditCard, Truck, CheckCircle } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
 
@@ -27,17 +26,12 @@ export default function Checkout() {
   const [success, setSuccess] = useState(isPaymobSuccess);
 
   const [error, setError] = useState(isPaymobFailed ? t('عفواً، لم تنجح عملية الدفع. يرجى المحاولة مرة أخرى.') : '');
-  const [errorState, setErrorState] = useState<Error | null>(null);
 
   useEffect(() => {
     if (isPaymobSuccess && items.length > 0) {
       clearCart();
     }
   }, [isPaymobSuccess]);
-
-  if (errorState) {
-    throw errorState;
-  }
 
   if (items.length === 0 && !success) {
     navigate('/cart');
@@ -97,16 +91,10 @@ export default function Checkout() {
       setSuccess(true);
       clearCart();
     } catch (error: any) {
-      setError(error.message);
-      try {
-        handleFirestoreError(error, OperationType.CREATE, 'orders');
-      } catch (e: any) {
-        setErrorState(e);
-      }
+      console.error('Checkout error:', error);
+      setError(error.message || 'حدث خطأ أثناء إتمام الطلب. يرجى المحاولة مرة أخرى.');
     } finally {
-      if (paymentMethod !== 'card') {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   };
 

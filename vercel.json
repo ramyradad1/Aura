@@ -5,6 +5,14 @@
       "destination": "/api/sitemap"
     },
     {
+      "source": "/api/paymob/create-payment",
+      "destination": "/api/paymob/create-payment"
+    },
+    {
+      "source": "/api/paymob/webhook",
+      "destination": "/api/paymob/webhook"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
