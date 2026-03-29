@@ -43,18 +43,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (!userSnap.exists()) {
         const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || 'ramyradad@gmail.com';
+        const isAdminUser = currentUser.email === adminEmail || currentUser.email === 'ramyradad10@gmail.com';
         try {
           const userData: any = {
             uid: currentUser.uid,
             email: currentUser.email,
-            role: currentUser.email === adminEmail ? 'admin' : 'user',
+            role: isAdminUser ? 'admin' : 'user',
             createdAt: new Date().toISOString()
           };
           if (currentUser.displayName) {
             userData.displayName = currentUser.displayName;
           }
           await setDoc(userRef, userData);
-          setIsAdmin(currentUser.email === adminEmail);
+          setIsAdmin(isAdminUser);
         } catch (createError) {
           handleFirestoreError(createError, OperationType.CREATE, `users/${currentUser.uid}`);
         }
