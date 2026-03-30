@@ -31,7 +31,7 @@ User-agent: Applebot-Extended
 Allow: /
 
 # Sitemaps
-Sitemap: https://www.aura-perfumes.online/api/sitemap
+Sitemap: https://www.aura-perfumes.online/sitemap.xml
 
 # LLM Info
 # See /llms.txt for AI-readable site summary

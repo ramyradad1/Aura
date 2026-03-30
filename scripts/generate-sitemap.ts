@@ -38,6 +38,16 @@ const STATIC_PAGES = [
   { path: '/privacy',     priority: '0.3', changefreq: 'yearly' },
   { path: '/terms',       priority: '0.3', changefreq: 'yearly' },
   { path: '/refund',      priority: '0.3', changefreq: 'yearly' },
+  { path: '/blog',        priority: '0.8', changefreq: 'weekly' },
+  { path: '/blog/افضل-عطور-رجالي-2025', priority: '0.7', changefreq: 'monthly' },
+  { path: '/blog/دليل-اختيار-العطر-المناسب', priority: '0.7', changefreq: 'monthly' },
+  { path: '/blog/عطور-نسائية-فاخرة-2025', priority: '0.7', changefreq: 'monthly' },
+  { path: '/blog/افضل-عطور-صيف-2025', priority: '0.7', changefreq: 'monthly' },
+  { path: '/blog/عطور-مناسبات-وافراح-مصر', priority: '0.7', changefreq: 'monthly' },
+  { path: '/عطور-رجالي-مصر', priority: '0.9', changefreq: 'weekly' },
+  { path: '/عطور-نسائية-فاخرة', priority: '0.9', changefreq: 'weekly' },
+  { path: '/عطور-هدايا', priority: '0.9', changefreq: 'weekly' },
+  { path: '/مقارنة-العطور', priority: '0.8', changefreq: 'monthly' },
 ];
 
 function formatDate(date?: any): string {

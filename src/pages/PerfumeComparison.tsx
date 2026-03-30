@@ -99,6 +99,7 @@ export default function PerfumeComparison() {
         description="مقارنة تفصيلية بين عطور Aura المستوحاة والعطور الأصلية. تعرف على الفرق في الثبات والرائحة والسعر. Aura Noir vs Creed Aventus و Aura Rose vs Baccarat Rouge 540."
         keywords="مقارنة عطور, عطور مستوحاة مقابل أصلية, Aura Noir vs Creed Aventus, Aura Rose vs Baccarat Rouge, الفرق بين العطر المستوحى والأصلي"
         ogUrl="/مقارنة-العطور"
+        canonicalUrl="/مقارنة-العطور"
         schema={[breadcrumbSchema, comparisonFaqSchema]}
       />
 

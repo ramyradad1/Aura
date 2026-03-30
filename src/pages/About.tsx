@@ -12,6 +12,8 @@ export default function About() {
         title={t("من نحن")}
         description={t("تعرف على أورا للعطور، وجهتك الأولى لاكتشاف العطور المستوحاة بجودة عالمية وثبات لا يضاهى.")}
         keywords={t("من نحن أورا للعطور, قصة أورا, جودة العطور, عطور مستوحاة")}
+        ogUrl="/about"
+        canonicalUrl="/about"
       />
       <div className="text-center mb-16">
         <Sparkles className="h-12 w-12 text-indigo-600 mx-auto mb-4" />

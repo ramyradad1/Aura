@@ -22,6 +22,8 @@ export default function Contact() {
         title={t("اتصل بنا")}
         description={t("تواصل مع خدمة عملاء أورا للعطور لأي استفسار أو مساعدة. نحن هنا لخدمتكم.")}
         keywords={t("اتصل بنا, خدمة عملاء أورا للعطور, ارقام التواصل أورا")}
+        ogUrl="/contact"
+        canonicalUrl="/contact"
       />
       <div className="text-center mb-16">
         <h1 className="text-4xl font-serif font-bold text-gray-900 mb-4">{t('اتصل بنا')}</h1>

@@ -10,6 +10,8 @@ export default function Privacy() {
       <SEOHead
         title={t("سياسة الخصوصية")}
         description={t("تعرف على سياسة الخصوصية وكيفية حماية بياناتك الشخصية في متجر أورا للعطور.")}
+        ogUrl="/privacy"
+        canonicalUrl="/privacy"
       />
       <h1 className="text-4xl font-serif font-bold text-gray-900 mb-8">{t('سياسة الخصوصية')}</h1>
       <div className="prose prose-indigo max-w-none text-gray-600">

@@ -10,6 +10,8 @@ export default function Refund() {
       <SEOHead
         title={t("سياسة الاسترجاع")}
         description={t("تعرف على سياسة الاسترجاع والاستبدال لمنتجات أورا للعطور.")}
+        ogUrl="/refund"
+        canonicalUrl="/refund"
       />
       <h1 className="text-4xl font-serif font-bold text-gray-900 mb-8">{t('سياسة الاسترجاع')}</h1>
       <div className="prose prose-indigo max-w-none text-gray-600">

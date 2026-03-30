@@ -14,7 +14,7 @@ interface SEOHeadProps {
 }
 
 const SITE_NAME = 'Aura Perfumes';
-const DEFAULT_DESCRIPTION = 'Aura Perfumes — متجر عطور مستوحاة من أشهر الماركات العالمية بجودة عالية وثبات يدوم. تسوق عطور رجالية ونسائية وللجنسين بأسعار مناسبة.';
+const DEFAULT_DESCRIPTION = 'Aura Perfumes — متجر عطور مستوحاة من أشهر الماركات العالمية بجودة عالية وثبات يدوم. عطور رجالية ونسائية بأسعار مناسبة وشحن سريع لمصر.';
 const DEFAULT_IMAGE = 'https://www.aura-perfumes.online/og-image.jpg';
 const BASE_URL = 'https://www.aura-perfumes.online';
 
@@ -60,6 +60,11 @@ export default function SEOHead({
       <link rel="alternate" hrefLang="ar" href={canonical} />
       <link rel="alternate" hrefLang="en" href={canonical} />
       <link rel="alternate" hrefLang="x-default" href={canonical} />
+
+      {/* Geo / Regional tags for Local SEO */}
+      <meta name="geo.region" content="EG" />
+      <meta name="geo.placename" content="Cairo" />
+      <meta httpEquiv="content-language" content={isArabic ? 'ar' : 'en'} />
 
       {/* Open Graph */}
       <meta property="og:type" content={ogType} />

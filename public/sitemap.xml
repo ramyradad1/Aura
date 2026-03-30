@@ -6,7 +6,7 @@
   <!-- ========== Static Pages ========== -->
   <url>
     <loc>https://www.aura-perfumes.online/</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/" />
@@ -15,7 +15,7 @@
   </url>
   <url>
     <loc>https://www.aura-perfumes.online/shop/all</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/shop/all" />
@@ -24,7 +24,7 @@
   </url>
   <url>
     <loc>https://www.aura-perfumes.online/shop/men</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/shop/men" />
@@ -33,7 +33,7 @@
   </url>
   <url>
     <loc>https://www.aura-perfumes.online/shop/women</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/shop/women" />
@@ -42,7 +42,7 @@
   </url>
   <url>
     <loc>https://www.aura-perfumes.online/shop/unisex</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/shop/unisex" />
@@ -51,7 +51,7 @@
   </url>
   <url>
     <loc>https://www.aura-perfumes.online/ai-studio</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/ai-studio" />
@@ -60,7 +60,7 @@
   </url>
   <url>
     <loc>https://www.aura-perfumes.online/quiz</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/quiz" />
@@ -69,7 +69,7 @@
   </url>
   <url>
     <loc>https://www.aura-perfumes.online/compare</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/compare" />
@@ -78,7 +78,7 @@
   </url>
   <url>
     <loc>https://www.aura-perfumes.online/about</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/about" />
@@ -87,7 +87,7 @@
   </url>
   <url>
     <loc>https://www.aura-perfumes.online/contact</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/contact" />
@@ -96,7 +96,7 @@
   </url>
   <url>
     <loc>https://www.aura-perfumes.online/privacy</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/privacy" />
@@ -105,7 +105,7 @@
   </url>
   <url>
     <loc>https://www.aura-perfumes.online/terms</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/terms" />
@@ -114,11 +114,101 @@
   </url>
   <url>
     <loc>https://www.aura-perfumes.online/refund</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-03-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/refund" />
     <xhtml:link rel="alternate" hreflang="ar" href="https://www.aura-perfumes.online/refund" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.aura-perfumes.online/refund" />
+  </url>
+  <url>
+    <loc>https://www.aura-perfumes.online/blog</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/blog" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.aura-perfumes.online/blog" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.aura-perfumes.online/blog" />
+  </url>
+  <url>
+    <loc>https://www.aura-perfumes.online/blog/افضل-عطور-رجالي-2025</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/blog/افضل-عطور-رجالي-2025" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.aura-perfumes.online/blog/افضل-عطور-رجالي-2025" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.aura-perfumes.online/blog/افضل-عطور-رجالي-2025" />
+  </url>
+  <url>
+    <loc>https://www.aura-perfumes.online/blog/دليل-اختيار-العطر-المناسب</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/blog/دليل-اختيار-العطر-المناسب" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.aura-perfumes.online/blog/دليل-اختيار-العطر-المناسب" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.aura-perfumes.online/blog/دليل-اختيار-العطر-المناسب" />
+  </url>
+  <url>
+    <loc>https://www.aura-perfumes.online/blog/عطور-نسائية-فاخرة-2025</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/blog/عطور-نسائية-فاخرة-2025" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.aura-perfumes.online/blog/عطور-نسائية-فاخرة-2025" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.aura-perfumes.online/blog/عطور-نسائية-فاخرة-2025" />
+  </url>
+  <url>
+    <loc>https://www.aura-perfumes.online/blog/افضل-عطور-صيف-2025</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/blog/افضل-عطور-صيف-2025" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.aura-perfumes.online/blog/افضل-عطور-صيف-2025" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.aura-perfumes.online/blog/افضل-عطور-صيف-2025" />
+  </url>
+  <url>
+    <loc>https://www.aura-perfumes.online/blog/عطور-مناسبات-وافراح-مصر</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/blog/عطور-مناسبات-وافراح-مصر" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.aura-perfumes.online/blog/عطور-مناسبات-وافراح-مصر" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.aura-perfumes.online/blog/عطور-مناسبات-وافراح-مصر" />
+  </url>
+  <url>
+    <loc>https://www.aura-perfumes.online/عطور-رجالي-مصر</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/عطور-رجالي-مصر" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.aura-perfumes.online/عطور-رجالي-مصر" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.aura-perfumes.online/عطور-رجالي-مصر" />
+  </url>
+  <url>
+    <loc>https://www.aura-perfumes.online/عطور-نسائية-فاخرة</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/عطور-نسائية-فاخرة" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.aura-perfumes.online/عطور-نسائية-فاخرة" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.aura-perfumes.online/عطور-نسائية-فاخرة" />
+  </url>
+  <url>
+    <loc>https://www.aura-perfumes.online/عطور-هدايا</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/عطور-هدايا" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.aura-perfumes.online/عطور-هدايا" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.aura-perfumes.online/عطور-هدايا" />
+  </url>
+  <url>
+    <loc>https://www.aura-perfumes.online/مقارنة-العطور</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ar-EG" href="https://www.aura-perfumes.online/مقارنة-العطور" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://www.aura-perfumes.online/مقارنة-العطور" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.aura-perfumes.online/مقارنة-العطور" />
   </url>
 </urlset>

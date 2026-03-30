@@ -10,6 +10,8 @@ export default function Terms() {
       <SEOHead
         title={t("الشروط والأحكام")}
         description={t("اقرأ الشروط والأحكام الخاصة بشراء العطور واستخدام موقع أورا للعطور.")}
+        ogUrl="/terms"
+        canonicalUrl="/terms"
       />
       <h1 className="text-4xl font-serif font-bold text-gray-900 mb-8">{t('الشروط والأحكام')}</h1>
       <div className="prose prose-indigo max-w-none text-gray-600">

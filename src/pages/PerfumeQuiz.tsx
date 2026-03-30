@@ -129,9 +129,9 @@ export default function PerfumeQuiz() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4" dir={dir}>
       <SEOHead
-        title={t("اختبار العطر المثالي")}
-        description={t("اكتشف عطرك المثالي مع اختبار Aura Perfumes الذكي — أجب على بضعة أسئلة بسيطة وسيقترح عليك الذكاء الاصطناعي أفضل العطور التي تناسب شخصيتك وذوقك.")}
-        keywords={t("اختبار عطر, اختبار العطر المثالي, quiz عطور, اختيار عطر, Aura Perfumes quiz, توصيات عطور")}
+        title={t("اختبار عطر | اكتشف العطر المناسب لشخصيتك")}
+        description={t("لا تعرف أي عطر تختار؟ جرب اختبار العطور الخاص بنا للإجابة على بعض الأسئلة واكتشاف العطر المستوحى الذي يطابق ذوقك بكل دقة.")}
+        keywords={t("اختبار عطر, اختبار العطر المثالي, quiz عطور, اختيار عطر, Aura Perfumes quiz, توصيات عطور, ازاى اختار برفان, احسن ريحة ليا")}
         ogUrl="/quiz"
       />
       <div className="max-w-3xl mx-auto">
