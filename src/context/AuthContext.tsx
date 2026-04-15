@@ -12,6 +12,7 @@ import { handleFirestoreError, OperationType } from '../utils/firebaseUtils';
 interface AuthContextType {
   user: User | null;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
   isAuthReady: boolean;
   loginError: string | null;
   login: () => Promise<void>;
@@ -29,6 +30,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [authError, setAuthError] = useState<Error | null>(null);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -37,10 +39,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const openAuthModal = () => setIsAuthModalOpen(true);
 
   const checkAndSetUserRole = async (currentUser: User) => {
-    const adminEmails = [
-      (import.meta.env.VITE_ADMIN_EMAIL || 'ramyradad@gmail.com').toLowerCase(),
-      'ramyradad10@gmail.com'
+    const superAdminEmails = [
+      (import.meta.env.VITE_SUPER_ADMIN_EMAIL || 'ramyradad@gmail.com').toLowerCase()
     ];
+    const adminEmails = [
+      (import.meta.env.VITE_ADMIN_EMAIL || 'ramyradad@gmail.com').toLowerCase()
+    ];
+    
+    const isSuperAdminByEmail = superAdminEmails.includes(currentUser.email?.toLowerCase() || '');
     const isAdminByEmail = adminEmails.includes(currentUser.email?.toLowerCase() || '');
 
     try {
@@ -52,28 +58,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const userData: any = {
             uid: currentUser.uid,
             email: currentUser.email,
-            role: isAdminByEmail ? 'admin' : 'user',
+            role: isSuperAdminByEmail ? 'superadmin' : (isAdminByEmail ? 'admin' : 'user'),
             createdAt: new Date().toISOString()
           };
           if (currentUser.displayName) {
             userData.displayName = currentUser.displayName;
           }
           await setDoc(userRef, userData);
-          setIsAdmin(isAdminByEmail);
+          setIsAdmin(isAdminByEmail || isSuperAdminByEmail);
+          setIsSuperAdmin(isSuperAdminByEmail);
         } catch (createError) {
-          // Failed to create user doc - log but don't crash
           console.warn('Could not create user document:', createError);
-          // Still grant admin by email check so the user isn't locked out
-          setIsAdmin(isAdminByEmail);
+          setIsAdmin(isAdminByEmail || isSuperAdminByEmail);
+          setIsSuperAdmin(isSuperAdminByEmail);
         }
       } else {
-        setIsAdmin(userSnap.data().role === 'admin');
+        const role = userSnap.data().role;
+        setIsAdmin(role === 'admin' || role === 'superadmin');
+        setIsSuperAdmin(role === 'superadmin');
       }
     } catch (error) {
-      // Failed to read user doc - log but don't crash the app
       console.warn('Could not read user document, falling back to email check:', error);
-      // Fallback: use email-based admin check so the site remains usable
-      setIsAdmin(isAdminByEmail);
+      setIsAdmin(isAdminByEmail || isSuperAdminByEmail);
+      setIsSuperAdmin(isSuperAdminByEmail);
     }
   };
 
@@ -192,7 +199,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider value={{ 
-      user, isAdmin, isAuthReady, loginError, 
+      user, isAdmin, isSuperAdmin, isAuthReady, loginError, 
       login, logout, loginWithEmail, registerWithEmail, resetPassword,
       isAuthModalOpen, setIsAuthModalOpen, openAuthModal
     }}>

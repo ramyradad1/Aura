@@ -10,7 +10,7 @@ import { Button } from '@heroui/react';
 import AuthModal from './AuthModal';
 
 export default function AppNavbar() {
-  const { user, isAdmin, logout, loginError, isAuthModalOpen, setIsAuthModalOpen, openAuthModal } = useAuth();
+  const { user, isAdmin, isSuperAdmin, logout, loginError, isAuthModalOpen, setIsAuthModalOpen, openAuthModal } = useAuth();
   const { items } = useCart();
   const { wishlist, compareList } = useUserPreferences();
   const { t, language, setLanguage } = useTranslation();
@@ -40,10 +40,13 @@ export default function AppNavbar() {
     { name: t('للجنسين'), path: '/shop/unisex' },
     { name: t('مدونة'), path: '/blog' },
     { name: t('اختبار العطور'), path: '/quiz', icon: HelpCircle },
-    { name: t('استوديو الذكاء'), path: '/ai-studio', icon: Sparkles, highlight: true, adminOnly: true },
+    { name: t('استوديو الذكاء'), path: '/ai-studio', icon: Sparkles, highlight: true, superAdminOnly: true },
   ];
 
-  const visibleLinks = navLinks.filter(link => !link.adminOnly || isAdmin);
+  const visibleLinks = navLinks.filter(link => {
+    if (link.superAdminOnly && !isSuperAdmin) return false;
+    return true;
+  });
 
   // Custom icon button component to avoid HeroUI prop issues
   const IconBtn = ({ onClick, className, children, ariaLabel }: { onClick: () => void; className?: string; children: React.ReactNode; ariaLabel?: string }) => (
@@ -62,7 +65,7 @@ export default function AppNavbar() {
   const BadgeDot = ({ count, color = 'bg-primary' }: { count: number; color?: string }) => {
     if (count === 0) return null;
     return (
-      <span className={`absolute -top-0.5 -right-0.5 ${color} text-white text-[9px] font-bold w-[18px] h-[18px] rounded-full flex items-center justify-center ring-2 ring-surface z-10`}>
+      <span className={`absolute -top-0.5 rtl:-left-0.5 ltr:-right-0.5 ${color} text-white text-[9px] font-bold w-[18px] h-[18px] rounded-full flex items-center justify-center ring-2 ring-surface z-10`}>
         {count}
       </span>
     );
@@ -181,10 +184,10 @@ export default function AppNavbar() {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 8, scale: 0.95 }}
                           transition={{ duration: 0.15 }}
-                          className="absolute top-14 right-0 z-50 w-[260px] bg-surface border border-primary/10 rounded-2xl shadow-luxury-lg overflow-hidden"
+                          className="absolute top-14 right-0 rtl:left-0 rtl:right-auto z-50 w-[260px] bg-surface border border-primary/10 rounded-2xl shadow-luxury-lg overflow-hidden"
                         >
                           {/* User Info Header */}
-                          <div className="px-5 py-4 border-b border-primary/8 bg-primary/[0.02]">
+                          <div className="px-5 py-4 border-b border-primary/8 bg-primary/2">
                             <p className="text-[10px] uppercase tracking-[0.15em] text-primary/40 font-bold mb-1.5">{t('مرحباً')}</p>
                             <p className="text-sm font-bold text-primary truncate">{user.displayName || user.email?.split('@')[0]}</p>
                             <p className="text-[11px] text-primary/40 mt-0.5 truncate">{user.email}</p>

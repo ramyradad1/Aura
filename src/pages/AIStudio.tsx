@@ -1,13 +1,23 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { Sparkles, Video, Image as ImageIcon, Map, Search, Key } from 'lucide-react';
 import { generatePerfumeAdVideo, generatePerfumeBottleImage, findNearestStore, searchPerfumeTrends } from '../utils/geminiUtils';
 import SEOHead from '../components/SEOHead';
 
 export default function AIStudio() {
+  const { isSuperAdmin, isAuthReady } = useAuth();
+  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<'video' | 'image' | 'map' | 'search'>('video');
   const [hasApiKey, setHasApiKey] = useState(true);
   
+  useEffect(() => {
+    if (isAuthReady && !isSuperAdmin) {
+      navigate('/');
+    }
+  }, [isSuperAdmin, isAuthReady, navigate]);
+
   useEffect(() => {
     const checkApiKey = async () => {
       if (typeof (window as any).aistudio !== 'undefined') {
