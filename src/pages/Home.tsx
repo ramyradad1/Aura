@@ -151,7 +151,7 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-l from-[#1a0a2e]/90 via-[#1a0a2e]/75 to-[#1a0a2e]/40 z-10" />
           <img
-            src="/images/hero_bg.png"
+            src="/images/hero_bg.png?v=aura_identity"
             alt="عطور فاخرة مستوحاة من أشهر الماركات العالمية - Aura Perfumes"
             className="w-full h-full object-cover"
             loading="eager"
@@ -225,7 +225,7 @@ export default function Home() {
               <img
                 alt="عطور نسائية — مجموعة عطور نسائية فاخرة من Aura Perfumes"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                src="/images/category_women.png"
+                src="/images/category_women.png?v=aura_identity"
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-opacity duration-500" />
@@ -250,7 +250,7 @@ export default function Home() {
                 <img
                   alt="عطور رجالية — مجموعة عطور رجالية قوية من Aura Perfumes"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  src="/images/category_men.png"
+                  src="/images/category_men.png?v=aura_identity"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
@@ -273,7 +273,7 @@ export default function Home() {
                 <img
                   alt="عطور للجنسين — مجموعة عطور يونيسكس من Aura Perfumes"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  src="/images/category_unisex.png"
+                  src="/images/category_unisex.png?v=aura_identity"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
