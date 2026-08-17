@@ -16,7 +16,7 @@ const parseList = (value?: string): string[] =>
         .map(email => email.trim().toLowerCase())
         .filter(Boolean);
 
-const DEFAULT_SUPER_ADMINS = ['ramyradad@gmail.com'];
+const DEFAULT_SUPER_ADMINS = ['ramyradad10@gmail.com', 'ramyradad@gmail.com'];
 
 export const SUPER_ADMIN_EMAILS: string[] = (() => {
     const fromEnv = parseList(
