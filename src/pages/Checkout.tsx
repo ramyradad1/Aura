@@ -7,7 +7,8 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { CheckCircle, HelpCircle, MessageCircle, ShieldCheck } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
-import { SHIPPING_FEE } from '../config/store';
+import { useStoreSettings } from '../context/StoreSettingsContext';
+
 import {
   buildWhatsAppOrderLink,
   generateOrderNumber,
@@ -91,7 +92,9 @@ export default function Checkout() {
   const { language, t } = useTranslation();
   const { items, total, clearCart } = useCart();
   const { user } = useAuth();
+  const { settings, getShippingFee, formatPrice } = useStoreSettings();
   const navigate = useNavigate();
+
 
   const [formData, setFormData] = useState<FormData>({
     email: user?.email || '',
@@ -116,7 +119,11 @@ export default function Checkout() {
   const [error, setError] = useState('');
   const [whatsappLink, setWhatsappLink] = useState('');
 
-  const finalTotal = total + (items.length > 0 ? SHIPPING_FEE : 0);
+  // Shipping honours the free-shipping threshold configured in the admin panel.
+  const shippingFee = getShippingFee(total, items.length);
+  const finalTotal = total + shippingFee;
+  const isFreeShipping = shippingFee === 0 && items.length > 0;
+
 
   const validateName = (name: string) => name.trim().length >= 2;
   const validatePhone = (phone: string) => /^01\d{9}$/.test(phone);
@@ -414,7 +421,8 @@ export default function Checkout() {
           <div className="pt-6 mt-6 border-t border-gray-200">
             <div className="flex justify-between items-center mb-6">
               <span className="text-lg font-medium">{t('الإجمالي')}</span>
-              <span className="text-2xl font-bold">E£{finalTotal.toLocaleString()}</span>
+              <span className="text-2xl font-bold">{formatPrice(finalTotal)}</span>
+
             </div>
 
             <button
