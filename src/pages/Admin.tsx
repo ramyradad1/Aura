@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
+import { Role, canAssignRole } from '../config/roles';
+
 import { useNavigate } from 'react-router-dom';
 import { handleFirestoreError, OperationType } from '../utils/firebaseUtils';
 import {
   LayoutDashboard, Package, ShoppingBag, Grid3x3, Tag, Layers, Gift, BarChart3,
   Ticket, Star, Users, UserCog, Settings, LayoutList, Globe, FileText,
-  Languages, Ruler, Bell, Activity, ScrollText, LogOut, ChevronLeft, ChevronRight, Menu
+  Languages, Ruler, Bell, Activity, ScrollText, LogOut, ChevronLeft, ChevronRight, Menu, X
 } from 'lucide-react';
 import { usePageTitle } from '../hooks/usePageTitle';
 import SEOHead from '../components/SEOHead';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
+import Logo from '../components/Logo';
 
 // Admin Sub-Components
 import AdminDashboard from '../components/admin/AdminDashboard';
@@ -76,15 +79,19 @@ export default function Admin() {
   const { t, language } = useTranslation();
   const dir = language === 'ar' ? 'rtl' : 'ltr';
   usePageTitle(t('لوحة الإدارة'));
-  const { isAdmin, isAuthReady } = useAuth();
+  const { isAdmin, isAuthReady, role: actorRole, can } = useAuth();
+
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [perfumes, setPerfumes] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [invites, setInvites] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [errorState, setErrorState] = useState<Error | null>(null);
 
@@ -137,13 +144,25 @@ export default function Admin() {
     }
   };
 
+  const fetchInvites = async () => {
+    if (!can('users.invite')) return;
+    try {
+      const snapshot = await getDocs(collection(db, 'roleInvites'));
+      setInvites(snapshot.docs.map(d => ({ id: d.id, email: d.id, ...(d.data() as any) })));
+    } catch (error) {
+      console.error("Error fetching invites:", error);
+    }
+  };
+
   useEffect(() => {
     if (isAdmin) {
       fetchPerfumes();
       fetchOrders();
       fetchUsers();
+      fetchInvites();
     }
   }, [isAdmin]);
+
 
   const handleAddProduct = async (data: any) => {
     try {
@@ -158,7 +177,21 @@ export default function Admin() {
     }
   };
 
+  const handleUpdateProduct = async (id: string, data: any) => {
+    try {
+      await updateDoc(doc(db, 'perfumes', id), data);
+      fetchPerfumes();
+    } catch (error) {
+      try {
+        handleFirestoreError(error, OperationType.UPDATE, `perfumes/${id}`);
+      } catch (e: any) {
+        setErrorState(e);
+      }
+    }
+  };
+
   const handleDeleteProduct = async (id: string) => {
+
     try {
       await deleteDoc(doc(db, 'perfumes', id));
       fetchPerfumes();
@@ -184,7 +217,9 @@ export default function Admin() {
     }
   };
 
-  const handleUpdateUserRole = async (userId: string, newRole: string) => {
+  const handleUpdateUserRole = async (userId: string, newRole: Role) => {
+    // Client-side guard; firestore.rules enforces the same thing server-side.
+    if (!can('users.changeRole') || !canAssignRole(actorRole, newRole)) return;
     try {
       await updateDoc(doc(db, 'users', userId), { role: newRole });
       fetchUsers();
@@ -196,6 +231,59 @@ export default function Admin() {
       }
     }
   };
+
+  const handleDeleteUser = async (userId: string) => {
+    if (!can('users.delete')) return;
+    try {
+      await deleteDoc(doc(db, 'users', userId));
+      fetchUsers();
+    } catch (error) {
+      try {
+        handleFirestoreError(error, OperationType.DELETE, `users/${userId}`);
+      } catch (e: any) {
+        setErrorState(e);
+      }
+    }
+  };
+
+  /**
+   * Invites are keyed by email so the role can be claimed on first login.
+   * No account is created here, we only reserve the role.
+   */
+  const handleInviteUser = async (email: string, inviteRole: Role) => {
+    if (!can('users.invite') || !canAssignRole(actorRole, inviteRole)) return;
+    const key = email.trim().toLowerCase();
+    try {
+      await setDoc(doc(db, 'roleInvites', key), {
+        email: key,
+        role: inviteRole,
+        createdAt: new Date().toISOString(),
+      });
+      fetchInvites();
+    } catch (error) {
+      try {
+        handleFirestoreError(error, OperationType.CREATE, `roleInvites/${key}`);
+      } catch (e: any) {
+        setErrorState(e);
+      }
+    }
+  };
+
+  const handleRevokeInvite = async (email: string) => {
+    if (!can('users.invite')) return;
+    const key = email.trim().toLowerCase();
+    try {
+      await deleteDoc(doc(db, 'roleInvites', key));
+      fetchInvites();
+    } catch (error) {
+      try {
+        handleFirestoreError(error, OperationType.DELETE, `roleInvites/${key}`);
+      } catch (e: any) {
+        setErrorState(e);
+      }
+    }
+  };
+
 
   if (errorState) {
     throw errorState;
@@ -217,7 +305,16 @@ export default function Admin() {
     switch (activeTab) {
       case 'dashboard': return <AdminDashboard orders={orders} perfumes={perfumes} users={users} />;
       case 'orders': return <AdminOrders orders={orders} loading={ordersLoading} onUpdateStatus={handleUpdateOrderStatus} />;
-      case 'products': return <AdminProducts perfumes={perfumes} loading={loading} onAdd={handleAddProduct} onDelete={handleDeleteProduct} />;
+      case 'products': return (
+        <AdminProducts
+          perfumes={perfumes}
+          loading={loading}
+          onAdd={handleAddProduct}
+          onUpdate={handleUpdateProduct}
+          onDelete={handleDeleteProduct}
+        />
+      );
+
       case 'categories': return <AdminCategories />;
       case 'brands': return <AdminBrands />;
       case 'collections': return <AdminCollections />;
@@ -226,7 +323,17 @@ export default function Admin() {
       case 'coupons': return <AdminCoupons />;
       case 'reviews': return <AdminReviews />;
       case 'customers': return <AdminCustomers users={users} orders={orders} />;
-      case 'users': return <AdminUsers users={users} onUpdateRole={handleUpdateUserRole} />;
+      case 'users': return (
+        <AdminUsers
+          users={users}
+          invites={invites}
+          onUpdateRole={handleUpdateUserRole}
+          onDeleteUser={handleDeleteUser}
+          onInvite={handleInviteUser}
+          onRevokeInvite={handleRevokeInvite}
+        />
+      );
+
       case 'settings': return <AdminSettings />;
       case 'sections': return <AdminSections />;
       case 'seo': return <AdminSEO />;
@@ -240,49 +347,72 @@ export default function Admin() {
     }
   };
 
+  // Off-canvas transform for the mobile drawer, direction aware.
+  const drawerHidden = dir === 'rtl' ? 'translate-x-full' : '-translate-x-full';
+  const sidebarWidth = sidebarCollapsed ? 'lg:w-[76px]' : 'lg:w-[264px]';
+  const contentOffset = sidebarCollapsed
+    ? (dir === 'rtl' ? 'lg:mr-[76px]' : 'lg:ml-[76px]')
+    : (dir === 'rtl' ? 'lg:mr-[264px]' : 'lg:ml-[264px]');
+
   return (
-    <div className="flex h-screen overflow-hidden font-sans" dir={dir} style={{ background: '#0f172a' }}>
+    <div className="flex h-screen overflow-hidden font-sans bg-admin-bg text-white" dir={dir}>
       <SEOHead title={t('لوحة الإدارة')} noindex={true} />
 
+      {/* Mobile drawer backdrop */}
+      <AnimatePresence>
+        {mobileNavOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMobileNavOpen(false)}
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
-      <aside className={`h-screen fixed ${dir === 'rtl' ? 'right-0 border-l' : 'left-0 border-r'} top-0 bg-[#1a1f37] flex flex-col z-50 border-white/5 transition-all duration-300 ${sidebarCollapsed ? 'w-[68px]' : 'w-[250px]'}`}>
-        {/* Logo */}
-        <div className={`px-4 pt-6 pb-4 border-b border-white/5 ${sidebarCollapsed ? 'text-center' : ''}`}>
-          {sidebarCollapsed ? (
-            <div className="w-9 h-9 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center mx-auto">
-              <span className="text-white font-bold text-sm">A</span>
-            </div>
-          ) : (
-            <div>
-              <h1 className="font-serif text-lg text-white tracking-wider">Aura Admin</h1>
-              <p className="text-[10px] font-medium tracking-widest text-slate-500 uppercase">Management Panel</p>
-            </div>
-          )}
+      <aside
+        className={`h-screen fixed top-0 ${dir === 'rtl' ? 'right-0 border-l' : 'left-0 border-r'} w-[264px] ${sidebarWidth} bg-admin-surface border-white/[0.06] flex flex-col z-50 transition-[transform,width] duration-300 ease-out lg:translate-x-0 ${mobileNavOpen ? 'translate-x-0' : drawerHidden}`}
+      >
+        {/* Brand */}
+        <div className={`h-16 shrink-0 flex items-center gap-2 border-b border-white/[0.06] ${sidebarCollapsed ? 'lg:justify-center px-3' : 'px-4'}`}>
+          <Logo onDark className={sidebarCollapsed ? 'lg:[&>span:last-child]:hidden' : ''} />
+          <button
+            onClick={() => setMobileNavOpen(false)}
+            aria-label={t('إغلاق القائمة')}
+            className="lg:hidden ms-auto w-9 h-9 rounded-xl flex items-center justify-center text-white/50 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5 scrollbar-thin">
-          {navItems.map((item, idx) => {
+        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5 admin-scroll">
+          {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
-            const showSection = item.section && !sidebarCollapsed;
             return (
               <React.Fragment key={item.id}>
-                {showSection && (
-                  <p className="text-[9px] font-bold tracking-[0.2em] text-slate-500 uppercase px-3 pt-4 pb-1.5">{t(item.section!)}</p>
+                {item.section && (
+                  <p className={`text-[9px] font-bold tracking-[0.2em] text-gold-500/50 uppercase px-3 pt-4 pb-1.5 ${sidebarCollapsed ? 'lg:hidden' : ''}`}>
+                    {t(item.section)}
+                  </p>
                 )}
                 <button
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => { setActiveTab(item.id); setMobileNavOpen(false); }}
                   title={sidebarCollapsed ? t(item.label) : undefined}
-                  className={`w-full flex items-center gap-3 rounded-xl transition-all duration-200 ${sidebarCollapsed ? 'px-0 py-2.5 justify-center' : 'px-3 py-2.5'} ${
-                    isActive
-                      ? 'bg-indigo-600/20 text-indigo-400'
-                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                  }`}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/60 ${sidebarCollapsed ? 'lg:justify-center lg:px-0' : ''} ${isActive
+                    ? 'bg-gold-500/12 text-gold-300 ring-1 ring-gold-500/25'
+                    : 'text-white/55 hover:bg-white/5 hover:text-white'
+                    }`}
                 >
-                  <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-indigo-400' : ''}`} strokeWidth={isActive ? 2.5 : 1.8} />
-                  {!sidebarCollapsed && <span className="text-[13px] font-medium truncate">{t(item.label)}</span>}
-                  {isActive && !sidebarCollapsed && <span className={`w-1.5 h-1.5 rounded-full bg-indigo-400 ${dir === 'rtl' ? 'mr-auto' : 'ml-auto'}`} />}
+                  <Icon className="w-[18px] h-[18px] shrink-0" strokeWidth={isActive ? 2.4 : 1.8} />
+                  <span className={`text-[13px] font-medium truncate ${sidebarCollapsed ? 'lg:hidden' : ''}`}>{t(item.label)}</span>
+                  {isActive && (
+                    <span className={`w-1.5 h-1.5 rounded-full bg-gold-500 ${dir === 'rtl' ? 'mr-auto' : 'ml-auto'} ${sidebarCollapsed ? 'lg:hidden' : ''}`} />
+                  )}
                 </button>
               </React.Fragment>
             );
@@ -290,9 +420,12 @@ export default function Admin() {
         </nav>
 
         {/* Footer */}
-        <div className={`border-t border-white/5 p-3 ${sidebarCollapsed ? 'text-center' : ''}`}>
-          <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="w-full p-2 text-slate-500 hover:text-white hover:bg-white/5 rounded-xl transition-colors flex items-center justify-center gap-2">
+        <div className="border-t border-white/[0.06] p-3 shrink-0">
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            aria-label={sidebarCollapsed ? t('توسيع القائمة') : t('طي القائمة')}
+            className="hidden lg:flex w-full p-2 text-white/40 hover:text-white hover:bg-white/5 rounded-xl transition-colors items-center justify-center gap-2"
+          >
             {sidebarCollapsed ? (
               dir === 'rtl' ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />
             ) : (
@@ -302,30 +435,46 @@ export default function Admin() {
               </>
             )}
           </button>
-          <button onClick={() => navigate('/')}
-            className={`w-full p-2 mt-1 text-slate-500 hover:text-red-400 hover:bg-red-500/5 rounded-xl transition-colors flex items-center gap-2 ${sidebarCollapsed ? 'justify-center' : ''}`}>
-            <LogOut className={`w-4 h-4 ${dir === 'rtl' ? 'rotate-180' : ''}`} />
-            {!sidebarCollapsed && <span className="text-xs">{t('العودة للمتجر')}</span>}
+          <button
+            onClick={() => navigate('/')}
+            className={`w-full p-2 mt-1 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors flex items-center gap-2 ${sidebarCollapsed ? 'lg:justify-center' : ''}`}
+          >
+            <LogOut className={`w-4 h-4 shrink-0 ${dir === 'rtl' ? 'rotate-180' : ''}`} />
+            <span className={`text-xs ${sidebarCollapsed ? 'lg:hidden' : ''}`}>{t('العودة للمتجر')}</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className={`flex-1 flex flex-col h-screen overflow-hidden transition-all duration-300 ${sidebarCollapsed ? (dir === 'rtl' ? 'mr-[68px]' : 'ml-[68px]') : (dir === 'rtl' ? 'mr-[250px]' : 'ml-[250px]')}`}>
+      <main className={`flex-1 flex flex-col h-screen overflow-hidden transition-[margin] duration-300 ${contentOffset}`}>
         {/* Top Header */}
-        <header className="h-16 px-6 flex items-center justify-between bg-[#1a1f37]/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-10">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-bold text-white">{tabLabels[activeTab]}</h2>
+        <header className="h-16 shrink-0 px-4 sm:px-6 flex items-center justify-between bg-admin-surface/80 backdrop-blur-xl border-b border-white/[0.06] sticky top-0 z-30">
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              onClick={() => setMobileNavOpen(true)}
+              aria-label={t('فتح القائمة')}
+              className="lg:hidden w-10 h-10 -ms-2 rounded-xl flex items-center justify-center text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-lg font-bold text-white truncate">{tabLabels[activeTab]}</h2>
+              <p className="hidden sm:block text-[10px] tracking-[0.2em] uppercase text-gold-500/50">Aura Management</p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg overflow-hidden bg-linear-to-br from-indigo-500 to-purple-600">
-              <img src="https://ui-avatars.com/api/?name=Admin&background=4F46E5&color=fff&size=32" alt="Admin" className="w-full h-full object-cover" />
+            <span className="hidden sm:inline-flex items-center gap-2 text-[11px] font-medium text-white/45 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              {t('متصل')}
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-gold-gradient flex items-center justify-center text-primary font-bold text-xs shrink-0">
+              A
             </div>
           </div>
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6 pb-16">
+        <div className="flex-1 overflow-y-auto admin-scroll p-4 sm:p-6 pb-16">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}

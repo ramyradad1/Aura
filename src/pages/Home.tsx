@@ -4,15 +4,14 @@ import { ArrowLeft, ShoppingBag } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
 import AIRecommendations from '../components/AIRecommendations';
 import PerfumeCard from '../components/PerfumeCard';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
-import Lottie from 'lottie-react';
 import { db } from '../firebase';
 import { mockPerfumes } from '../data/mockData';
 import { useTranslation } from '../context/TranslationContext';
 
-// We import the locally downloaded lottie JSON
-import sparklesAnimation from '../../public/sparkles.json';
+// Lottie player + its 65kB animation JSON are pulled in after the hero paints.
+const HeroSparkles = lazy(() => import('../components/HeroSparkles'));
 
 export default function Home() {
   const { t } = useTranslation();
@@ -151,49 +150,47 @@ export default function Home() {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-l from-[#1a0a2e]/90 via-[#1a0a2e]/75 to-[#1a0a2e]/40 z-10" />
-          <img 
-            src="/images/hero_bg.png" 
-            alt="عطور فاخرة مستوحاة من أشهر الماركات العالمية - Aura Perfumes" 
+          <img
+            src="/images/hero_bg.png"
+            alt="عطور فاخرة مستوحاة من أشهر الماركات العالمية - Aura Perfumes"
             className="w-full h-full object-cover"
             loading="eager"
             fetchPriority="high"
           />
         </div>
-        
-        {/* Lottie Overlay */}
+
+        {/* Lottie Overlay — deferred so it never blocks the hero paint */}
         <div className="absolute inset-0 z-10 pointer-events-none opacity-50 mix-blend-screen flex items-center justify-center">
-          <Lottie 
-            animationData={sparklesAnimation} 
-            loop={true} 
-            className="w-[150%] h-[150%] max-w-none opacity-60"
-          />
+          <Suspense fallback={null}>
+            <HeroSparkles />
+          </Suspense>
         </div>
 
         {/* Content */}
         <div className="relative z-20 px-8 md:px-24 w-full max-w-[1400px] mx-auto mt-20">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
             className="max-w-2xl space-y-8"
           >
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif italic leading-tight text-white">
-              {t('اكتشف عطرك')} <br/>
+              {t('اكتشف عطرك')} <br />
               <span className="text-tertiary-gold">{t('المفضل الجديد')}</span>
             </h1>
             <p className="text-lg md:text-xl font-light text-white/80 max-w-lg">
               {t('نقدم لك تشكيلة فاخرة من العطور المستوحاة من أشهر الماركات العالمية، بثبات عالي وسعر مناسب.')}
             </p>
             <div className="flex flex-wrap items-center gap-4 pt-4">
-              <Link 
-                to="/shop/all" 
+              <Link
+                to="/shop/all"
                 className="px-8 py-4 md:px-10 md:py-5 bg-tertiary-gold text-[#241a00] rounded-lg uppercase tracking-widest text-sm hover:brightness-110 transition-all shadow-xl shadow-tertiary-gold/30 font-bold flex items-center gap-2"
               >
                 <ShoppingBag className="h-4 w-4" />
                 {t('تسوق المجموعة')}
               </Link>
-              <Link 
-                to="/quiz" 
+              <Link
+                to="/quiz"
                 className="px-8 py-4 md:px-10 md:py-5 border border-white/40 text-white rounded-lg uppercase tracking-widest text-sm hover:bg-white/10 transition-all font-bold"
               >
                 {t('اختبار العطور')}
@@ -205,7 +202,7 @@ export default function Home() {
 
       {/* ══════════════ Section 2: Categories ══════════════ */}
       <section className="py-20 md:py-32 px-6 md:px-12 max-w-[1400px] mx-auto" aria-labelledby="categories-heading">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -218,17 +215,17 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
           {/* Women */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="md:col-span-7 relative group overflow-hidden rounded-2xl cursor-pointer h-[300px] md:h-[600px]"
           >
             <Link to="/shop/women" className="block w-full h-full">
-              <img 
-                alt="عطور نسائية — مجموعة عطور نسائية فاخرة من Aura Perfumes" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                src="/images/category_women.png" 
+              <img
+                alt="عطور نسائية — مجموعة عطور نسائية فاخرة من Aura Perfumes"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                src="/images/category_women.png"
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-opacity duration-500" />
@@ -242,7 +239,7 @@ export default function Home() {
           {/* Vertical Stack */}
           <div className="md:col-span-5 flex flex-col gap-6 md:gap-8">
             {/* Men */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -250,10 +247,10 @@ export default function Home() {
               className="relative group overflow-hidden rounded-2xl cursor-pointer h-[250px] md:h-[284px]"
             >
               <Link to="/shop/men" className="block w-full h-full">
-                <img 
-                  alt="عطور رجالية — مجموعة عطور رجالية قوية من Aura Perfumes" 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                  src="/images/category_men.png" 
+                <img
+                  alt="عطور رجالية — مجموعة عطور رجالية قوية من Aura Perfumes"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  src="/images/category_men.png"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
@@ -265,7 +262,7 @@ export default function Home() {
             </motion.div>
 
             {/* Unisex */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -273,10 +270,10 @@ export default function Home() {
               className="relative group overflow-hidden rounded-2xl cursor-pointer h-[250px] md:h-[284px]"
             >
               <Link to="/shop/unisex" className="block w-full h-full">
-                <img 
-                  alt="عطور للجنسين — مجموعة عطور يونيسكس من Aura Perfumes" 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                  src="/images/category_unisex.png" 
+                <img
+                  alt="عطور للجنسين — مجموعة عطور يونيسكس من Aura Perfumes"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  src="/images/category_unisex.png"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
@@ -304,8 +301,8 @@ export default function Home() {
               <h2 id="catalog-heading" className="text-4xl md:text-5xl font-serif text-primary">{t('جميع العطور')}</h2>
               <p className="text-on-surface-variant text-sm max-w-md">{t('تصفح مجموعتنا الكاملة من العطور الفاخرة المستوحاة من أشهر الماركات العالمية')}</p>
             </div>
-            <Link 
-              to="/shop/all" 
+            <Link
+              to="/shop/all"
               className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg text-sm font-bold hover:opacity-90 transition-opacity"
             >
               {t('عرض الكل')}
@@ -334,7 +331,7 @@ export default function Home() {
 
       {/* ══════════════ Section 5: FAQ ══════════════ */}
       <section className="py-20 md:py-32 px-6 md:px-12 max-w-[800px] mx-auto" aria-labelledby="faq-heading">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -345,8 +342,8 @@ export default function Home() {
         </motion.div>
         <div className="space-y-6">
           {faqItems.map((item, index) => (
-            <motion.details 
-              key={index} 
+            <motion.details
+              key={index}
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

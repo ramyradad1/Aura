@@ -8,6 +8,7 @@ import { useTranslation } from '../context/TranslationContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@heroui/react';
 import AuthModal from './AuthModal';
+import Logo from './Logo';
 
 export default function AppNavbar() {
   const { user, isAdmin, isSuperAdmin, logout, loginError, isAuthModalOpen, setIsAuthModalOpen, openAuthModal } = useAuth();
@@ -75,7 +76,7 @@ export default function AppNavbar() {
     <>
       <header className="sticky top-0 z-50 w-full bg-surface/80 backdrop-blur-2xl border-b border-primary/5 shadow-sm transition-all duration-300">
         <nav className="max-w-[1920px] mx-auto px-6 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between gap-4">
-          
+
           {/* Mobile Menu Toggle & Brand */}
           <div className="flex items-center gap-4">
             <button
@@ -86,7 +87,7 @@ export default function AppNavbar() {
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
             <Link to="/" className="flex items-center gap-2 group">
-              <span className="font-serif text-2xl sm:text-3xl tracking-widest text-primary">Aura</span>
+              <Logo className="transition-transform duration-300 group-hover:scale-[1.03]" />
             </Link>
           </div>
 
@@ -98,13 +99,12 @@ export default function AppNavbar() {
                 <li key={link.path}>
                   <Link
                     to={link.path}
-                    className={`relative uppercase text-xs font-bold tracking-[0.08em] flex items-center gap-1.5 py-2 transition-colors group ${
-                      isActive ? (link.highlight ? 'text-[#4e3d00]' : 'text-primary') : (link.highlight ? 'text-tertiary hover:text-[#4e3d00]' : 'text-primary/70 hover:text-primary')
-                    }`}
+                    className={`relative uppercase text-xs font-bold tracking-[0.08em] flex items-center gap-1.5 py-2 transition-colors group ${isActive ? (link.highlight ? 'text-gold-700' : 'text-primary') : (link.highlight ? 'text-gold-600 hover:text-gold-700' : 'text-primary/70 hover:text-primary')
+                      }`}
                   >
                     {link.icon && <link.icon className="h-4 w-4" />}
                     {link.name}
-                    <span className={`absolute -bottom-1 left-0 w-full h-[2px] rounded-full transition-transform origin-left duration-300 ${isActive ? 'scale-x-100 bg-primary' : 'scale-x-0 bg-primary/40 group-hover:scale-x-100'}`}></span>
+                    <span className={`absolute -bottom-1 left-0 w-full h-[2px] rounded-full transition-transform origin-left duration-300 ${isActive ? 'scale-x-100 bg-gold-gradient' : 'scale-x-0 bg-gold-500/50 group-hover:scale-x-100'}`}></span>
                   </Link>
                 </li>
               );
@@ -178,7 +178,7 @@ export default function AppNavbar() {
                       <>
                         {/* Backdrop */}
                         <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
-                        
+
                         <motion.div
                           initial={{ opacity: 0, y: 8, scale: 0.95 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -187,7 +187,7 @@ export default function AppNavbar() {
                           className="absolute top-14 right-0 rtl:left-0 rtl:right-auto z-50 w-[260px] bg-surface border border-primary/10 rounded-2xl shadow-luxury-lg overflow-hidden"
                         >
                           {/* User Info Header */}
-                          <div className="px-5 py-4 border-b border-primary/8 bg-primary/2">
+                          <div className="px-5 py-4 border-b border-primary/10 bg-primary/[0.03]">
                             <p className="text-[10px] uppercase tracking-[0.15em] text-primary/40 font-bold mb-1.5">{t('مرحباً')}</p>
                             <p className="text-sm font-bold text-primary truncate">{user.displayName || user.email?.split('@')[0]}</p>
                             <p className="text-[11px] text-primary/40 mt-0.5 truncate">{user.email}</p>
@@ -200,7 +200,7 @@ export default function AppNavbar() {
                                 onClick={() => { navigate('/admin'); setIsProfileOpen(false); }}
                                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-primary hover:bg-primary/5 transition-colors text-right"
                               >
-                                <Sparkles className="w-4 h-4 text-tertiary shrink-0" />
+                                <Sparkles className="w-4 h-4 text-gold-500 shrink-0" />
                                 {t('لوحة التحكم')}
                               </button>
                             )}
@@ -214,7 +214,7 @@ export default function AppNavbar() {
                           </div>
 
                           {/* Logout */}
-                          <div className="border-t border-primary/8 py-2 px-2">
+                          <div className="border-t border-primary/10 py-2 px-2">
                             <button
                               onClick={() => { logout(); setIsProfileOpen(false); }}
                               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-danger hover:bg-danger/5 transition-colors text-right"
@@ -233,7 +233,7 @@ export default function AppNavbar() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={openAuthModal}
-                  className="font-bold tracking-widest uppercase text-xs shadow-luxury bg-linear-to-r from-primary to-primary-container text-white h-10 px-5 rounded-xl border border-white/20 focus:outline-none"
+                  className="font-bold tracking-widest uppercase text-xs shadow-luxury bg-linear-to-r from-primary to-primary-container text-white h-10 px-5 rounded-xl border border-gold-500/30 hover:border-gold-500/60 transition-colors focus:outline-none"
                 >
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4" />
@@ -258,9 +258,8 @@ export default function AppNavbar() {
                 {visibleLinks.map((link, index) => (
                   <li key={`${link.name}-${index}`}>
                     <Link
-                      className={`w-full text-lg flex items-center gap-3 py-2 ${
-                        location.pathname.startsWith(link.path) ? (link.highlight ? 'text-tertiary font-bold' : 'text-primary font-bold') : 'text-primary/80'
-                      }`}
+                      className={`w-full text-lg flex items-center gap-3 py-2 ${location.pathname.startsWith(link.path) ? (link.highlight ? 'text-gold-600 font-bold' : 'text-primary font-bold') : 'text-primary/80'
+                        }`}
                       to={link.path}
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -287,7 +286,7 @@ export default function AppNavbar() {
                         {t('الملف الشخصي')}
                       </Link>
                       {isAdmin && (
-                        <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-tertiary py-2">
+                        <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-gold-600 py-2">
                           <Sparkles className="w-5 h-5" />
                           {t('لوحة التحكم')}
                         </Link>

@@ -24,5 +24,21 @@
     "noEmit": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true
-  }
+  },
+  "include": [
+    "src",
+    "api",
+    "scripts",
+    "server.ts",
+    "vite.config.ts",
+    "tailwind-heroui-plugin.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "aura-app",
+    "aura-seo-cron",
+    "test_genai.js",
+    "test-geo.ts"
+  ]
 }

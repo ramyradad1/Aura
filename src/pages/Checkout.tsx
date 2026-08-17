@@ -1,189 +1,239 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from '../context/TranslationContext';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { CreditCard, CheckCircle, HelpCircle } from 'lucide-react';
+import { CheckCircle, HelpCircle, MessageCircle, ShieldCheck } from 'lucide-react';
 import SEOHead from '../components/SEOHead';
+import { SHIPPING_FEE } from '../config/store';
+import {
+  buildWhatsAppOrderLink,
+  generateOrderNumber,
+  type WhatsAppOrderPayload,
+} from '../utils/whatsappOrder';
 
 const GOVERNORATES = [
-  "Cairo", "Giza", "Alexandria", "Qalyubia", "Dakahlia", "Sharqia", "Damietta", "Kafr El-Sheikh", 
-  "Gharbia", "Monufia", "Beheira", "Ismailia", "Port Said", "Suez", "North Sinai", "South Sinai", 
+  "Cairo", "Giza", "Alexandria", "Qalyubia", "Dakahlia", "Sharqia", "Damietta", "Kafr El-Sheikh",
+  "Gharbia", "Monufia", "Beheira", "Ismailia", "Port Said", "Suez", "North Sinai", "South Sinai",
   "Beni Suef", "Faiyum", "Minya", "Asyut", "Sohag", "Qena", "Luxor", "Aswan", "Red Sea", "New Valley", "Matrouh"
 ];
 
-const SHIPPING_FEE = 90;
+type FormData = {
+  email: string;
+  country: string;
+  firstName: string;
+  lastName: string;
+  address: string;
+  apartment: string;
+  landmark: string;
+  city: string;
+  governorate: string;
+  postalCode: string;
+  phone: string;
+  altPhone: string;
+  notes: string;
+  saveInfo: boolean;
+};
+
+/**
+ * Defined at module scope on purpose: declaring it inside Checkout would remount
+ * the input on every keystroke and drop focus.
+ */
+function Field({
+  name, label, value, onChange, onBlur, error, type = 'text', dir = 'auto',
+  isRTL, infoIcon = false, required = false, autoComplete,
+}: {
+  name: string;
+  label: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur: (name: string) => void;
+  error?: string;
+  type?: string;
+  dir?: string;
+  isRTL: boolean;
+  infoIcon?: boolean;
+  required?: boolean;
+  autoComplete?: string;
+}) {
+  const isFloating = value !== '';
+  return (
+    <div className="relative mb-3">
+      <label
+        htmlFor={name}
+        className={`absolute top-2 ${isRTL ? 'right-3' : 'left-3'} text-xs text-gray-500 transition-all ${!isFloating ? 'top-3.5 text-[15px]' : ''} pointer-events-none`}
+      >
+        {label}
+      </label>
+      <input
+        type={type}
+        id={name}
+        name={name}
+        value={value}
+        onChange={onChange}
+        onBlur={() => onBlur(name)}
+        required={required}
+        dir={dir}
+        autoComplete={autoComplete}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${name}-error` : undefined}
+        className={`w-full px-3 pb-2 pt-6 bg-white border rounded-md shadow-sm appearance-none outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow ${error ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300'}`}
+      />
+      {infoIcon && <HelpCircle className={`absolute top-3.5 ${isRTL ? 'left-3' : 'right-3'} w-5 h-5 text-gray-400`} />}
+      {error && <p id={`${name}-error`} className="text-red-500 text-xs mt-1 px-1">{error}</p>}
+    </div>
+  );
+}
 
 export default function Checkout() {
   const { language, t } = useTranslation();
   const { items, total, clearCart } = useCart();
-  const { user, openAuthModal } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const isPaymobSuccess = queryParams.get('success') === 'true';
-  const isPaymobFailed = queryParams.get('success') === 'false';
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     email: user?.email || '',
     country: 'Egypt',
     firstName: '',
     lastName: '',
     address: '',
     apartment: '',
+    landmark: '',
     city: '',
     governorate: 'Cairo',
     postalCode: '',
     phone: '',
-    saveInfo: false
+    altPhone: '',
+    notes: '',
+    saveInfo: false,
   });
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card'>('cod');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(isPaymobSuccess);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+  const [whatsappLink, setWhatsappLink] = useState('');
 
   const finalTotal = total + (items.length > 0 ? SHIPPING_FEE : 0);
 
-  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validateName = (name: string) => name.trim().length >= 2;
-  const validateAddress = (addr: string) => addr.trim().length >= 5;
-  const validateCity = (city: string) => city.trim().length >= 2;
   const validatePhone = (phone: string) => /^01\d{9}$/.test(phone);
 
   const errors = {
-    email: validateEmail(formData.email) ? '' : t('البريد الإلكتروني غير صالح'),
     firstName: validateName(formData.firstName) ? '' : t('الاسم الأول مطلوب'),
     lastName: validateName(formData.lastName) ? '' : t('اسم العائلة مطلوب'),
-    address: validateAddress(formData.address) ? '' : t('العنوان مطلوب'),
-    city: validateCity(formData.city) ? '' : t('اسم المدينة يجب أن يكون حرفين على الأقل'),
+    address: formData.address.trim().length >= 5 ? '' : t('العنوان مطلوب'),
+    city: validateName(formData.city) ? '' : t('اسم المدينة يجب أن يكون حرفين على الأقل'),
     phone: validatePhone(formData.phone) ? '' : t('رقم الهاتف يجب أن يتكون من 11 رقم ويبدأ بـ 01'),
+    altPhone: !formData.altPhone || validatePhone(formData.altPhone) ? '' : t('رقم الهاتف يجب أن يتكون من 11 رقم ويبدأ بـ 01'),
+    email: !formData.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) ? '' : t('البريد الإلكتروني غير صالح'),
   };
 
-  const isFormValid = !errors.email && !errors.firstName && !errors.lastName && 
-                      !errors.address && !errors.city && !errors.phone;
+  const isFormValid = useMemo(
+    () => Object.values(errors).every(e => e === ''),
+    [errors]
+  );
 
-  const [error, setError] = useState(isPaymobFailed ? t('عفواً، لم تنجح عملية الدفع. يرجى المحاولة مرة أخرى.') : '');
+  const isRTL = language === 'ar';
 
-  useEffect(() => {
-    if (isPaymobSuccess && items.length > 0) {
-      clearCart();
-    }
-  }, [isPaymobSuccess]);
+  const handleBlur = (field: string) => setTouched(prev => ({ ...prev, [field]: true }));
+  const err = (field: keyof typeof errors) => (touched[field] ? errors[field] : '');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+  };
 
   if (items.length === 0 && !success) {
     navigate('/cart');
     return null;
   }
 
-  const handleBlur = (field: string) => setTouched({ ...touched, [field]: true });
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
-    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
-  };
-
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
-    Object.keys(formData).forEach(key => handleBlur(key));
+    setTouched(Object.keys(formData).reduce((acc, k) => ({ ...acc, [k]: true }), {}));
     if (!isFormValid) return;
 
     setError('');
-    if (!user) {
-      openAuthModal();
-      return;
-    }
-
     setLoading(true);
-    try {
-      const formattedAddress = `${formData.address}${formData.apartment ? ', ' + formData.apartment : ''}, ${formData.city}, ${formData.governorate}, ${formData.country} ${formData.postalCode ? '- ' + formData.postalCode : ''}`;
-      const fullName = `${formData.firstName} ${formData.lastName}`;
 
-      const orderRef = await addDoc(collection(db, 'orders'), {
-        userId: user.uid,
+    const orderNumber = generateOrderNumber();
+    const payload: WhatsAppOrderPayload = {
+      orderNumber,
+      items: items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
+      subtotal: total,
+      shippingFee: SHIPPING_FEE,
+      total: finalTotal,
+      customer: {
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        phone: formData.phone.trim(),
+        altPhone: formData.altPhone.trim() || undefined,
+        email: formData.email.trim() || undefined,
+      },
+      address: {
+        street: formData.address.trim(),
+        apartment: formData.apartment.trim() || undefined,
+        landmark: formData.landmark.trim() || undefined,
+        city: formData.city.trim(),
+        governorate: t(formData.governorate),
+        postalCode: formData.postalCode.trim() || undefined,
+        country: t('مصر'),
+      },
+      notes: formData.notes.trim() || undefined,
+    };
+
+    const link = buildWhatsAppOrderLink(payload);
+
+    // Open the WhatsApp tab synchronously, still inside the click gesture,
+    // so mobile browsers don't treat it as a blocked popup.
+    const waWindow = window.open(link, '_blank', 'noopener,noreferrer');
+
+    // Persisting to Firestore is best effort: a failed write (e.g. guest rules)
+    // must never block the customer from sending their order.
+    try {
+      const formattedAddress = [
+        formData.address,
+        formData.apartment,
+        formData.landmark,
+        formData.city,
+        t(formData.governorate),
+        formData.postalCode,
+      ].filter(Boolean).join(', ');
+
+      await addDoc(collection(db, 'orders'), {
+        orderNumber,
+        userId: user?.uid || 'guest',
+        isGuest: !user,
         items: items.map(i => ({ perfumeId: i.id, quantity: i.quantity, name: i.name, price: i.price })),
-        totalAmount: finalTotal, // use finalTotal with shipping fee
+        totalAmount: finalTotal,
+        subtotal: total,
         shippingFee: SHIPPING_FEE,
         status: 'pending',
-        paymentMethod,
+        paymentMethod: 'whatsapp',
         paymentStatus: 'pending',
-        shippingAddress: `الاسم: ${fullName}، الهاتف: ${formData.phone}، العنوان: ${formattedAddress}`,
-        contactEmail: formData.email,
-        createdAt: new Date().toISOString()
+        customerName: `${formData.firstName} ${formData.lastName}`.trim(),
+        customerPhone: formData.phone,
+        shippingAddress: `الاسم: ${formData.firstName} ${formData.lastName}، الهاتف: ${formData.phone}، العنوان: ${formattedAddress}`,
+        contactEmail: formData.email || '',
+        notes: formData.notes || '',
+        createdAt: new Date().toISOString(),
       });
-      
-      if (paymentMethod === 'card') {
-        const response = await fetch('/api/paymob/create-payment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: finalTotal, // Pass the total with shipping to paymob
-            orderId: orderRef.id,
-            items: items.map(i => ({ name: i.name, amount_cents: i.price * 100, description: i.name, quantity: i.quantity })),
-            billingData: {
-              first_name: formData.firstName || user.displayName?.split(' ')[0] || "Customer",
-              last_name: formData.lastName || user.displayName?.split(' ').slice(1).join(' ') || "Aura",
-              email: formData.email || user.email || "test@test.com",
-              phone_number: formData.phone,
-              apartment: formData.apartment || "NA", floor: "NA", street: formData.address, building: "NA",
-              shipping_method: "Delivery", postal_code: formData.postalCode || "NA", city: formData.city,
-              country: "EG", state: formData.governorate || "NA"
-            }
-          })
-        });
-
-        const data = await response.json();
-        if (data.iframeUrl) {
-          window.location.href = data.iframeUrl;
-          return;
-        } else {
-          const detailStr = data.details ? ` | Details: ${JSON.stringify(data.details)}` : '';
-          throw new Error((data.error || "حدث خطأ في بوابة الدفع") + detailStr);
-        }
-      }
-
-      setSuccess(true);
-      clearCart();
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      setError(error.message || 'حدث خطأ أثناء إتمام الطلب. يرجى المحاولة مرة أخرى.');
-    } finally {
-      setLoading(false);
+    } catch (dbError) {
+      console.warn('Order could not be saved to Firestore, WhatsApp order still sent:', dbError);
     }
-  };
 
-  const isRTL = language === 'ar';
+    setWhatsappLink(link);
+    setSuccess(true);
+    clearCart();
+    setLoading(false);
 
-  const CustomInput = ({ name, type = "text", label, required = false, dir = "auto", infoIcon = false }: any) => {
-    const errorMsg = touched[name] && (errors as any)[name];
-    const isFloating = formData[name as keyof typeof formData] !== '';
-    return (
-      <div className="relative mb-3">
-        <label
-          htmlFor={name}
-          className={`absolute top-2 ${isRTL ? 'right-3' : 'left-3'} text-xs text-gray-500 transition-all ${!isFloating ? 'top-3.5 text-[15px]' : ''} pointer-events-none`}
-          style={{ transformOrigin: isRTL ? 'right' : 'left' }}
-        >
-          {label}
-        </label>
-        <input
-          type={type}
-          id={name}
-          name={name}
-          value={(formData as any)[name]}
-          onChange={handleChange}
-          onBlur={() => handleBlur(name)}
-          required={required}
-          dir={dir}
-          className={`w-full px-3 pb-2 pt-6 bg-white border rounded-md shadow-sm appearance-none outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow ${errorMsg ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300'}`}
-        />
-        {infoIcon && <HelpCircle className={`absolute top-3.5 ${isRTL ? 'left-3' : 'right-3'} w-5 h-5 text-gray-400`} />}
-        {errorMsg && <p className="text-red-500 text-xs mt-1 px-1">{errorMsg}</p>}
-      </div>
-    );
+    if (!waWindow) {
+      setError(t('لم يتم فتح واتساب تلقائياً. اضغط على الزر بالأسفل لإرسال الطلب.'));
+    }
   };
 
   if (success) {
@@ -192,11 +242,26 @@ export default function Checkout() {
         <div className="w-24 h-24 bg-[#c4eed0] rounded-full flex items-center justify-center mb-6">
           <CheckCircle className="w-12 h-12 text-[#006d3b]" />
         </div>
-        <h2 className="text-3xl font-serif text-primary mb-4">{t('تم الطلب بنجاح!')}</h2>
-        <p className="text-on-surface/50 mb-8 text-center max-w-md font-light">{t('شكراً لتسوقك معنا. سيتم تجهيز طلبك وشحنه في أقرب وقت ممكن.')}</p>
-        <button onClick={() => navigate('/')} className="px-8 py-3 bg-primary text-white font-bold rounded-lg hover:opacity-90 transition-opacity uppercase tracking-widest text-xs shadow-lg shadow-primary/20">
-          {t('العودة للرئيسية')}
-        </button>
+        <h2 className="text-3xl font-serif text-primary mb-4">{t('تم تجهيز طلبك!')}</h2>
+        <p className="text-on-surface/50 mb-8 text-center max-w-md font-light">
+          {t('تم تحويلك إلى واتساب لإرسال تفاصيل الطلب. برجاء إرسال الرسالة لتأكيد الطلب معنا.')}
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3">
+          {whatsappLink && (
+            <a
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-3 bg-[#25D366] text-white font-bold rounded-lg hover:opacity-90 transition-opacity uppercase tracking-widest text-xs shadow-lg flex items-center justify-center gap-2"
+            >
+              <MessageCircle className="w-4 h-4" />
+              {t('إرسال الطلب على واتساب')}
+            </a>
+          )}
+          <button onClick={() => navigate('/')} className="px-8 py-3 bg-primary text-white font-bold rounded-lg hover:opacity-90 transition-opacity uppercase tracking-widest text-xs shadow-lg shadow-primary/20">
+            {t('العودة للرئيسية')}
+          </button>
+        </div>
       </div>
     );
   }
@@ -205,71 +270,60 @@ export default function Checkout() {
     <div className="min-h-screen bg-white py-12 px-4 md:px-8" dir={isRTL ? 'rtl' : 'ltr'}>
       <SEOHead title={t('إتمام الطلب')} description={t('أكمل عملية الشراء من Aura Perfumes')} noindex={true} />
       <div className="max-w-2xl mx-auto font-sans">
-        
+
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleCheckout} className="space-y-8 text-gray-800">
-          {/* Contact Section */}
-          <section>
-            <div className="flex justify-between items-baseline mb-4">
-              <h2 className="text-2xl font-semibold">{t('تواصل')}</h2>
-              {!user && <button type="button" onClick={openAuthModal} className="text-sm text-blue-600 hover:underline">{t('تسجيل الدخول')}</button>}
-            </div>
-            
-            <div className="relative mb-3">
-               <label
-                htmlFor="email"
-                className={`absolute top-2 ${isRTL ? 'right-3' : 'left-3'} text-xs text-gray-500 transition-all ${!formData.email ? 'top-3.5 text-[15px]' : ''} pointer-events-none`}
-              >{t('البريد الإلكتروني')}</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                onBlur={() => handleBlur('email')}
-                className={`w-full px-3 pb-2 pt-6 bg-white border rounded-md shadow-sm appearance-none outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow ${touched.email && errors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300'}`}
-                dir="ltr"
-              />
-              {touched.email && errors.email && <p className="text-red-500 text-xs mt-1 px-1">{errors.email}</p>}
-            </div>
-          </section>
+        <div className="mb-8 p-4 rounded-lg bg-emerald-50 border border-emerald-200 flex items-start gap-3">
+          <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+          <div className="text-sm text-emerald-900">
+            <p className="font-semibold mb-0.5">{t('لا حاجة لإنشاء حساب')}</p>
+            <p className="text-emerald-800/80">{t('املأ بياناتك وسيتم إرسال تفاصيل الطلب على واتساب لتأكيده معك.')}</p>
+          </div>
+        </div>
 
+        <form onSubmit={handleCheckout} className="space-y-8 text-gray-800">
           {/* Delivery Section */}
           <section>
             <h2 className="text-2xl font-semibold mb-4">{t('التوصيل')}</h2>
-            
+
             <div className="mb-3 relative">
               <label className={`absolute top-2 ${isRTL ? 'right-3' : 'left-3'} text-xs text-gray-500 pointer-events-none`}>{t('البلد/المنطقة')}</label>
               <select disabled aria-label={t('البلد/المنطقة')} className="w-full px-3 pb-2 pt-6 bg-white border border-gray-300 rounded-md shadow-sm appearance-none outline-none text-gray-800">
                 <option>{t('مصر')}</option>
               </select>
               <div className={`pointer-events-none absolute inset-y-0 ${isRTL ? 'left-3' : 'right-3'} flex items-center px-2 text-gray-700`}>
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
               </div>
             </div>
 
-            <div className="flex gap-3 mb-3">
-              <div className="flex-1"><CustomInput name="firstName" label={t('الاسم الأول')} /></div>
-              <div className="flex-1"><CustomInput name="lastName" label={t('اسم العائلة')} /></div>
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <Field name="firstName" label={t('الاسم الأول')} value={formData.firstName} onChange={handleChange} onBlur={handleBlur} error={err('firstName')} isRTL={isRTL} autoComplete="given-name" required />
+              </div>
+              <div className="flex-1">
+                <Field name="lastName" label={t('اسم العائلة')} value={formData.lastName} onChange={handleChange} onBlur={handleBlur} error={err('lastName')} isRTL={isRTL} autoComplete="family-name" required />
+              </div>
             </div>
 
-            <CustomInput name="address" label={t('العنوان')} />
-            <CustomInput name="apartment" label={t('شقة، جناح، إلخ (اختياري)')} />
+            <Field name="address" label={t('العنوان')} value={formData.address} onChange={handleChange} onBlur={handleBlur} error={err('address')} isRTL={isRTL} autoComplete="street-address" required />
+            <Field name="apartment" label={t('شقة، دور، إلخ (اختياري)')} value={formData.apartment} onChange={handleChange} onBlur={handleBlur} isRTL={isRTL} />
+            <Field name="landmark" label={t('علامة مميزة قريبة (اختياري)')} value={formData.landmark} onChange={handleChange} onBlur={handleBlur} isRTL={isRTL} />
 
-            <div className="flex flex-col sm:flex-row gap-3 mb-3">
-              <div className="flex-1"><CustomInput name="city" label={t('المدينة')} /></div>
-              <div className="flex-1 relative">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1">
+                <Field name="city" label={t('المدينة')} value={formData.city} onChange={handleChange} onBlur={handleBlur} error={err('city')} isRTL={isRTL} autoComplete="address-level2" required />
+              </div>
+              <div className="flex-1 relative mb-3">
                 <label className={`absolute top-2 ${isRTL ? 'right-3' : 'left-3'} text-xs text-gray-500 pointer-events-none`}>{t('المحافظة')}</label>
-                <select 
-                  name="governorate" 
+                <select
+                  name="governorate"
                   aria-label={t('المحافظة')}
-                  value={formData.governorate} 
-                  onChange={handleChange} 
+                  value={formData.governorate}
+                  onChange={handleChange}
                   className="w-full px-3 pb-2 pt-6 bg-white border border-gray-300 rounded-md shadow-sm appearance-none outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   {GOVERNORATES.map(gov => (
@@ -277,18 +331,37 @@ export default function Checkout() {
                   ))}
                 </select>
                 <div className={`pointer-events-none absolute inset-y-0 ${isRTL ? 'left-3' : 'right-3'} flex items-center px-2 text-gray-700`}>
-                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                 </div>
               </div>
-              <div className="flex-1"><CustomInput name="postalCode" label={t('الرمز البريدي (اختياري)')} dir="ltr" /></div>
+              <div className="flex-1">
+                <Field name="postalCode" label={t('الرمز البريدي (اختياري)')} value={formData.postalCode} onChange={handleChange} onBlur={handleBlur} isRTL={isRTL} dir="ltr" />
+              </div>
             </div>
 
-            <CustomInput name="phone" label={t('رقم الهاتف')} type="tel" dir="ltr" infoIcon />
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1">
+                <Field name="phone" label={t('رقم الهاتف')} type="tel" value={formData.phone} onChange={handleChange} onBlur={handleBlur} error={err('phone')} isRTL={isRTL} dir="ltr" autoComplete="tel" infoIcon required />
+              </div>
+              <div className="flex-1">
+                <Field name="altPhone" label={t('رقم احتياطي (اختياري)')} type="tel" value={formData.altPhone} onChange={handleChange} onBlur={handleBlur} error={err('altPhone')} isRTL={isRTL} dir="ltr" />
+              </div>
+            </div>
 
-            <label className="flex items-center gap-2 mt-4 cursor-pointer">
-              <input type="checkbox" name="saveInfo" checked={formData.saveInfo} onChange={handleChange} className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
-              <span className="text-sm">{t('حفظ هذه المعلومات للمرة القادمة')}</span>
-            </label>
+            <Field name="email" label={t('البريد الإلكتروني (اختياري)')} type="email" value={formData.email} onChange={handleChange} onBlur={handleBlur} error={err('email')} isRTL={isRTL} dir="ltr" autoComplete="email" />
+
+            <div className="relative mb-3">
+              <label htmlFor="notes" className="block text-sm text-gray-600 mb-1.5">{t('ملاحظات على الطلب (اختياري)')}</label>
+              <textarea
+                id="notes"
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange}
+                rows={3}
+                placeholder={t('مثال: التوصيل بعد الساعة 5 مساءً')}
+                className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              />
+            </div>
           </section>
 
           {/* Shipping Method Section */}
@@ -304,48 +377,53 @@ export default function Checkout() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">{t('طريقة الدفع')}</h2>
             <div className="border border-gray-300 rounded-md overflow-hidden bg-white">
-              <label className={`flex items-center p-4 cursor-pointer transition-colors ${paymentMethod === 'cod' ? 'bg-blue-50/50' : 'hover:bg-gray-50'}`}>
-                <input 
-                  type="radio" 
-                  name="payment" 
-                  value="cod" 
-                  checked={paymentMethod === 'cod'} 
-                  onChange={() => setPaymentMethod('cod')}
-                  className={`w-4 h-4 text-blue-600 ${isRTL ? 'ml-3' : 'mr-3'} focus:ring-blue-500`}
-                />
-                <span className="text-sm font-medium">{t('الدفع عند الاستلام')}</span>
-              </label>
-              <div className="border-t border-gray-200"></div>
-              <label className={`flex items-center p-4 cursor-pointer transition-colors ${paymentMethod === 'card' ? 'bg-blue-50/50' : 'hover:bg-gray-50'}`}>
-                <input 
-                  type="radio" 
-                  name="payment" 
-                  value="card" 
-                  checked={paymentMethod === 'card'} 
-                  onChange={() => setPaymentMethod('card')}
-                  className={`w-4 h-4 text-blue-600 ${isRTL ? 'ml-3' : 'mr-3'} focus:ring-blue-500`}
-                />
-                <div className="flex flex-col">
-                   <span className="text-sm font-medium">{t('البطاقة الائتمانية / تقسيط (Paymob)')}</span>
-                   {paymentMethod === 'card' && <p className="text-xs text-gray-500 mt-1">{t('عند النقر على "تأكيد الطلب"، سيتم توجيهك بأمان إلى بوابة الدفع الرسمية (Paymob).')}</p>}
+              <div className="flex items-start gap-3 p-4 bg-blue-50/50">
+                <MessageCircle className="w-5 h-5 text-[#25D366] shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">{t('الدفع عند الاستلام — التأكيد عبر واتساب')}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {t('عند النقر على "إرسال الطلب على واتساب"، سيتم فتح واتساب برسالة تحتوي كل تفاصيل طلبك جاهزة للإرسال.')}
+                  </p>
                 </div>
-              </label>
+              </div>
+            </div>
+          </section>
+
+          {/* Order Summary */}
+          <section>
+            <h2 className="text-lg font-semibold mb-3">{t('ملخص الطلب')}</h2>
+            <div className="border border-gray-200 rounded-md divide-y divide-gray-100">
+              {items.map(item => (
+                <div key={item.id} className="flex justify-between items-center gap-3 px-4 py-3 text-sm">
+                  <span className="truncate">{item.name} × {item.quantity}</span>
+                  <span className="font-medium shrink-0">E£{(item.price * item.quantity).toLocaleString()}</span>
+                </div>
+              ))}
+              <div className="flex justify-between px-4 py-3 text-sm text-gray-600">
+                <span>{t('المجموع الفرعي')}</span>
+                <span>E£{total.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between px-4 py-3 text-sm text-gray-600">
+                <span>{t('الشحن')}</span>
+                <span>E£{SHIPPING_FEE.toLocaleString()}</span>
+              </div>
             </div>
           </section>
 
           {/* Submit */}
           <div className="pt-6 mt-6 border-t border-gray-200">
             <div className="flex justify-between items-center mb-6">
-               <span className="text-lg font-medium">{t('الإجمالي')}</span>
-               <span className="text-2xl font-bold">E£{finalTotal.toLocaleString()}</span>
+              <span className="text-lg font-medium">{t('الإجمالي')}</span>
+              <span className="text-2xl font-bold">E£{finalTotal.toLocaleString()}</span>
             </div>
-            
-            <button 
-              type="submit" 
+
+            <button
+              type="submit"
               disabled={loading || !isFormValid}
-              className={`w-full py-4 text-white rounded-md font-semibold transition-all ${(!loading && isFormValid) ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-300 cursor-not-allowed'}`}
+              className={`w-full py-4 text-white rounded-md font-semibold transition-all flex items-center justify-center gap-2 ${(!loading && isFormValid) ? 'bg-[#25D366] hover:bg-[#1eb355]' : 'bg-gray-300 cursor-not-allowed'}`}
             >
-              {loading ? t('جاري المعالجة...') : t('تأكيد الطلب')}
+              <MessageCircle className="w-5 h-5" />
+              {loading ? t('جاري المعالجة...') : t('إرسال الطلب على واتساب')}
             </button>
           </div>
         </form>

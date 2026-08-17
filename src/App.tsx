@@ -9,6 +9,8 @@ import { CartProvider } from './context/CartContext';
 import { UserPreferencesProvider } from './context/UserPreferencesContext';
 import { ToastProvider } from './context/ToastContext';
 import { TranslationProvider } from './context/TranslationContext';
+import { StoreSettingsProvider } from './context/StoreSettingsContext';
+
 import Navbar from './components/Navbar';
 import Chatbot from './components/Chatbot';
 import WhatsAppButton from './components/WhatsAppButton';
@@ -105,18 +107,21 @@ function AppContent() {
 export default function App() {
   return (
     <TranslationProvider>
-      <AuthProvider>
-        <CartProvider>
-          <UserPreferencesProvider>
-            <ToastProvider>
-              <Router>
-                <AppContent />
-              </Router>
-            </ToastProvider>
-          </UserPreferencesProvider>
-        </CartProvider>
-      </AuthProvider>
+      <StoreSettingsProvider>
+        <AuthProvider>
+          <CartProvider>
+            <UserPreferencesProvider>
+              <ToastProvider>
+                <Router>
+                  <AppContent />
+                </Router>
+              </ToastProvider>
+            </UserPreferencesProvider>
+          </CartProvider>
+        </AuthProvider>
+      </StoreSettingsProvider>
     </TranslationProvider>
+
   );
 }
 

@@ -3,29 +3,60 @@
 @plugin "../tailwind-heroui-plugin.js";
 
 @theme {
-  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Noto Serif", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans: "Manrope", "Tajawal", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Cormorant Garamond", "Noto Serif", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-arabic: "Tajawal", "IBM Plex Sans Arabic", "Manrope", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  /* Aura Luxury Color Palette */
-  --color-primary: #2e0052;
-  --color-primary-container: #4b0082;
+  /* ==========================================================
+     Aura Identity — Deep Navy + Gold
+     Token names are preserved from the previous palette so that
+     every existing component picks up the new identity for free.
+     ========================================================== */
+
+  /* Navy scale (brand primary) */
+  --color-primary: #0e1c3a;
+  --color-primary-container: #152648;
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #ba7ef4;
-  --color-secondary: #6d5772;
-  --color-secondary-container: #f6d9fa;
-  --color-tertiary: #735c00;
-  --color-tertiary-gold: #e9c349;
-  --color-tertiary-fixed: #ffe088;
-  --color-surface: #fbf9f5;
-  --color-surface-container: #efeeea;
-  --color-surface-container-low: #f5f3ef;
-  --color-surface-container-high: #eae8e4;
-  --color-surface-variant: #e4e2de;
-  --color-on-surface: #1b1c1a;
-  --color-on-surface-variant: #4c4451;
-  --color-outline: #7d7483;
-  --color-outline-variant: #cec3d3;
+  --color-on-primary-container: #e3c77b;
+  --color-navy-950: #070f20;
+  --color-navy-900: #0e1c3a;
+  --color-navy-800: #152648;
+  --color-navy-700: #1d3358;
+  --color-navy-600: #2a4470;
+
+  /* Slate-navy support */
+  --color-secondary: #4a5875;
+  --color-secondary-container: #dde4f0;
+
+  /* Gold scale (brand accent) */
+  --color-tertiary: #8a6d1f;
+  --color-tertiary-gold: #c9a227;
+  --color-tertiary-fixed: #e3c77b;
+  --color-gold-700: #8a6d1f;
+  --color-gold-600: #a8851f;
+  --color-gold-500: #c9a227;
+  --color-gold-400: #d9b64b;
+  --color-gold-300: #e3c77b;
+  --color-gold-200: #f0dcaa;
+
+  /* Admin shell (deep navy chrome) */
+  --color-admin-bg: #08122a;
+  --color-admin-surface: #0e1c3a;
+  --color-admin-elevated: #152648;
+
+  /* Ivory surfaces */
+  --color-surface: #f7f4ee;
+  --color-surface-container: #ede8de;
+  --color-surface-container-low: #f2eee5;
+  --color-surface-container-high: #e5dfd2;
+  --color-surface-variant: #e2dcd0;
+
+  /* Ink */
+  --color-on-surface: #14161a;
+  --color-on-surface-variant: #4a4e57;
+  --color-outline: #7c7f88;
+  --color-outline-variant: #cfc9bc;
   --color-error: #ba1a1a;
 
   /* Custom Animations Tailwind V4 */
@@ -33,6 +64,7 @@
   --animate-bounce-soft: bounce-soft 3s ease-in-out infinite;
   --animate-float-slow: float-slow 6s ease-in-out infinite;
   --animate-pulse-glow: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-gold-sweep: gold-sweep 2.6s ease-in-out infinite;
 }
 
 /* Smooth scroll */
@@ -41,81 +73,180 @@ html {
 }
 
 body {
-  font-family: 'Manrope', sans-serif;
-  background-color: #fbf9f5;
-  color: #1b1c1a;
+  font-family: 'Manrope', 'Tajawal', sans-serif;
+  background-color: #f7f4ee;
+  color: #14161a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, .font-headline {
-  font-family: 'Noto Serif', serif;
+h1,
+h2,
+h3,
+.font-headline {
+  font-family: 'Cormorant Garamond', 'Noto Serif', serif;
+  letter-spacing: 0.01em;
 }
 
-/* Custom scrollbar — luxury purple */
+/* Arabic copy reads better in Tajawal than in a Latin serif */
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] .font-headline {
+  font-family: 'Tajawal', 'Cormorant Garamond', serif;
+  font-weight: 700;
+}
+
+/* Custom scrollbar — navy / gold */
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #f5f3ef;
+  background: #f2eee5;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #cec3d3;
+  background: #cfc9bc;
   border-radius: 999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #7b41b3;
+  background: #c9a227;
 }
 
 /* Horizontal scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   height: 4px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cec3d3;
+  background: #cfc9bc;
   border-radius: 999px;
 }
 
 /* Keyframes */
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 20px rgba(75, 0, 130, 0.15); }
-  50% { box-shadow: 0 0 40px rgba(75, 0, 130, 0.3); }
-}
-@keyframes bounce-soft {
-  0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
-  50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
-}
-@keyframes float-slow {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(2deg); }
-}
-@keyframes pulse-glow {
-  0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px rgba(233, 195, 73, 0.4)); }
-  50% { opacity: .8; transform: scale(1.05); filter: drop-shadow(0 0 20px rgba(233, 195, 73, 0.8)); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-.animate-float { animation: float 6s ease-in-out infinite; }
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(201, 162, 39, 0.18);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(201, 162, 39, 0.34);
+  }
+}
+
+@keyframes bounce-soft {
+
+  0%,
+  100% {
+    transform: translateY(-5%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+@keyframes float-slow {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-15px) rotate(2deg);
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px rgba(201, 162, 39, 0.45));
+  }
+
+  50% {
+    opacity: .8;
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 20px rgba(227, 199, 123, 0.85));
+  }
+}
+
+/* Gold light sweeping across a CTA */
+@keyframes gold-sweep {
+  0% {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+
+  60%,
+  100% {
+    transform: translateX(240%) skewX(-18deg);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
 .animate-shimmer {
-  background: linear-gradient(90deg, #f5f3ef 25%, #eae8e4 50%, #f5f3ef 75%);
+  background: linear-gradient(90deg, #f2eee5 25%, #e5dfd2 50%, #f2eee5 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
-.animate-slide-up { animation: slide-up 0.6s ease-out both; }
-.animate-glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out both;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
 
 /* Skeleton loader */
 .skeleton {
-  background: linear-gradient(90deg, #f5f3ef 25%, #eae8e4 50%, #f5f3ef 75%);
+  background: linear-gradient(90deg, #f2eee5 25%, #e5dfd2 50%, #f2eee5 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 12px;
@@ -123,51 +254,157 @@ h1, h2, h3, .font-headline {
 
 /* Glassmorphism utilities */
 .glass {
-  background: rgba(251, 249, 245, 0.7);
+  background: rgba(247, 244, 238, 0.72);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
+
 .glass-dark {
-  background: rgba(46, 0, 82, 0.6);
+  background: rgba(14, 28, 58, 0.62);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(227, 199, 123, 0.16);
 }
+
 .glass-panel {
-  background: rgba(251, 249, 245, 0.7);
+  background: rgba(247, 244, 238, 0.72);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
+}
+
+/* Navy glass for dark sections and the admin shell */
+.glass-navy {
+  background: rgba(21, 38, 72, 0.78);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(227, 199, 123, 0.14);
+}
+
+/* ==========================================================
+   Gold accents
+   ========================================================== */
+.text-gold-gradient {
+  background: linear-gradient(100deg, #8a6d1f 0%, #c9a227 32%, #f0dcaa 52%, #c9a227 72%, #8a6d1f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-gold-gradient {
+  background: linear-gradient(100deg, #a8851f 0%, #c9a227 38%, #e3c77b 62%, #c9a227 100%);
+}
+
+/* Hairline gold rule used between sections */
+.gold-divider {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(201, 162, 39, 0.55) 50%, transparent 100%);
+}
+
+.gold-hairline {
+  border: 1px solid rgba(201, 162, 39, 0.28);
+}
+
+/* Wrap a CTA in .gold-sweep to get a single travelling highlight */
+.gold-sweep {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.gold-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.38), transparent);
+  animation: gold-sweep 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Subtle arabesque texture for dark navy panels */
+.arabesque {
+  background-color: #0e1c3a;
+  background-image:
+    radial-gradient(circle at 0% 50%, rgba(227, 199, 123, 0.07) 0 12%, transparent 12.5%),
+    radial-gradient(circle at 100% 50%, rgba(227, 199, 123, 0.07) 0 12%, transparent 12.5%),
+    radial-gradient(circle at 50% 0%, rgba(227, 199, 123, 0.05) 0 12%, transparent 12.5%),
+    radial-gradient(circle at 50% 100%, rgba(227, 199, 123, 0.05) 0 12%, transparent 12.5%);
+  background-size: 64px 64px;
 }
 
 /* Scent aura radial glow */
 .scent-aura {
-  background: radial-gradient(circle at 50% 50%, rgba(75, 0, 130, 0.03) 0%, rgba(233, 195, 73, 0.05) 50%, transparent 100%);
+  background: radial-gradient(circle at 50% 50%, rgba(14, 28, 58, 0.04) 0%, rgba(201, 162, 39, 0.07) 50%, transparent 100%);
 }
 
 /* Chart gradient */
 .chart-gradient {
-  background: linear-gradient(180deg, rgba(75, 0, 130, 0.1) 0%, rgba(75, 0, 130, 0) 100%);
+  background: linear-gradient(180deg, rgba(201, 162, 39, 0.16) 0%, rgba(201, 162, 39, 0) 100%);
 }
 
 /* Luxury shadow */
 .shadow-luxury {
-  box-shadow: 0 32px 64px -15px rgba(46, 0, 82, 0.05);
+  box-shadow: 0 24px 48px -18px rgba(14, 28, 58, 0.14);
 }
+
 .shadow-luxury-lg {
-  box-shadow: 0 32px 64px rgba(27, 28, 26, 0.05);
+  box-shadow: 0 32px 64px -20px rgba(14, 28, 58, 0.2);
 }
+
+.shadow-gold {
+  box-shadow: 0 12px 32px -12px rgba(201, 162, 39, 0.45);
+}
+
 .shadow-glow {
-  box-shadow: 0 0 20px rgba(75, 0, 130, 0.15), 0 0 40px rgba(75, 0, 130, 0.05);
+  box-shadow: 0 0 20px rgba(201, 162, 39, 0.18), 0 0 40px rgba(201, 162, 39, 0.08);
   transition: box-shadow 0.3s ease;
 }
+
 .shadow-glow:hover {
-  box-shadow: 0 0 30px rgba(75, 0, 130, 0.25), 0 0 50px rgba(75, 0, 130, 0.1);
+  box-shadow: 0 0 30px rgba(201, 162, 39, 0.3), 0 0 50px rgba(201, 162, 39, 0.14);
 }
+
+/* Slim scrollbar for the dark admin shell */
+.admin-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.admin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-scroll::-webkit-scrollbar-thumb {
+  background: rgba(227, 199, 123, 0.18);
+  border-radius: 999px;
+}
+
+.admin-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(227, 199, 123, 0.38);
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Respect users who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
