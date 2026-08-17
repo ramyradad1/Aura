@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageCircle, X } from 'lucide-react';
-
-const WHATSAPP_NUMBER = '201000000000'; // Replace with actual number
+import { useStoreSettings } from '../context/StoreSettingsContext';
 
 export default function WhatsAppButton() {
   const [showTooltip, setShowTooltip] = useState(false);
+  // Number and greeting both come from the admin panel settings.
+  const { settings, whatsappLink } = useStoreSettings();
 
-  const message = encodeURIComponent('مرحباً! أحتاج مساعدة في اختيار عطر من Aura Perfumes 🌸');
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+  const whatsappUrl = whatsappLink(settings.whatsappGreeting);
+
 
   return (
     <div className="fixed bottom-24 left-6 z-50 flex items-end gap-3" dir="rtl">

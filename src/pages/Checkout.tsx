@@ -172,7 +172,7 @@ export default function Checkout() {
       orderNumber,
       items: items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
       subtotal: total,
-      shippingFee: SHIPPING_FEE,
+      shippingFee,
       total: finalTotal,
       customer: {
         firstName: formData.firstName.trim(),
@@ -193,7 +193,7 @@ export default function Checkout() {
       notes: formData.notes.trim() || undefined,
     };
 
-    const link = buildWhatsAppOrderLink(payload);
+    const link = buildWhatsAppOrderLink(payload, settings);
 
     // Open the WhatsApp tab synchronously, still inside the click gesture,
     // so mobile browsers don't treat it as a blocked popup.
@@ -218,7 +218,7 @@ export default function Checkout() {
         items: items.map(i => ({ perfumeId: i.id, quantity: i.quantity, name: i.name, price: i.price })),
         totalAmount: finalTotal,
         subtotal: total,
-        shippingFee: SHIPPING_FEE,
+        shippingFee,
         status: 'pending',
         paymentMethod: 'whatsapp',
         paymentStatus: 'pending',
@@ -375,8 +375,11 @@ export default function Checkout() {
           <section>
             <h2 className="text-lg font-semibold mb-3">{t('طريقة الشحن')}</h2>
             <div className="w-full px-4 py-3 bg-blue-50 border border-blue-500 rounded-md flex justify-between items-center text-sm font-medium">
-              <span>{t('توصيل (2-5 أيام عمل)')}</span>
-              <span className="font-bold">E£{SHIPPING_FEE.toFixed(2)}</span>
+              <span>{`${t('توصيل')} (${settings.deliveryTimeText})`}</span>
+
+              <span className="font-bold">
+                {isFreeShipping ? t('شحن مجاني') : formatPrice(shippingFee)}
+              </span>
             </div>
           </section>
 
@@ -403,16 +406,16 @@ export default function Checkout() {
               {items.map(item => (
                 <div key={item.id} className="flex justify-between items-center gap-3 px-4 py-3 text-sm">
                   <span className="truncate">{item.name} × {item.quantity}</span>
-                  <span className="font-medium shrink-0">E£{(item.price * item.quantity).toLocaleString()}</span>
+                  <span className="font-medium shrink-0">{formatPrice(item.price * item.quantity)}</span>
                 </div>
               ))}
               <div className="flex justify-between px-4 py-3 text-sm text-gray-600">
                 <span>{t('المجموع الفرعي')}</span>
-                <span>E£{total.toLocaleString()}</span>
+                <span>{formatPrice(total)}</span>
               </div>
               <div className="flex justify-between px-4 py-3 text-sm text-gray-600">
                 <span>{t('الشحن')}</span>
-                <span>E£{SHIPPING_FEE.toLocaleString()}</span>
+                <span>{isFreeShipping ? t('شحن مجاني') : formatPrice(shippingFee)}</span>
               </div>
             </div>
           </section>
