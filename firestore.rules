@@ -178,6 +178,45 @@ service cloud.firestore {
       allow delete: if isAdmin() || isOwner(resource.data.userId);
     }
 
+    match /coupons/{couponId} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
+    match /gift_sets/{giftSetId} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
+    match /collections/{collectionId} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
+    match /brands/{brandId} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
+    match /sections/{sectionId} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
+    match /policies/{policyId} {
+      allow read: if true;
+      allow write: if isEditor();
+    }
+
+    match /alerts/{alertId} {
+      allow read, write: if isAdmin();
+    }
+
     match /suppliers/{supplierId} {
       allow read, write: if isAdmin();
     }
@@ -205,3 +244,4 @@ service cloud.firestore {
     }
   }
 }
+

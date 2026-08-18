@@ -318,7 +318,7 @@ export default function Admin() {
       case 'categories': return <AdminCategories />;
       case 'brands': return <AdminBrands />;
       case 'collections': return <AdminCollections />;
-      case 'giftSets': return <AdminGiftSets />;
+      case 'giftSets': return <AdminGiftSets perfumes={perfumes} />;
       case 'reports': return <AdminReports orders={orders} perfumes={perfumes} users={users} />;
       case 'coupons': return <AdminCoupons />;
       case 'reviews': return <AdminReviews />;
