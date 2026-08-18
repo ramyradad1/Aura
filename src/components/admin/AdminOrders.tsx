@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, Download } from 'lucide-react';
+import { exportOrdersToCSV } from '../../utils/exportUtils';
 
 interface Props {
   orders: any[];
@@ -40,26 +41,39 @@ export default function AdminOrders({ orders, loading, onUpdateStatus }: Props) 
 
   return (
     <div className="space-y-6">
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3 items-center">
-        <div className="relative flex-1 min-w-[240px]">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text" value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="بحث برقم الطلب أو اسم العميل..."
-            className="w-full pr-10 pl-4 py-2.5 bg-[#1e293b] border border-white/5 rounded-xl text-white placeholder:text-slate-500 focus:border-indigo-500/50 outline-none text-sm"
-          />
+      {/* Filters & Export */}
+      <div className="flex flex-wrap gap-3 items-center justify-between">
+        <div className="flex flex-wrap gap-3 items-center flex-1">
+          <div className="relative flex-1 min-w-[240px]">
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              type="text" value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="بحث برقم الطلب أو اسم العميل..."
+              className="w-full pr-10 pl-4 py-2.5 bg-[#1e293b] border border-white/5 rounded-xl text-white placeholder:text-slate-500 focus:border-indigo-500/50 outline-none text-sm"
+            />
+          </div>
+          <select
+            value={statusFilter} onChange={e => setStatusFilter(e.target.value)} title="فلتر الحالة"
+            className="px-4 py-2.5 bg-[#1e293b] border border-white/5 rounded-xl text-white text-sm focus:border-indigo-500/50 outline-none"
+          >
+            <option value="all">كل الحالات</option>
+            <option value="pending">قيد الانتظار</option>
+            <option value="processing">جاري التجهيز</option>
+            <option value="shipped">تم الشحن</option>
+            <option value="delivered">مكتمل</option>
+          </select>
         </div>
-        <select
-          value={statusFilter} onChange={e => setStatusFilter(e.target.value)} title="فلتر الحالة"
-          className="px-4 py-2.5 bg-[#1e293b] border border-white/5 rounded-xl text-white text-sm focus:border-indigo-500/50 outline-none"
+
+        <button
+          type="button"
+          onClick={() => exportOrdersToCSV(filtered)}
+          disabled={filtered.length === 0}
+          className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold rounded-xl flex items-center gap-2 transition-all cursor-pointer shadow-sm"
+          title="تصدير الطلبات المعروضة إلى ملف Excel"
         >
-          <option value="all">كل الحالات</option>
-          <option value="pending">قيد الانتظار</option>
-          <option value="processing">جاري التجهيز</option>
-          <option value="shipped">تم الشحن</option>
-          <option value="delivered">مكتمل</option>
-        </select>
+          <Download className="w-4 h-4" />
+          <span>تصدير الطلبات (Excel/CSV)</span>
+        </button>
       </div>
 
       {/* Table */}

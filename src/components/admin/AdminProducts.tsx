@@ -1,13 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import {
   Plus, Trash2, Search, Sparkles, ImagePlus, Loader2, Pencil, X,
-  Star, Package, DollarSign, FlaskConical, Image as ImageIcon, Globe
+  Star, Package, DollarSign, FlaskConical, Image as ImageIcon, Globe, Download
 } from 'lucide-react';
 import { generateProductDescription } from '../../utils/geminiUtils';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../../firebase';
 import { compressAndConvertToWebP } from '../../utils/imageUtils';
 import { useAuth } from '../../context/AuthContext';
+import { exportProductsToCSV } from '../../utils/exportUtils';
 
 interface Props {
   perfumes: any[];
@@ -294,12 +295,26 @@ export default function AdminProducts({ perfumes, loading, onAdd, onUpdate, onDe
           <option value="women">نسائي</option>
           <option value="unisex">للجنسين</option>
         </select>
-        {canEdit && (
-          <button onClick={showForm ? closeForm : openCreate}
-            className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors flex items-center gap-2 text-sm font-medium">
-            {showForm ? <><X className="w-4 h-4" /> إغلاق</> : <><Plus className="w-4 h-4" /> منتج جديد</>}
+        
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => exportProductsToCSV(filtered)}
+            disabled={filtered.length === 0}
+            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white text-xs font-bold rounded-xl flex items-center gap-2 transition-all cursor-pointer shadow-sm"
+            title="تصدير قائمة المنتجات المعروضة إلى ملف Excel"
+          >
+            <Download className="w-4 h-4" />
+            <span>تصدير (Excel/CSV)</span>
           </button>
-        )}
+
+          {canEdit && (
+            <button onClick={showForm ? closeForm : openCreate}
+              className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors flex items-center gap-2 text-sm font-medium cursor-pointer">
+              {showForm ? <><X className="w-4 h-4" /> إغلاق</> : <><Plus className="w-4 h-4" /> منتج جديد</>}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Form */}

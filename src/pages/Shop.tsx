@@ -48,7 +48,18 @@ export default function Shop() {
     return raw ? raw.split(',').filter(Boolean) : [];
   }, [searchParams]);
 
-  const commonNotes = ['ياسمين', 'عود', 'فانيليا', 'مسك', 'ورد', 'خشب الصندل', 'عنبر', 'برغموت', 'باتشولي', 'لافندر'];
+  const commonNotes = [
+    { name: 'عود', icon: '🪵' },
+    { name: 'ياسمين', icon: '🌸' },
+    { name: 'فانيليا', icon: '🍦' },
+    { name: 'مسك', icon: '✨' },
+    { name: 'ورد', icon: '🌹' },
+    { name: 'عنبر', icon: '🪨' },
+    { name: 'خشب الصندل', icon: '🌲' },
+    { name: 'برغموت', icon: '🍋' },
+    { name: 'باتشولي', icon: '🌿' },
+    { name: 'لافندر', icon: '🪻' },
+  ];
 
   // Helper to update search params
   const updateParam = (key: string, value: string | string[] | null) => {
@@ -386,22 +397,23 @@ export default function Shop() {
 
                   {/* Common Notes Tags */}
                   <div className="md:col-span-3">
-                    <label className="block text-xs font-bold text-primary/60 mb-2 uppercase tracking-widest">{t('نوتات شائعة')}</label>
-                    <div className="flex flex-wrap gap-2">
+                    <label className="block text-xs font-bold text-primary/60 mb-2.5 uppercase tracking-widest">{t('نوتات عطرية شائعة')}</label>
+                    <div className="flex flex-wrap gap-2.5">
                       {commonNotes.map((note) => {
-                        const isSelected = currentSelectedNotes.includes(note);
+                        const isSelected = currentSelectedNotes.includes(note.name);
                         return (
                           <button
-                            key={note}
+                            key={note.name}
                             type="button"
-                            onClick={() => toggleNote(note)}
-                            className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                            onClick={() => toggleNote(note.name)}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
                               isSelected
-                                ? 'bg-primary text-white shadow-xs'
-                                : 'bg-surface-container-low text-on-surface/70 hover:bg-surface-container-high border border-outline-variant/10'
+                                ? 'bg-primary text-white ring-2 ring-tertiary-gold shadow-md'
+                                : 'bg-surface-container-low text-on-surface/80 hover:bg-surface-container-high hover:text-primary border border-outline-variant/15'
                             }`}
                           >
-                            {note}
+                            <span className="text-sm leading-none">{note.icon}</span>
+                            <span>{note.name}</span>
                           </button>
                         );
                       })}

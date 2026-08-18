@@ -7,10 +7,11 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useStoreSettings } from '../context/StoreSettingsContext';
-import { ArrowRight, ShoppingCart, Sparkles, Star, Droplets, Wind, Leaf, Check, Heart, ChevronDown, Minus, Plus, AlertCircle } from 'lucide-react';
+import { ArrowRight, ShoppingCart, Sparkles, Star, Droplets, Wind, Leaf, Check, Heart, ChevronDown, Minus, Plus, AlertCircle, Bell } from 'lucide-react';
 import { fastPerfumeRecommendation } from '../utils/geminiUtils';
 import AIRecommendations from '../components/AIRecommendations';
 import RecentlyViewed from '../components/RecentlyViewed';
+import BackInStockModal from '../components/BackInStockModal';
 import { useUserPreferences } from '../context/UserPreferencesContext';
 import { handleFirestoreError, OperationType } from '../utils/firebaseUtils';
 import { extractIdFromSlug, generateProductSlug } from '../utils/slugUtils';
@@ -42,6 +43,7 @@ export default function PerfumeDetails() {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [showStickyBar, setShowStickyBar] = useState(false);
+  const [isBackInStockOpen, setIsBackInStockOpen] = useState(false);
   const isOutOfStock = perfume?.stock !== undefined && perfume.stock <= 0;
 
   useEffect(() => {
@@ -466,30 +468,35 @@ export default function PerfumeDetails() {
                   </div>
                 )}
 
-                <motion.button 
-                  whileHover={{ scale: isOutOfStock ? 1 : 1.02 }}
-                  whileTap={{ scale: isOutOfStock ? 1 : 0.98 }}
-                  disabled={isOutOfStock}
-                  onClick={handleAddToCart}
-                  className={`flex-1 py-4 font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-3 uppercase tracking-widest text-sm cursor-pointer ${
-                    isOutOfStock
-                      ? 'bg-slate-200 text-slate-500 cursor-not-allowed shadow-none'
-                      : 'bg-primary text-white shadow-primary/20 hover:opacity-95'
-                  }`}
-                  aria-label={t('أضف للسلة')}
-                >
-                  {isOutOfStock ? (
-                    <>
-                      <AlertCircle className="h-5 w-5" />
-                      {t('نفذ من المخزون')}
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingCart className="h-5 w-5" />
-                      {t('أضف للسلة')}
-                    </>
-                  )}
-                </motion.button>
+                {isOutOfStock ? (
+                  <div className="flex flex-col sm:flex-row gap-3 w-full">
+                    <div className="flex-1 py-4 bg-slate-100 text-slate-500 font-bold rounded-xl flex items-center justify-center gap-2 text-sm border border-slate-200 shadow-xs">
+                      <AlertCircle className="h-5 w-5 text-slate-400" />
+                      <span>{t('نفذ من المخزون')}</span>
+                    </div>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      type="button"
+                      onClick={() => setIsBackInStockOpen(true)}
+                      className="flex-1 py-4 bg-primary text-white font-bold rounded-xl flex items-center justify-center gap-2 text-sm shadow-lg shadow-primary/20 hover:opacity-95 transition-all cursor-pointer uppercase tracking-wider"
+                    >
+                      <Bell className="h-5 w-5 text-tertiary-gold" />
+                      <span>{t('أعلمني عند التوفر')}</span>
+                    </motion.button>
+                  </div>
+                ) : (
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleAddToCart}
+                    className="flex-1 py-4 font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-3 uppercase tracking-widest text-sm cursor-pointer bg-primary text-white shadow-primary/20 hover:opacity-95"
+                    aria-label={t('أضف للسلة')}
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                    {t('أضف للسلة')}
+                  </motion.button>
+                )}
               </div>
 
               {/* Trust Badges */}
@@ -777,31 +784,43 @@ export default function PerfumeDetails() {
               </div>
             </div>
 
-            <button
-              type="button"
-              disabled={isOutOfStock}
-              onClick={handleAddToCart}
-              className={`py-3 px-5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shrink-0 cursor-pointer shadow-md ${
-                isOutOfStock
-                  ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
-                  : 'bg-primary text-white shadow-primary/20 hover:opacity-95'
-              }`}
-            >
-              {isOutOfStock ? (
-                <>
-                  <AlertCircle className="h-4 w-4" />
-                  <span>{t('نفذ')}</span>
-                </>
-              ) : (
-                <>
-                  <ShoppingCart className="h-4 w-4" />
-                  <span>{t('أضف للسلة')}</span>
-                </>
-              )}
-            </button>
+            {isOutOfStock ? (
+              <button
+                type="button"
+                onClick={() => setIsBackInStockOpen(true)}
+                className="py-3 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shrink-0 cursor-pointer shadow-md bg-primary text-white hover:opacity-95"
+              >
+                <Bell className="h-4 w-4 text-tertiary-gold" />
+                <span>{t('أعلمني عند التوفر')}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                className="py-3 px-5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shrink-0 cursor-pointer shadow-md bg-primary text-white shadow-primary/20 hover:opacity-95"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                <span>{t('أضف للسلة')}</span>
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Back in Stock Modal */}
+      {perfume && (
+        <BackInStockModal
+          isOpen={isBackInStockOpen}
+          onClose={() => setIsBackInStockOpen(false)}
+          perfume={{
+            id: perfume.id,
+            name: perfume.name,
+            inspiredBy: perfume.inspiredBy,
+            imageUrl: selectedImage || (perfume.images && perfume.images[0]) || perfume.imageUrl,
+            price: perfume.price,
+          }}
+        />
+      )}
     </div>
   );
 }
