@@ -88,13 +88,29 @@ function Field({
   );
 }
 
+// Helper to convert Arabic-Indic numerals (٠-٩) to standard digits (0-9)
+function normalizeNumerals(str: string): string {
+  return str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString());
+}
+
+// Clean phone input and format to standard 11-digit Egyptian mobile (01xxxxxxxxx)
+function sanitizePhone(raw: string): string {
+  const normalized = normalizeNumerals(raw).replace(/[\s\-\(\)\+]/g, '');
+  if (normalized.startsWith('201') && normalized.length === 12) {
+    return '0' + normalized.slice(2);
+  }
+  if (normalized.startsWith('00201') && normalized.length === 14) {
+    return '0' + normalized.slice(4);
+  }
+  return normalized;
+}
+
 export default function Checkout() {
   const { language, t } = useTranslation();
   const { items, total, clearCart } = useCart();
   const { user } = useAuth();
   const { settings, getShippingFee, formatPrice } = useStoreSettings();
   const navigate = useNavigate();
-
 
   const [formData, setFormData] = useState<FormData>({
     email: user?.email || '',
@@ -124,17 +140,19 @@ export default function Checkout() {
   const finalTotal = total + shippingFee;
   const isFreeShipping = shippingFee === 0 && items.length > 0;
 
-
   const validateName = (name: string) => name.trim().length >= 2;
-  const validatePhone = (phone: string) => /^01\d{9}$/.test(phone);
+  const validatePhone = (phone: string) => {
+    const s = sanitizePhone(phone);
+    return /^01[0125]\d{8}$/.test(s);
+  };
 
   const errors = {
-    firstName: validateName(formData.firstName) ? '' : t('الاسم الأول مطلوب'),
-    lastName: validateName(formData.lastName) ? '' : t('اسم العائلة مطلوب'),
-    address: formData.address.trim().length >= 5 ? '' : t('العنوان مطلوب'),
-    city: validateName(formData.city) ? '' : t('اسم المدينة يجب أن يكون حرفين على الأقل'),
-    phone: validatePhone(formData.phone) ? '' : t('رقم الهاتف يجب أن يتكون من 11 رقم ويبدأ بـ 01'),
-    altPhone: !formData.altPhone || validatePhone(formData.altPhone) ? '' : t('رقم الهاتف يجب أن يتكون من 11 رقم ويبدأ بـ 01'),
+    firstName: validateName(formData.firstName) ? '' : t('الاسم الأول مطلوب (حرفين على الأقل)'),
+    lastName: validateName(formData.lastName) ? '' : t('اسم العائلة مطلوب (حرفين على الأقل)'),
+    address: formData.address.trim().length >= 5 ? '' : t('العنوان بالتفصيل مطلوب'),
+    city: validateName(formData.city) ? '' : t('اسم المدينة مطلوب'),
+    phone: validatePhone(formData.phone) ? '' : t('رقم الهاتف غير صحيح (مثال: 01012345678)'),
+    altPhone: !formData.altPhone || validatePhone(formData.altPhone) ? '' : t('الرقم الاحتياطي غير صحيح'),
     email: !formData.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) ? '' : t('البريد الإلكتروني غير صالح'),
   };
 
@@ -161,24 +179,42 @@ export default function Checkout() {
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
-    setTouched(Object.keys(formData).reduce((acc, k) => ({ ...acc, [k]: true }), {}));
-    if (!isFormValid) return;
+    const allTouched = Object.keys(formData).reduce((acc, k) => ({ ...acc, [k]: true }), {});
+    setTouched(allTouched);
+
+    if (!isFormValid) {
+      const firstInvalidKey = Object.keys(errors).find(k => (errors as any)[k] !== '');
+      if (firstInvalidKey) {
+        const el = document.getElementById(firstInvalidKey);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      setError(t('برجاء استكمال جميع الحقول المطلوبة بشكل صحيح'));
+      return;
+    }
 
     setError('');
     setLoading(true);
 
+    const sanitizedPhone = sanitizePhone(formData.phone);
+    const sanitizedAltPhone = formData.altPhone ? sanitizePhone(formData.altPhone) : undefined;
     const orderNumber = generateOrderNumber();
+
     const payload: WhatsAppOrderPayload = {
       orderNumber,
-      items: items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
+      items: items.map(i => ({
+        name: i.name,
+        quantity: i.quantity,
+        price: i.price,
+        size: (i as any).selectedSize || (i as any).size,
+      })),
       subtotal: total,
       shippingFee,
       total: finalTotal,
       customer: {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
-        phone: formData.phone.trim(),
-        altPhone: formData.altPhone.trim() || undefined,
+        phone: sanitizedPhone,
+        altPhone: sanitizedAltPhone,
         email: formData.email.trim() || undefined,
       },
       address: {
@@ -195,12 +231,7 @@ export default function Checkout() {
 
     const link = buildWhatsAppOrderLink(payload, settings);
 
-    // Open the WhatsApp tab synchronously, still inside the click gesture,
-    // so mobile browsers don't treat it as a blocked popup.
-    const waWindow = window.open(link, '_blank', 'noopener,noreferrer');
-
-    // Persisting to Firestore is best effort: a failed write (e.g. guest rules)
-    // must never block the customer from sending their order.
+    // Save order in Firestore in background
     try {
       const formattedAddress = [
         formData.address,
@@ -215,7 +246,13 @@ export default function Checkout() {
         orderNumber,
         userId: user?.uid || 'guest',
         isGuest: !user,
-        items: items.map(i => ({ perfumeId: i.id, quantity: i.quantity, name: i.name, price: i.price })),
+        items: items.map(i => ({
+          perfumeId: i.id,
+          quantity: i.quantity,
+          name: i.name,
+          price: i.price,
+          size: (i as any).selectedSize || (i as any).size || '',
+        })),
         totalAmount: finalTotal,
         subtotal: total,
         shippingFee,
@@ -223,8 +260,8 @@ export default function Checkout() {
         paymentMethod: 'whatsapp',
         paymentStatus: 'pending',
         customerName: `${formData.firstName} ${formData.lastName}`.trim(),
-        customerPhone: formData.phone,
-        shippingAddress: `الاسم: ${formData.firstName} ${formData.lastName}، الهاتف: ${formData.phone}، العنوان: ${formattedAddress}`,
+        customerPhone: sanitizedPhone,
+        shippingAddress: `الاسم: ${formData.firstName} ${formData.lastName}، الهاتف: ${sanitizedPhone}، العنوان: ${formattedAddress}`,
         contactEmail: formData.email || '',
         notes: formData.notes || '',
         createdAt: new Date().toISOString(),
@@ -238,8 +275,12 @@ export default function Checkout() {
     clearCart();
     setLoading(false);
 
-    if (!waWindow) {
-      setError(t('لم يتم فتح واتساب تلقائياً. اضغط على الزر بالأسفل لإرسال الطلب.'));
+    // Open WhatsApp deep link
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = link;
+    } else {
+      window.open(link, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -430,8 +471,8 @@ export default function Checkout() {
 
             <button
               type="submit"
-              disabled={loading || !isFormValid}
-              className={`w-full py-4 text-white rounded-md font-semibold transition-all flex items-center justify-center gap-2 ${(!loading && isFormValid) ? 'bg-[#25D366] hover:bg-[#1eb355]' : 'bg-gray-300 cursor-not-allowed'}`}
+              disabled={loading}
+              className="w-full py-4 bg-[#25D366] hover:bg-[#1eb355] text-white rounded-md font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed text-base cursor-pointer"
             >
               <MessageCircle className="w-5 h-5" />
               {loading ? t('جاري المعالجة...') : t('إرسال الطلب على واتساب')}
