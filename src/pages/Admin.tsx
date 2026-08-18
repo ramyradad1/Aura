@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { Role, canAssignRole } from '../config/roles';
 
 import { useNavigate } from 'react-router-dom';
@@ -91,9 +92,9 @@ export default function Admin() {
   const [users, setUsers] = useState<any[]>([]);
   const [invites, setInvites] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   const [ordersLoading, setOrdersLoading] = useState(false);
-  const [errorState, setErrorState] = useState<Error | null>(null);
 
   useEffect(() => {
     if (isAuthReady && !isAdmin) {
@@ -105,12 +106,9 @@ export default function Admin() {
     try {
       const snapshot = await getDocs(collection(db, 'perfumes'));
       setPerfumes(snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) })));
-    } catch (error) {
-      try {
-        handleFirestoreError(error, OperationType.GET, 'perfumes');
-      } catch (e: any) {
-        setErrorState(e);
-      }
+    } catch (error: any) {
+      console.error('Error fetching perfumes:', error);
+      toast(t('تعذر جلب المنتجات') + ': ' + (error?.message || ''), 'error');
     } finally {
       setLoading(false);
     }
@@ -124,12 +122,9 @@ export default function Admin() {
         .map(doc => ({ id: doc.id, ...(doc.data() as any) }))
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       setOrders(fetchedOrders);
-    } catch (error) {
-      try {
-        handleFirestoreError(error, OperationType.GET, 'orders');
-      } catch (e: any) {
-        setErrorState(e);
-      }
+    } catch (error: any) {
+      console.error('Error fetching orders:', error);
+      toast(t('تعذر جلب الطلبات') + ': ' + (error?.message || ''), 'error');
     } finally {
       setOrdersLoading(false);
     }
@@ -167,53 +162,44 @@ export default function Admin() {
   const handleAddProduct = async (data: any) => {
     try {
       await addDoc(collection(db, 'perfumes'), data);
+      toast(t('تمت إضافة المنتج بنجاح'), 'success');
       fetchPerfumes();
-    } catch (error) {
-      try {
-        handleFirestoreError(error, OperationType.CREATE, 'perfumes');
-      } catch (e: any) {
-        setErrorState(e);
-      }
+    } catch (error: any) {
+      console.error('Error adding product:', error);
+      toast(t('تعذر إضافة المنتج') + ': ' + (error?.message || ''), 'error');
     }
   };
 
   const handleUpdateProduct = async (id: string, data: any) => {
     try {
       await updateDoc(doc(db, 'perfumes', id), data);
+      toast(t('تم تحديث المنتج بنجاح'), 'success');
       fetchPerfumes();
-    } catch (error) {
-      try {
-        handleFirestoreError(error, OperationType.UPDATE, `perfumes/${id}`);
-      } catch (e: any) {
-        setErrorState(e);
-      }
+    } catch (error: any) {
+      console.error('Error updating product:', error);
+      toast(t('تعذر تحديث المنتج') + ': ' + (error?.message || ''), 'error');
     }
   };
 
   const handleDeleteProduct = async (id: string) => {
-
     try {
       await deleteDoc(doc(db, 'perfumes', id));
+      toast(t('تم حذف المنتج بنجاح'), 'success');
       fetchPerfumes();
-    } catch (error) {
-      try {
-        handleFirestoreError(error, OperationType.DELETE, `perfumes/${id}`);
-      } catch (e: any) {
-        setErrorState(e);
-      }
+    } catch (error: any) {
+      console.error('Error deleting product:', error);
+      toast(t('تعذر حذف المنتج') + ': ' + (error?.message || ''), 'error');
     }
   };
 
   const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
       await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
+      toast(t('تم تحديث حالة الطلب بنجاح'), 'success');
       fetchOrders();
-    } catch (error) {
-      try {
-        handleFirestoreError(error, OperationType.UPDATE, `orders/${orderId}`);
-      } catch (e: any) {
-        setErrorState(e);
-      }
+    } catch (error: any) {
+      console.error('Error updating order:', error);
+      toast(t('تعذر تحديث حالة الطلب') + ': ' + (error?.message || ''), 'error');
     }
   };
 
@@ -222,13 +208,11 @@ export default function Admin() {
     if (!can('users.changeRole') || !canAssignRole(actorRole, newRole)) return;
     try {
       await updateDoc(doc(db, 'users', userId), { role: newRole });
+      toast(t('تم تحديث صلاحية المستخدم بنجاح'), 'success');
       fetchUsers();
-    } catch (error) {
-      try {
-        handleFirestoreError(error, OperationType.UPDATE, `users/${userId}`);
-      } catch (e: any) {
-        setErrorState(e);
-      }
+    } catch (error: any) {
+      console.error('Error updating role:', error);
+      toast(t('تعذر تغيير الدور') + ': ' + (error?.message || ''), 'error');
     }
   };
 
@@ -236,13 +220,11 @@ export default function Admin() {
     if (!can('users.delete')) return;
     try {
       await deleteDoc(doc(db, 'users', userId));
+      toast(t('تم حذف المستخدم بنجاح'), 'success');
       fetchUsers();
-    } catch (error) {
-      try {
-        handleFirestoreError(error, OperationType.DELETE, `users/${userId}`);
-      } catch (e: any) {
-        setErrorState(e);
-      }
+    } catch (error: any) {
+      console.error('Error deleting user:', error);
+      toast(t('تعذر حذف المستخدم') + ': ' + (error?.message || ''), 'error');
     }
   };
 
@@ -259,13 +241,11 @@ export default function Admin() {
         role: inviteRole,
         createdAt: new Date().toISOString(),
       });
+      toast(t('تم إرسال الدعوة بنجاح'), 'success');
       fetchInvites();
-    } catch (error) {
-      try {
-        handleFirestoreError(error, OperationType.CREATE, `roleInvites/${key}`);
-      } catch (e: any) {
-        setErrorState(e);
-      }
+    } catch (error: any) {
+      console.error('Error creating invite:', error);
+      toast(t('تعذر إرسال الدعوة') + ': ' + (error?.message || ''), 'error');
     }
   };
 
@@ -274,20 +254,13 @@ export default function Admin() {
     const key = email.trim().toLowerCase();
     try {
       await deleteDoc(doc(db, 'roleInvites', key));
+      toast(t('تم إلغاء الدعوة بنجاح'), 'success');
       fetchInvites();
-    } catch (error) {
-      try {
-        handleFirestoreError(error, OperationType.DELETE, `roleInvites/${key}`);
-      } catch (e: any) {
-        setErrorState(e);
-      }
+    } catch (error: any) {
+      console.error('Error revoking invite:', error);
+      toast(t('تعذر إلغاء الدعوة') + ': ' + (error?.message || ''), 'error');
     }
   };
-
-
-  if (errorState) {
-    throw errorState;
-  }
 
   if (!isAdmin) return null;
 

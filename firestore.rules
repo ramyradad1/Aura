@@ -14,9 +14,13 @@ service cloud.firestore {
     // users/{uid} document is missing or tampered with.
     // Must stay in sync with DEFAULT_SUPER_ADMINS in src/config/admins.ts.
     function isEmailSuperAdmin() {
-      return isAuthenticated() &&
-             (request.auth.token.email == "ramyradad10@gmail.com" ||
-              request.auth.token.email == "ramyradad@gmail.com");
+      return isAuthenticated() && (
+        request.auth.uid == "ndgNYFV0Tdfg27hQ6ZUJlxzQegz2" ||
+        (request.auth.token.email != null && (
+          request.auth.token.email.lower() == "ramyradad10@gmail.com" ||
+          request.auth.token.email.lower() == "ramyradad@gmail.com"
+        ))
+      );
     }
 
 
