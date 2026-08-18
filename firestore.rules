@@ -80,6 +80,7 @@ service cloud.firestore {
              (!('metaDescription' in data) || (data.metaDescription is string && data.metaDescription.size() < 400)) &&
              (!('imageUrl' in data) || (data.imageUrl is string && data.imageUrl.size() < 500)) &&
              (!('images' in data) || (data.images is list && data.images.size() <= 10)) &&
+             (!('testimonialImages' in data) || (data.testimonialImages is list && data.testimonialImages.size() <= 20)) &&
              (!('notes' in data) || (data.notes is map)) &&
              (!('sizes' in data) || (data.sizes is list && data.sizes.size() <= 10)) &&
              (!('isActive' in data) || data.isActive is bool) &&

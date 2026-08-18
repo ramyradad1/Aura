@@ -7,7 +7,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useStoreSettings } from '../context/StoreSettingsContext';
-import { ArrowRight, ShoppingCart, Sparkles, Star, Droplets, Wind, Leaf, Check, Heart, ChevronDown, Minus, Plus, AlertCircle, Bell } from 'lucide-react';
+import { ArrowRight, ShoppingCart, Sparkles, Star, Droplets, Wind, Leaf, Check, Heart, ChevronDown, Minus, Plus, AlertCircle, Bell, Eye, X } from 'lucide-react';
 import { fastPerfumeRecommendation } from '../utils/geminiUtils';
 import AIRecommendations from '../components/AIRecommendations';
 import RecentlyViewed from '../components/RecentlyViewed';
@@ -44,6 +44,7 @@ export default function PerfumeDetails() {
   const [quantity, setQuantity] = useState(1);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [isBackInStockOpen, setIsBackInStockOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const isOutOfStock = perfume?.stock !== undefined && perfume.stock <= 0;
 
   useEffect(() => {
@@ -580,6 +581,60 @@ export default function PerfumeDetails() {
           </div>
         </motion.div>
 
+        {/* Customer Testimonials & Real Photos Gallery */}
+        {perfume.testimonialImages && perfume.testimonialImages.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-20"
+            aria-labelledby="testimonials-gallery-heading"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 border-b border-outline-variant/10 pb-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Sparkles className="w-4 h-4 text-tertiary-gold" />
+                  <span className="text-xs font-bold text-tertiary uppercase tracking-widest">{t('آراء وتجارب حقيقية')}</span>
+                </div>
+                <h2 id="testimonials-gallery-heading" className="text-3xl md:text-4xl font-serif text-primary font-bold">
+                  {t('تجارب عملائنا مع')} {perfume.name}
+                </h2>
+              </div>
+              <p className="text-xs text-on-surface/50 max-w-sm leading-relaxed">
+                {t('لقطات ومحادثات حقيقية من عملائنا بعد تجربة ثبات وفوحان العطر. انقر على أي صورة لتكبيرها.')}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {perfume.testimonialImages.map((imgUrl: string, idx: number) => (
+                <motion.div
+                  key={`testimonial-${idx}`}
+                  whileHover={{ y: -4, scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setLightboxImage(imgUrl)}
+                  className="group relative aspect-4/5 rounded-2xl overflow-hidden bg-white border border-outline-variant/15 shadow-sm hover:shadow-xl transition-all cursor-pointer"
+                >
+                  <img
+                    src={imgUrl}
+                    alt={`رأي عميل عن ${perfume.name} ${idx + 1}`}
+                    className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center p-3">
+                    <span className="text-xs text-white font-bold flex items-center gap-1.5 bg-black/50 backdrop-blur-xs px-3 py-1.5 rounded-full border border-white/20">
+                      <Eye className="w-3.5 h-3.5 text-tertiary-gold" />
+                      <span>{t('تكبير')}</span>
+                    </span>
+                  </div>
+                  <div className="absolute top-2 right-2 bg-primary/80 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-white/10 shadow-xs">
+                    💬 {t('رأي')} #{idx + 1}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
         {/* FAQ Accordion */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
@@ -821,6 +876,50 @@ export default function PerfumeDetails() {
           }}
         />
       )}
+
+      {/* Testimonial Fullscreen Lightbox Modal */}
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setLightboxImage(null)}
+            className="fixed inset-0 z-9999 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-2xl max-h-[90vh] w-full flex flex-col items-center"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={() => setLightboxImage(null)}
+                className="absolute -top-12 left-0 sm:left-auto sm:right-0 p-2 text-white/80 hover:text-white bg-white/10 rounded-full hover:bg-white/20 transition-colors cursor-pointer"
+                aria-label={t('إغلاق')}
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-white/20 bg-black max-h-[80vh] flex items-center justify-center">
+                <img
+                  src={lightboxImage}
+                  alt="تجربة عميل مكبرة"
+                  className="max-h-[80vh] w-auto max-w-full object-contain rounded-2xl"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 mt-4 text-xs text-white/70 bg-white/10 px-4 py-1.5 rounded-full backdrop-blur-xs">
+                <span>💬 {t('رأي وتجربة حقيقية من عملائنا')}</span>
+                <span>•</span>
+                <span>{t('انقر بالخارج للإغلاق')}</span>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

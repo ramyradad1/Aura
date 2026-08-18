@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import {
   Plus, Trash2, Search, Sparkles, ImagePlus, Loader2, Pencil, X,
-  Star, Package, DollarSign, FlaskConical, Image as ImageIcon, Globe, Download
+  Star, Package, DollarSign, FlaskConical, Image as ImageIcon, Globe, Download, MessageSquare
 } from 'lucide-react';
 import { generateProductDescription } from '../../utils/geminiUtils';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -38,6 +38,7 @@ interface FormState {
   description: string;
   descriptionEn: string;
   images: string[];
+  testimonialImages: string[];
   metaTitle: string;
   metaDescription: string;
   isActive: boolean;
@@ -57,6 +58,7 @@ const emptyForm: FormState = {
   notesTop: '', notesMiddle: '', notesBase: '',
   description: '', descriptionEn: '',
   images: [],
+  testimonialImages: [],
   metaTitle: '', metaDescription: '',
   isActive: true, isFeatured: false, isNew: true, isBestSeller: false,
 };
@@ -81,6 +83,7 @@ function toFormState(p: any): FormState {
     description: p.description || '',
     descriptionEn: p.descriptionEn || '',
     images: Array.isArray(p.images) ? p.images.filter(Boolean) : (p.imageUrl ? [p.imageUrl] : []),
+    testimonialImages: Array.isArray(p.testimonialImages) ? p.testimonialImages.filter(Boolean) : [],
     metaTitle: p.metaTitle || '',
     metaDescription: p.metaDescription || '',
     isActive: p.isActive !== false,
@@ -116,7 +119,9 @@ export default function AdminProducts({ perfumes, loading, onAdd, onUpdate, onDe
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [testimonialUploading, setTestimonialUploading] = useState(false);
   const [urlDraft, setUrlDraft] = useState('');
+  const [testimonialUrlDraft, setTestimonialUrlDraft] = useState('');
   const [sizeDraft, setSizeDraft] = useState('');
   const [formData, setFormData] = useState<FormState>(emptyForm);
 
@@ -140,6 +145,7 @@ export default function AdminProducts({ perfumes, loading, onAdd, onUpdate, onDe
     setFormData(emptyForm);
     setEditingId(null);
     setUrlDraft('');
+    setTestimonialUrlDraft('');
     setShowForm(true);
   };
 
@@ -147,6 +153,7 @@ export default function AdminProducts({ perfumes, loading, onAdd, onUpdate, onDe
     setFormData(toFormState(p));
     setEditingId(p.id);
     setUrlDraft('');
+    setTestimonialUrlDraft('');
     setShowForm(true);
   };
 
@@ -161,6 +168,7 @@ export default function AdminProducts({ perfumes, loading, onAdd, onUpdate, onDe
     if (!canEdit) return;
 
     const images = formData.images.filter(img => img.trim() !== '');
+    const testimonialImages = (formData.testimonialImages || []).filter(img => img.trim() !== '');
     const price = Number(formData.price);
     const compareAtPrice = Number(formData.compareAtPrice);
 
@@ -186,6 +194,7 @@ export default function AdminProducts({ perfumes, loading, onAdd, onUpdate, onDe
       description: formData.description.trim(),
       descriptionEn: formData.descriptionEn.trim(),
       images: images.length > 0 ? images : ['https://picsum.photos/seed/perfume/400/400'],
+      testimonialImages,
       // Kept in sync for the cards/compare views that read a single image.
       imageUrl: images[0] || 'https://picsum.photos/seed/perfume/400/400',
       metaTitle: formData.metaTitle.trim(),
@@ -228,6 +237,37 @@ export default function AdminProducts({ perfumes, loading, onAdd, onUpdate, onDe
     if (!url) return;
     setFormData(prev => ({ ...prev, images: [...prev.images, url] }));
     setUrlDraft('');
+  };
+
+  const handleMultiTestimonialUpload = async (files: File[]) => {
+    setTestimonialUploading(true);
+    try {
+      const urls = await Promise.all(files.map(async (file) => {
+        const optimizedFile = await compressAndConvertToWebP(file);
+        const storageRef = ref(storage, `testimonials/${Date.now()}_${Math.random().toString(36).slice(2)}_${optimizedFile.name}`);
+        const snapshot = await uploadBytes(storageRef, optimizedFile);
+        return getDownloadURL(snapshot.ref);
+      }));
+      setFormData(prev => ({
+        ...prev,
+        testimonialImages: [...(prev.testimonialImages || []).filter(Boolean), ...urls]
+      }));
+    } catch (error) {
+      console.error('Error uploading testimonial images: ', error);
+      alert('فشل رفع بعض صور التقييمات');
+    } finally {
+      setTestimonialUploading(false);
+    }
+  };
+
+  const addTestimonialUrlImage = () => {
+    const url = testimonialUrlDraft.trim();
+    if (!url) return;
+    setFormData(prev => ({
+      ...prev,
+      testimonialImages: [...(prev.testimonialImages || []), url]
+    }));
+    setTestimonialUrlDraft('');
   };
 
   const toggleSize = (size: string) => {
@@ -469,7 +509,88 @@ export default function AdminProducts({ perfumes, loading, onAdd, onUpdate, onDe
                   <input type="url" value={urlDraft} onChange={e => setUrlDraft(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addUrlImage(); } }}
                     placeholder="أو الصق رابط صورة https://..." className={`${inputCls} text-xs py-2.5`} dir="ltr" />
-                  <button type="button" onClick={addUrlImage} className="px-4 rounded-xl bg-white/5 text-slate-300 text-xs hover:bg-white/10 transition-colors">إضافة</button>
+                  <button type="button" onClick={addUrlImage} className="px-4 rounded-xl bg-white/5 text-slate-300 text-xs hover:bg-white/10 transition-colors cursor-pointer">إضافة</button>
+                </div>
+              </div>
+            </Section>
+
+            {/* Testimonials & Social Proof Section */}
+            <Section icon={MessageSquare} title="صور آراء وتجارب العملاء (Testimonials & Social Proof)">
+              <div className="md:col-span-2">
+                <p className="text-xs text-slate-400 mb-3 leading-relaxed">
+                  ارفع سكرين شوتس محادثات الواتساب أو صور حقيقية لتجارب وآراء العملاء مع هذا العطر، ليتم عرضها في صفحة المنتج كدليل اجتماعي قوي لزيادة ثقة المشتري ومبيعاتك.
+                </p>
+
+                <div
+                  onClick={() => document.getElementById('multi-testimonial-input')?.click()}
+                  className="border-2 border-dashed border-white/10 hover:border-indigo-500/50 rounded-2xl p-6 text-center cursor-pointer transition-colors bg-[#0f172a]"
+                >
+                  {testimonialUploading ? (
+                    <div className="flex items-center justify-center gap-2 text-indigo-400 text-sm py-2">
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                      <span>جاري رفع صور التقييمات...</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 py-2">
+                      <ImagePlus className="w-8 h-8 text-emerald-400" />
+                      <p className="text-sm text-slate-300 font-medium">اسحب صور وسكرين شوتس تجارب العملاء هنا أو اضغط للاختيار</p>
+                      <p className="text-xs text-slate-500">يمكنك رفع عدة صور محادثات واتساب/إنستغرام دفعة واحدة</p>
+                    </div>
+                  )}
+                  <input
+                    id="multi-testimonial-input"
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    multiple
+                    aria-label="اختيار صور آراء العملاء"
+                    disabled={testimonialUploading}
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files || []);
+                      if (files.length > 0) await handleMultiTestimonialUpload(files);
+                      e.target.value = '';
+                    }}
+                  />
+                </div>
+
+                {formData.testimonialImages && formData.testimonialImages.length > 0 && (
+                  <div className="flex flex-wrap gap-3 mt-4">
+                    {formData.testimonialImages.map((img, idx) => (
+                      <div key={`testimonial-${img}-${idx}`} className="relative group w-24 h-24 rounded-xl overflow-hidden border border-emerald-500/30 bg-[#0f172a] shadow-md">
+                        <img src={img} alt={`رأي عميل ${idx + 1}`} className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          aria-label="حذف الصورة"
+                          onClick={() => set('testimonialImages', formData.testimonialImages.filter((_, i) => i !== idx))}
+                          className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+                        >
+                          <Trash2 className="w-5 h-5 text-red-400" />
+                        </button>
+                        <span className="absolute bottom-0 inset-x-0 bg-emerald-700/90 text-[9px] text-white text-center py-0.5 font-bold">
+                          رأي #{idx + 1}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex gap-2 items-center mt-3">
+                  <input
+                    type="url"
+                    value={testimonialUrlDraft}
+                    onChange={e => setTestimonialUrlDraft(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTestimonialUrlImage(); } }}
+                    placeholder="أو الصق رابط سكرين شوت تقييم https://..."
+                    className={`${inputCls} text-xs py-2.5`}
+                    dir="ltr"
+                  />
+                  <button
+                    type="button"
+                    onClick={addTestimonialUrlImage}
+                    className="px-4 rounded-xl bg-white/5 text-slate-300 text-xs hover:bg-white/10 transition-colors cursor-pointer"
+                  >
+                    إضافة
+                  </button>
                 </div>
               </div>
             </Section>
