@@ -15,7 +15,8 @@ service cloud.firestore {
     // Must stay in sync with DEFAULT_SUPER_ADMINS in src/config/admins.ts.
     function isEmailSuperAdmin() {
       return isAuthenticated() &&
-             request.auth.token.email == "ramyradad@gmail.com";
+             (request.auth.token.email == "ramyradad10@gmail.com" ||
+              request.auth.token.email == "ramyradad@gmail.com");
     }
 
 
