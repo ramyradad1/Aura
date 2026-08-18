@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@heroui/react';
 import AuthModal from './AuthModal';
 import Logo from './Logo';
+import ThemeToggle from './ThemeToggle';
 
 export default function AppNavbar() {
   const { user, isAdmin, isSuperAdmin, logout, loginError, isAuthModalOpen, setIsAuthModalOpen, openAuthModal } = useAuth();
@@ -113,6 +114,9 @@ export default function AppNavbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-1.5 sm:gap-2 justify-end">
+            {/* Theme Toggle (Dark/Light mode) */}
+            <ThemeToggle />
+
             {/* Language Toggle */}
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -269,6 +273,15 @@ export default function AppNavbar() {
                   </li>
                 ))}
                 <li className="mt-4 pt-4 border-t border-primary/10 flex flex-col gap-4">
+                  {/* Theme Switcher Row */}
+                  <div className="flex items-center justify-between py-1">
+                    <span className="text-sm font-bold text-primary/80 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-gold-500" />
+                      {t('تغيير المظهر')}
+                    </span>
+                    <ThemeToggle variant="button" showLabel />
+                  </div>
+
                   <Link to="/compare" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-primary/80 py-2">
                     <GitCompare className="w-5 h-5" />
                     {t('المقارنة')}

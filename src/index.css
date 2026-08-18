@@ -2,6 +2,32 @@
 @import "tailwindcss";
 @plugin "../tailwind-heroui-plugin.js";
 
+:root {
+  --color-surface-raw: #f7f4ee;
+  --color-surface-container-raw: #ede8de;
+  --color-surface-container-low-raw: #f2eee5;
+  --color-surface-container-high-raw: #e5dfd2;
+  --color-surface-variant-raw: #e2dcd0;
+
+  --color-on-surface-raw: #14161a;
+  --color-on-surface-variant-raw: #4a4e57;
+  --color-outline-raw: #7c7f88;
+  --color-outline-variant-raw: #cfc9bc;
+}
+
+.dark {
+  --color-surface-raw: #070e1c;
+  --color-surface-container-raw: #0e1c3a;
+  --color-surface-container-low-raw: #050a15;
+  --color-surface-container-high-raw: #152648;
+  --color-surface-variant-raw: #1a2f58;
+
+  --color-on-surface-raw: #f3f5f9;
+  --color-on-surface-variant-raw: #9fb0cd;
+  --color-outline-raw: #5a6b8a;
+  --color-outline-variant-raw: #1e3155;
+}
+
 @theme {
   --font-sans: "Manrope", "Tajawal", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Cormorant Garamond", "Noto Serif", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
@@ -45,18 +71,18 @@
   --color-admin-surface: #0e1c3a;
   --color-admin-elevated: #152648;
 
-  /* Ivory surfaces */
-  --color-surface: #f7f4ee;
-  --color-surface-container: #ede8de;
-  --color-surface-container-low: #f2eee5;
-  --color-surface-container-high: #e5dfd2;
-  --color-surface-variant: #e2dcd0;
+  /* Dynamic Surfaces */
+  --color-surface: var(--color-surface-raw);
+  --color-surface-container: var(--color-surface-container-raw);
+  --color-surface-container-low: var(--color-surface-container-low-raw);
+  --color-surface-container-high: var(--color-surface-container-high-raw);
+  --color-surface-variant: var(--color-surface-variant-raw);
 
-  /* Ink */
-  --color-on-surface: #14161a;
-  --color-on-surface-variant: #4a4e57;
-  --color-outline: #7c7f88;
-  --color-outline-variant: #cfc9bc;
+  /* Dynamic Ink */
+  --color-on-surface: var(--color-on-surface-raw);
+  --color-on-surface-variant: var(--color-on-surface-variant-raw);
+  --color-outline: var(--color-outline-raw);
+  --color-outline-variant: var(--color-outline-variant-raw);
   --color-error: #ba1a1a;
 
   /* Custom Animations Tailwind V4 */
@@ -74,10 +100,80 @@ html {
 
 body {
   font-family: 'Manrope', 'Tajawal', sans-serif;
-  background-color: #f7f4ee;
-  color: #14161a;
+  background-color: var(--color-surface-raw);
+  color: var(--color-on-surface-raw);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode root styles */
+.dark body {
+  background-color: #070e1c;
+  color: #f3f5f9;
+}
+
+.dark .bg-white {
+  background-color: #0e1c3a;
+  color: #f3f5f9;
+}
+
+.dark .bg-gray-50 {
+  background-color: #070e1c;
+}
+
+.dark .text-gray-900 {
+  color: #f8fafc;
+}
+
+.dark .text-gray-800 {
+  color: #f1f5f9;
+}
+
+.dark .text-gray-700 {
+  color: #cbd5e1;
+}
+
+.dark .text-gray-600 {
+  color: #94a3b8;
+}
+
+.dark .text-gray-500 {
+  color: #64748b;
+}
+
+.dark .text-primary {
+  color: #f0dcaa;
+}
+
+.dark .text-primary\/70,
+.dark .text-primary\/80 {
+  color: #cbd5e1;
+}
+
+.dark .text-primary\/40,
+.dark .text-primary\/50 {
+  color: #94a3b8;
+}
+
+.dark .border-primary\/5,
+.dark .border-primary\/10 {
+  border-color: rgba(227, 199, 123, 0.12);
+}
+
+.dark .border-outline-variant\/10,
+.dark .border-outline-variant\/20,
+.dark .border-gray-200,
+.dark .border-gray-100 {
+  border-color: rgba(227, 199, 123, 0.12);
+}
+
+.dark .bg-primary\/5 {
+  background-color: rgba(21, 38, 72, 0.6);
+}
+
+.dark .bg-primary\/10 {
+  background-color: rgba(21, 38, 72, 0.9);
 }
 
 :focus-visible {
@@ -266,6 +362,13 @@ h3,
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
+.dark .glass {
+  background: rgba(14, 28, 58, 0.75);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(227, 199, 123, 0.16);
+}
+
 .glass-dark {
   background: rgba(14, 28, 58, 0.62);
   -webkit-backdrop-filter: blur(16px);
@@ -275,6 +378,12 @@ h3,
 
 .glass-panel {
   background: rgba(247, 244, 238, 0.72);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.dark .glass-panel {
+  background: rgba(14, 28, 58, 0.78);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 }

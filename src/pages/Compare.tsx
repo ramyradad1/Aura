@@ -49,17 +49,17 @@ export default function Compare() {
   }, [compareList]);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4" dir={dir}>
+    <div className="min-h-screen bg-surface py-12 px-4" dir={dir}>
       <SEOHead title={t("مقارنة العطور")} description={t("قارن بين عطور Aura Perfumes المستوحاة جنبًا إلى جنب — قارن النوتات والأسعار والفئات لاختيار العطر المثالي")} keywords={t("مقارنة عطور, مقارنة عطور مستوحاة, Aura Perfumes")} ogUrl="/compare" />
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-indigo-50 rounded-2xl">
-              <GitCompare className="h-8 w-8 text-indigo-600" />
+            <div className="p-3 bg-primary/10 rounded-2xl border border-primary/20">
+              <GitCompare className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-4xl font-serif font-bold text-gray-900">{t('مقارنة العطور')}</h1>
-              <p className="text-gray-500">{t('قارن بين عطورك المفضلة لاختيار الأنسب لك')}</p>
+              <h1 className="text-4xl font-serif font-bold text-primary">{t('مقارنة العطور')}</h1>
+              <p className="text-on-surface-variant">{t('قارن بين عطورك المفضلة لاختيار الأنسب لك')}</p>
             </div>
           </div>
           {compareList.length > 0 && (

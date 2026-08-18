@@ -47,6 +47,7 @@ const FallbackLoader = () => (
   </div>
 );
 import ScrollToTop from './components/ScrollToTop';
+import { ThemeProvider } from './context/ThemeContext';
 import Footer from './components/Footer';
 
 function AppContent() {
@@ -54,7 +55,7 @@ function AppContent() {
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-900">
+    <div className="min-h-screen bg-surface flex flex-col font-sans text-on-surface transition-colors duration-300">
       <ScrollToTop />
       {!isAdminRoute && <Navbar />}
       <main className="flex-1">
@@ -106,22 +107,23 @@ function AppContent() {
 
 export default function App() {
   return (
-    <TranslationProvider>
-      <StoreSettingsProvider>
-        <AuthProvider>
-          <CartProvider>
-            <UserPreferencesProvider>
-              <ToastProvider>
-                <Router>
-                  <AppContent />
-                </Router>
-              </ToastProvider>
-            </UserPreferencesProvider>
-          </CartProvider>
-        </AuthProvider>
-      </StoreSettingsProvider>
-    </TranslationProvider>
-
+    <ThemeProvider>
+      <TranslationProvider>
+        <StoreSettingsProvider>
+          <AuthProvider>
+            <CartProvider>
+              <UserPreferencesProvider>
+                <ToastProvider>
+                  <Router>
+                    <AppContent />
+                  </Router>
+                </ToastProvider>
+              </UserPreferencesProvider>
+            </CartProvider>
+          </AuthProvider>
+        </StoreSettingsProvider>
+      </TranslationProvider>
+    </ThemeProvider>
   );
 }
 

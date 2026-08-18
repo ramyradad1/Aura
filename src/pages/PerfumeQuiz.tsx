@@ -127,7 +127,7 @@ export default function PerfumeQuiz() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4" dir={dir}>
+    <div className="min-h-screen bg-surface py-12 px-4" dir={dir}>
       <SEOHead
         title={t("اختبار عطر | اكتشف العطر المناسب لشخصيتك")}
         description={t("لا تعرف أي عطر تختار؟ جرب اختبار العطور الخاص بنا للإجابة على بعض الأسئلة واكتشاف العطر المستوحى الذي يطابق ذوقك بكل دقة.")}
@@ -136,11 +136,11 @@ export default function PerfumeQuiz() {
       />
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
-          <div className="inline-flex p-4 bg-indigo-50 rounded-3xl mb-4">
-            <HelpCircle className="h-10 w-10 text-indigo-600" />
+          <div className="inline-flex p-4 bg-primary/10 rounded-3xl mb-4 border border-primary/20">
+            <HelpCircle className="h-10 w-10 text-primary" />
           </div>
-          <h1 className="text-4xl font-serif font-bold text-gray-900 mb-2">{t('اختبار العطر المثالي')}</h1>
-          <p className="text-gray-500">{t('أجب على بضعة أسئلة وسنجد لك العطر الذي يناسب شخصيتك')}</p>
+          <h1 className="text-4xl font-serif font-bold text-primary mb-2">{t('اختبار العطر المثالي')}</h1>
+          <p className="text-on-surface-variant">{t('أجب على بضعة أسئلة وسنجد لك العطر الذي يناسب شخصيتك')}</p>
           {pastResults && currentStep === 0 && Object.keys(answers).length === 0 && !isFinished && (
             <button 
               onClick={() => {

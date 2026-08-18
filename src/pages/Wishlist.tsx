@@ -46,16 +46,16 @@ export default function Wishlist() {
   }, [wishlist]);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4" dir="rtl">
+    <div className="min-h-screen bg-surface py-12 px-4" dir="rtl">
       <SEOHead title="قائمة الأمنيات" description="العطور المفضلة لديك في Aura Perfumes — احفظ عطورك المفضلة لشرائها لاحقاً" ogUrl="/wishlist" />
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
-          <div className="p-3 bg-red-50 rounded-2xl">
+          <div className="p-3 bg-red-500/10 rounded-2xl border border-red-500/20">
             <Heart className="h-8 w-8 text-red-500 fill-current" />
           </div>
           <div>
-            <h1 className="text-4xl font-serif font-bold text-gray-900">قائمة الأمنيات</h1>
-            <p className="text-gray-500">العطور التي نالت إعجابك</p>
+            <h1 className="text-4xl font-serif font-bold text-primary">قائمة الأمنيات</h1>
+            <p className="text-on-surface-variant">العطور التي نالت إعجابك</p>
           </div>
         </div>
 

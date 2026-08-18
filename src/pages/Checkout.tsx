@@ -405,7 +405,7 @@ export default function Checkout() {
   }
 
   return (
-    <div className="min-h-screen bg-white py-12 px-4 md:px-8" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-surface py-12 px-4 md:px-8 text-on-surface" dir={isRTL ? 'rtl' : 'ltr'}>
       <SEOHead title={t('إتمام الطلب')} description={t('أكمل عملية الشراء من Aura Perfumes')} noindex={true} />
       <div className="max-w-2xl mx-auto font-sans">
         <h1 className="text-3xl font-serif text-primary mb-8 font-bold text-center">{t('إتمام الطلب')}</h1>

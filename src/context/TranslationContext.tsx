@@ -33,6 +33,9 @@ const pairs: Array<[string, string]> = [
   ['اختبار العطور', 'Perfume Quiz'],
   ['استوديو الذكاء', 'AI Studio'],
   ['تغيير اللغة', 'Change Language'],
+  ['الوضع الليلي', 'Dark Mode'],
+  ['الوضع النهاري', 'Light Mode'],
+  ['تغيير المظهر', 'Toggle Theme'],
 
   // ── Hero section ──
   ['اكتشف عطرك', 'Discover Your'],
