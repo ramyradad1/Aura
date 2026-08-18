@@ -75,8 +75,8 @@ export default function LandingWomenPerfumes() {
       <section className="pb-12 px-6 md:px-12 max-w-[1100px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            { icon: Star, title: t('ثبات طول اليوم'), desc: t('8-12 ساعة على البشرة') },
-            { icon: Truck, title: t('شحن مجاني'), desc: t('للطلبات فوق 50 ج.م') },
+            { icon: Star, title: t('ثبات عالي'), desc: t('تركيز Eau de Parfum يدوم طويلاً') },
+            { icon: Truck, title: t('شحن سريع'), desc: t('لكافة محافظات مصر مع المعاينة') },
             { icon: Shield, title: t('مكونات آمنة'), desc: t('مناسبة لجميع أنواع البشرة') },
           ].map((b, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="text-center p-6 bg-white rounded-xl border border-outline-variant/10">

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { doc, getDoc, collection, query, where, getDocs, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { ArrowRight, ShoppingCart, Sparkles, Star, Droplets, Wind, Leaf, Check, Heart, ChevronDown } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
+import { useStoreSettings } from '../context/StoreSettingsContext';
+import { ArrowRight, ShoppingCart, Sparkles, Star, Droplets, Wind, Leaf, Check, Heart, ChevronDown, Minus, Plus, AlertCircle } from 'lucide-react';
 import { fastPerfumeRecommendation } from '../utils/geminiUtils';
 import AIRecommendations from '../components/AIRecommendations';
 import { useUserPreferences } from '../context/UserPreferencesContext';
@@ -33,6 +35,31 @@ export default function PerfumeDetails() {
   
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
+  const { toast } = useToast();
+  const { settings, formatPrice } = useStoreSettings();
+  const navigate = useNavigate();
+  const [quantity, setQuantity] = useState(1);
+  const isOutOfStock = perfume?.stock !== undefined && perfume.stock <= 0;
+
+  const handleAddToCart = () => {
+    if (isOutOfStock) {
+      toast(t('هذا المنتج غير متوفر حالياً بالمخزون'), 'error');
+      return;
+    }
+    addToCart({
+      id: perfume.id,
+      name: perfume.name,
+      price: perfume.price,
+      quantity,
+      size: selectedSize || (perfume.sizes && perfume.sizes[0]) || undefined,
+      imageUrl: perfume.imageUrl || (perfume.images && perfume.images[0]),
+      stock: perfume.stock,
+    });
+    toast(`تمت إضافة "${perfume.name}" إلى السلة 🛍️`, 'success', {
+      label: t('عرض السلة'),
+      onClick: () => navigate('/cart'),
+    });
+  };
   
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewForm, setReviewForm] = useState({ rating: 5, text: '' });
@@ -224,8 +251,10 @@ export default function PerfumeDetails() {
       a: t(`نعم، تركيبتنا مستوحاة بدقة عالية من ${perfume.inspiredBy} لتقديم نفس التجربة العطرية الفاخرة بجودة ممتازة وسعر مناسب.`),
     },
     {
-      q: t('هل الشحن مجاني؟ وكم يستغرق التوصيل؟'),
-      a: t('نعم، الشحن مجاني للطلبات فوق 50 ج.م. التوصيل يستغرق من 2 إلى 5 أيام عمل لجميع محافظات مصر مع خدمة تتبع الطلب.'),
+      q: t('ما هي تفاصيل الشحن ومدة التوصيل؟'),
+      a: settings.freeShippingThreshold > 0
+        ? t(`الشحن مجاني للطلبات فوق ${settings.freeShippingThreshold} ج.م، والتوصيل يستغرق ${settings.deliveryTimeText || '2 إلى 4 أيام عمل'} لجميع المحافظات مع خدمة المعاينة عند الاستلام.`)
+        : t(`نوفر خدمة توصيل سريعة (${settings.deliveryTimeText || '2 إلى 4 أيام عمل'}) لجميع المحافظات مع خدمة المعاينة والتأكيد قبل الدفع.`),
     },
     {
       q: t('ما الأحجام المتاحة وما الفرق بينها؟'),
@@ -335,20 +364,36 @@ export default function PerfumeDetails() {
                 </Link>
               </p>
               
-              <p className="text-4xl font-serif text-tertiary mb-10" itemProp="offers" itemScope itemType="https://schema.org/Offer">
-                <span itemProp="priceCurrency" content="EGP">{t('ج.م')}</span><span itemProp="price" content={String(perfume.price)}>{perfume.price}</span>
-                <link itemProp="availability" href="https://schema.org/InStock" />
-              </p>
+              <div className="flex items-baseline gap-3 mb-10" itemProp="offers" itemScope itemType="https://schema.org/Offer">
+                <span className="text-4xl font-serif text-tertiary font-bold font-mono">
+                  {formatPrice(perfume.price)}
+                </span>
+                <link
+                  itemProp="availability"
+                  href={isOutOfStock ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock'}
+                />
+                <meta itemProp="priceCurrency" content="EGP" />
+                <meta itemProp="price" content={String(perfume.price)} />
+                {isOutOfStock && (
+                  <span className="text-xs font-bold text-red-500 bg-red-500/10 px-3 py-1 rounded-full flex items-center gap-1 border border-red-500/20">
+                    <AlertCircle className="w-3.5 h-3.5" /> نفذ من المخزون
+                  </span>
+                )}
+              </div>
               
               {perfume.sizes && perfume.sizes.length > 0 && (
-                <div className="mb-10">
-                  <h3 className="text-xs font-bold text-primary/60 mb-4 uppercase tracking-widest">{t('الحجم')}</h3>
+                <div className="mb-8">
+                  <h3 className="text-xs font-bold text-primary/60 mb-3 uppercase tracking-widest">{t('الحجم')}</h3>
                   <div className="flex gap-3" role="radiogroup" aria-label={t('اختيار الحجم')}>
                     {perfume.sizes.map((size: string) => (
                       <button
                         key={size}
                         onClick={() => setSelectedSize(size)}
-                        className={`px-6 py-3 rounded-lg border transition-all duration-200 ${selectedSize === size ? 'border-primary bg-secondary-container/20 text-primary font-bold' : 'border-outline-variant/20 text-on-surface-variant hover:border-primary/30'}`}
+                        className={`px-6 py-3 rounded-xl border transition-all duration-200 cursor-pointer ${
+                          selectedSize === size
+                            ? 'border-primary bg-primary text-white font-bold shadow-sm'
+                            : 'border-outline-variant/30 text-on-surface-variant hover:border-primary/40 bg-white'
+                        }`}
                         role="radio"
                         aria-checked={selectedSize === size}
                       >
@@ -360,59 +405,103 @@ export default function PerfumeDetails() {
               )}
               
               {perfume.notes && (
-                <div className="mb-10">
-                  <h3 className="text-xs font-bold text-primary/60 mb-4 uppercase tracking-widest">{t('هرم العطر')}</h3>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="p-5 bg-white rounded-lg border border-outline-variant/10 shadow-sm">
-                      <Wind className="h-5 w-5 text-tertiary mb-3" />
-                      <span className="block text-xs font-bold text-primary mb-1 uppercase tracking-widest">{t('الافتتاحية')}</span>
-                      <p className="text-sm text-on-surface/50 font-light">{t(perfume.notes.top)}</p>
+                <div className="mb-8">
+                  <h3 className="text-xs font-bold text-primary/60 mb-3 uppercase tracking-widest">{t('هرم العطر')}</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="p-4 bg-white rounded-xl border border-outline-variant/10 shadow-xs">
+                      <Wind className="h-4 w-4 text-tertiary mb-2" />
+                      <span className="block text-[11px] font-bold text-primary mb-0.5 uppercase tracking-wider">{t('الافتتاحية')}</span>
+                      <p className="text-xs text-on-surface/60 font-light leading-relaxed">{t(perfume.notes.top)}</p>
                     </div>
-                    <div className="p-5 bg-white rounded-lg border border-outline-variant/10 shadow-sm">
-                      <Heart className="h-5 w-5 text-tertiary mb-3" />
-                      <span className="block text-xs font-bold text-primary mb-1 uppercase tracking-widest">{t('القلب')}</span>
-                      <p className="text-sm text-on-surface/50 font-light">{t(perfume.notes.middle)}</p>
+                    <div className="p-4 bg-white rounded-xl border border-outline-variant/10 shadow-xs">
+                      <Heart className="h-4 w-4 text-tertiary mb-2" />
+                      <span className="block text-[11px] font-bold text-primary mb-0.5 uppercase tracking-wider">{t('القلب')}</span>
+                      <p className="text-xs text-on-surface/60 font-light leading-relaxed">{t(perfume.notes.middle)}</p>
                     </div>
-                    <div className="p-5 bg-white rounded-lg border border-outline-variant/10 shadow-sm">
-                      <Leaf className="h-5 w-5 text-tertiary mb-3" />
-                      <span className="block text-xs font-bold text-primary mb-1 uppercase tracking-widest">{t('القاعدة')}</span>
-                      <p className="text-sm text-on-surface/50 font-light">{t(perfume.notes.base)}</p>
+                    <div className="p-4 bg-white rounded-xl border border-outline-variant/10 shadow-xs">
+                      <Leaf className="h-4 w-4 text-tertiary mb-2" />
+                      <span className="block text-[11px] font-bold text-primary mb-0.5 uppercase tracking-wider">{t('القاعدة')}</span>
+                      <p className="text-xs text-on-surface/60 font-light leading-relaxed">{t(perfume.notes.base)}</p>
                     </div>
                   </div>
                 </div>
               )}
               
               {perfume.description && (
-                <div className="mb-10">
-                  <h3 className="text-xs font-bold text-primary/60 mb-3 uppercase tracking-widest">{t('الوصف')}</h3>
-                  <p className="text-on-surface/60 leading-relaxed font-light" itemProp="description">{t(perfume.description)}</p>
+                <div className="mb-8">
+                  <h3 className="text-xs font-bold text-primary/60 mb-2 uppercase tracking-widest">{t('الوصف')}</h3>
+                  <p className="text-sm text-on-surface/70 leading-relaxed font-light" itemProp="description">{t(perfume.description)}</p>
                 </div>
               )}
               
-              <motion.button 
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => addToCart({ ...perfume, quantity: 1, size: selectedSize })}
-                className="w-full py-4 bg-primary text-white font-bold rounded-lg transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-3 mb-4 uppercase tracking-widest text-sm hover:opacity-90"
-                aria-label={t('أضف للسلة')}
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {t('أضف للسلة')}
-              </motion.button>
+              {/* Quantity & Add to Cart */}
+              <div className="flex items-center gap-3 mb-6">
+                {!isOutOfStock && (
+                  <div className="flex items-center bg-white border border-outline-variant/20 rounded-xl p-1 shadow-xs shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                      disabled={quantity <= 1}
+                      className="p-2.5 text-primary/60 hover:text-primary disabled:opacity-30 transition-colors cursor-pointer"
+                      title="تقليل الكمية"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <span className="font-bold text-primary w-8 text-center text-sm font-mono">{quantity}</span>
+                    <button
+                      type="button"
+                      onClick={() => setQuantity(q => q + 1)}
+                      className="p-2.5 text-primary/60 hover:text-primary transition-colors cursor-pointer"
+                      title="زيادة الكمية"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+
+                <motion.button 
+                  whileHover={{ scale: isOutOfStock ? 1 : 1.02 }}
+                  whileTap={{ scale: isOutOfStock ? 1 : 0.98 }}
+                  disabled={isOutOfStock}
+                  onClick={handleAddToCart}
+                  className={`flex-1 py-4 font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-3 uppercase tracking-widest text-sm cursor-pointer ${
+                    isOutOfStock
+                      ? 'bg-slate-200 text-slate-500 cursor-not-allowed shadow-none'
+                      : 'bg-primary text-white shadow-primary/20 hover:opacity-95'
+                  }`}
+                  aria-label={t('أضف للسلة')}
+                >
+                  {isOutOfStock ? (
+                    <>
+                      <AlertCircle className="h-5 w-5" />
+                      {t('نفذ من المخزون')}
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="h-5 w-5" />
+                      {t('أضف للسلة')}
+                    </>
+                  )}
+                </motion.button>
+              </div>
 
               {/* Trust Badges */}
-              <div className="grid grid-cols-3 gap-4 mt-6">
-                <div className="text-center p-3 bg-white rounded-lg border border-outline-variant/10">
-                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{t('شحن مجاني')}</p>
-                  <p className="text-[10px] text-on-surface/30 mt-1">{t('للطلبات فوق 50 ج.م')}</p>
+              <div className="grid grid-cols-3 gap-3 mt-4">
+                <div className="text-center p-3 bg-white rounded-xl border border-outline-variant/10 shadow-xs">
+                  <p className="text-[11px] font-bold text-primary uppercase tracking-wider">{t('شحن سريع')}</p>
+                  <p className="text-[10px] text-on-surface/40 mt-0.5">
+                    {settings.freeShippingThreshold > 0
+                      ? `مجاني فوق ${formatPrice(settings.freeShippingThreshold)}`
+                      : settings.deliveryTimeText || 'لكافة المحافظات'}
+                  </p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-outline-variant/10">
-                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{t('أصلي 100%')}</p>
-                  <p className="text-[10px] text-on-surface/30 mt-1">{t('ضمان الجودة')}</p>
+                <div className="text-center p-3 bg-white rounded-xl border border-outline-variant/10 shadow-xs">
+                  <p className="text-[11px] font-bold text-primary uppercase tracking-wider">{t('أصلي 100%')}</p>
+                  <p className="text-[10px] text-on-surface/40 mt-0.5">{t('ضمان الثبات والفوحان')}</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-outline-variant/10">
-                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{t('إرجاع سهل')}</p>
-                  <p className="text-[10px] text-on-surface/30 mt-1">{t('خلال 14 يوم')}</p>
+                <div className="text-center p-3 bg-white rounded-xl border border-outline-variant/10 shadow-xs">
+                  <p className="text-[11px] font-bold text-primary uppercase tracking-wider">{t('معاينة عند الاستلام')}</p>
+                  <p className="text-[10px] text-on-surface/40 mt-0.5">{t('حق الفحص قبل الدفع')}</p>
                 </div>
               </div>
             </div>

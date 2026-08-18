@@ -1,12 +1,15 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ShoppingCart, Heart, GitCompare, Eye } from 'lucide-react';
+import { ShoppingCart, Heart, GitCompare, Eye, AlertCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useUserPreferences } from '../context/UserPreferencesContext';
+import { useToast } from '../context/ToastContext';
 import QuickViewModal from './QuickViewModal';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { generateProductSlug } from '../utils/slugUtils';
+import { useTranslation } from '../context/TranslationContext';
+import { useStoreSettings } from '../context/StoreSettingsContext';
 
 interface PerfumeCardProps {
   id: string;
@@ -15,33 +18,97 @@ interface PerfumeCardProps {
   category: string;
   inspiredBy: string;
   imageUrl: string;
+  stock?: number;
+  sizes?: string[];
   notes?: any;
 }
 
-export default function PerfumeCard({ id, name, price, category, inspiredBy, imageUrl, notes }: PerfumeCardProps) {
+export default function PerfumeCard({
+  id,
+  name,
+  price,
+  category,
+  inspiredBy,
+  imageUrl,
+  stock,
+  sizes,
+  notes,
+}: PerfumeCardProps) {
   const { addToCart } = useCart();
   const { toggleWishlist, toggleCompare, isInWishlist, isInCompare } = useUserPreferences();
+  const { toast } = useToast();
+  const { t } = useTranslation();
+  const { formatPrice } = useStoreSettings();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const { isAdmin } = useAuth();
+  const navigate = useNavigate();
 
+  const isOutOfStock = stock !== undefined && stock <= 0;
   const categoryLabel = category === 'men' ? 'رجالي' : category === 'women' ? 'نسائي' : 'للجنسين';
+  const defaultSize = Array.isArray(sizes) && sizes.length > 0 ? sizes[0] : undefined;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isOutOfStock) {
+      toast(t('هذا المنتج غير متوفر حالياً بالمخزون'), 'error');
+      return;
+    }
+    addToCart({
+      id,
+      name,
+      price,
+      quantity: 1,
+      size: defaultSize,
+      imageUrl,
+      stock,
+    });
+    toast(`تمت إضافة "${name}" إلى السلة 🛍️`, 'success', {
+      label: 'عرض السلة',
+      onClick: () => navigate('/cart'),
+    });
+  };
+
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const willBeInWishlist = !isInWishlist(id);
+    toggleWishlist(id);
+    toast(
+      willBeInWishlist ? `تمت إضافة "${name}" إلى المفضلة ❤️` : `تمت إزالة "${name}" من المفضلة`,
+      'info'
+    );
+  };
+
+  const handleCompare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const willBeInCompare = !isInCompare(id);
+    toggleCompare(id);
+    toast(
+      willBeInCompare ? `تمت إضافة "${name}" إلى المقارنة ⚖️` : `تمت إزالة "${name}" من المقارنة`,
+      'info'
+    );
+  };
 
   return (
     <>
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        whileHover={{ y: -8, scale: 1.02 }}
-        transition={{ duration: 0.4, type: 'spring', stiffness: 300, damping: 20 }}
-        className="group relative flex flex-col items-center"
+        whileHover={{ y: -6 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="group relative flex flex-col items-center w-full"
       >
         {/* Image Container */}
-        <div className="w-full aspect-4/5 bg-white rounded-lg overflow-hidden mb-6 relative shadow-sm transition-all duration-500 group-hover:shadow-glow group-hover:shadow-primary/20">
+        <div className="w-full aspect-4/5 bg-white rounded-2xl overflow-hidden mb-4 relative shadow-sm border border-outline-variant/10 transition-all duration-500 group-hover:shadow-glow group-hover:shadow-primary/20">
           <Link to={`/perfume/${generateProductSlug(name, id)}`} className="block w-full h-full">
             <img 
               src={imageUrl || `https://picsum.photos/seed/${id}/400/500`} 
               alt={`${name} — عطر مستوحى من ${inspiredBy} | Aura Perfumes`} 
-              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${
+                isOutOfStock ? 'grayscale opacity-75' : ''
+              }`}
               referrerPolicy="no-referrer"
               loading="lazy"
               decoding="async"
@@ -49,84 +116,105 @@ export default function PerfumeCard({ id, name, price, category, inspiredBy, ima
               height={500}
             />
           </Link>
+
+          {/* Out of Stock Ribbon */}
+          {isOutOfStock && (
+            <div className="absolute top-3 left-3 bg-red-600/90 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-lg">
+              <AlertCircle className="w-3 h-3" />
+              <span>نفذ من المخزون</span>
+            </div>
+          )}
           
-          {/* Favorite Button */}
-          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <motion.button 
-              whileTap={{ scale: 0.85 }}
-              onClick={() => toggleWishlist(id)}
+          {/* Favorite Button (Visible on mobile, hover on desktop) */}
+          <div className="absolute top-3 right-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
+            <button 
+              type="button"
+              onClick={handleWishlist}
               aria-label={isInWishlist(id) ? 'إزالة من المفضلة' : 'أضف للمفضلة'}
-              className={`p-2.5 rounded-full shadow-lg backdrop-blur-md transition-all ${
+              className={`w-10 h-10 rounded-full shadow-md backdrop-blur-md transition-all flex items-center justify-center cursor-pointer ${
                 isInWishlist(id) 
                   ? 'bg-red-500 text-white' 
-                  : 'bg-white/80 text-primary hover:bg-white'
+                  : 'bg-white/90 text-primary hover:bg-white hover:scale-110'
               }`}
             >
               <Heart className={`h-4 w-4 ${isInWishlist(id) ? 'fill-current' : ''}`} />
-            </motion.button>
+            </button>
           </div>
 
-          {/* Compare Button */}
-          <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <motion.button 
-              whileTap={{ scale: 0.85 }}
-              onClick={() => toggleCompare(id)}
+          {/* Compare Button (Visible on mobile, hover on desktop) */}
+          <div className="absolute top-14 right-3 md:top-3 md:left-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
+            <button 
+              type="button"
+              onClick={handleCompare}
               aria-label={isInCompare(id) ? 'إزالة من المقارنة' : 'أضف للمقارنة'}
-              className={`p-2.5 rounded-full shadow-lg backdrop-blur-md transition-all ${
+              className={`w-10 h-10 rounded-full shadow-md backdrop-blur-md transition-all flex items-center justify-center cursor-pointer ${
                 isInCompare(id) 
-                  ? 'bg-primary-container text-white' 
-                  : 'bg-white/80 text-primary hover:bg-white'
+                  ? 'bg-primary text-white' 
+                  : 'bg-white/90 text-primary hover:bg-white hover:scale-110'
               }`}
             >
               <GitCompare className="h-4 w-4" />
-            </motion.button>
+            </button>
           </div>
 
-          {/* Quick View */}
-          <motion.button 
-            initial={{ y: 20 }}
-            whileHover={{ scale: 1.05 }}
+          {/* Quick View (Desktop) */}
+          <button 
+            type="button"
             onClick={() => setIsQuickViewOpen(true)}
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-md text-primary px-5 py-2.5 rounded-lg text-xs font-bold shadow-xl opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-2 hover:bg-white uppercase tracking-widest"
+            className="hidden md:flex absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-md text-primary px-4 py-2 rounded-xl text-xs font-bold shadow-xl opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300 items-center gap-1.5 hover:bg-white uppercase tracking-wider cursor-pointer"
           >
             <Eye className="h-3.5 w-3.5" />
             عرض سريع
-          </motion.button>
+          </button>
         </div>
         
         {/* Text Content */}
-        <div className="text-center space-y-2 w-full">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-on-surface/40 font-bold">مستوحى من: {inspiredBy}</span>
-          <h3 className="text-xl font-serif text-primary">{name}</h3>
+        <div className="text-center space-y-1.5 w-full px-1">
+          {inspiredBy && (
+            <span className="text-[11px] tracking-wider text-on-surface/50 block font-medium">
+              مستوحى من: {inspiredBy}
+            </span>
+          )}
+          <Link to={`/perfume/${generateProductSlug(name, id)}`}>
+            <h3 className="text-lg font-serif text-primary hover:text-tertiary transition-colors truncate font-bold">
+              {name}
+            </h3>
+          </Link>
           
-          {/* Category Tag */}
-          <div className="flex gap-2 justify-center">
-            {isAdmin && (
-              <span className="px-3 py-1 bg-surface-variant text-[10px] rounded-full uppercase tracking-tighter text-on-surface-variant font-medium">
+          {/* Admin Category Tag */}
+          {isAdmin && (
+            <div className="flex gap-2 justify-center">
+              <span className="px-2.5 py-0.5 bg-surface-variant text-[10px] rounded-full uppercase tracking-tighter text-on-surface-variant font-medium">
                 {categoryLabel}
               </span>
-            )}
-          </div>
+            </div>
+          )}
 
-          <p className="text-tertiary font-semibold mt-2">{price} ج.م</p>
+          <p className="text-tertiary font-bold text-base mt-1 font-mono">
+            {formatPrice(price)}
+          </p>
           
-          {/* Add to Cart — reveals on hover */}
-          <motion.button 
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => addToCart({ id, name, price, quantity: 1, imageUrl })}
-            className="mt-4 px-6 py-2.5 bg-tertiary-gold text-[#241a00] rounded-lg text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2 mx-auto shadow-md hover:shadow-glow hover:shadow-tertiary-gold/40"
+          {/* Add to Cart Button (Always visible and usable on mobile, hover on desktop) */}
+          <button 
+            type="button"
+            disabled={isOutOfStock}
+            onClick={handleAddToCart}
+            className={`w-full mt-3 py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm ${
+              isOutOfStock
+                ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                : 'bg-tertiary-gold text-[#241a00] hover:brightness-110 shadow-tertiary-gold/20 md:opacity-0 md:group-hover:opacity-100'
+            }`}
           >
-            <ShoppingCart className="h-3.5 w-3.5" />
-            أضف للسلة
-          </motion.button>
+            <ShoppingCart className="h-4 w-4" />
+            {isOutOfStock ? 'نفذ من المخزون' : 'أضف للسلة'}
+          </button>
         </div>
       </motion.div>
 
       <QuickViewModal 
         isOpen={isQuickViewOpen} 
         onClose={() => setIsQuickViewOpen(false)} 
-        perfume={{ id, name, price, category, inspiredBy, imageUrl, notes }}
+        perfume={{ id, name, price, category, inspiredBy, imageUrl, notes, stock, sizes }}
       />
     </>
   );
