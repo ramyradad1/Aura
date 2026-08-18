@@ -27,6 +27,8 @@ export interface StoreSettings {
     whatsappGreeting: string;
     /** Shown on the checkout page next to the shipping fee. */
     deliveryTimeText: string;
+    /** Show recently viewed items on storefront. */
+    recentlyViewed?: boolean;
 }
 
 export const DEFAULT_STORE_SETTINGS: StoreSettings = {
@@ -40,6 +42,7 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
     onlinePaymentEnabled: false,
     whatsappGreeting: 'مرحباً! أحتاج مساعدة في اختيار عطر من Aura Perfumes 🌸',
     deliveryTimeText: '2-5 أيام عمل',
+    recentlyViewed: true,
 };
 
 /** Firestore location of the live settings document. */
@@ -80,6 +83,10 @@ export function mergeStoreSettings(raw: unknown): StoreSettings {
                 : DEFAULT_STORE_SETTINGS.onlinePaymentEnabled,
         whatsappGreeting: str('whatsappGreeting') ?? DEFAULT_STORE_SETTINGS.whatsappGreeting,
         deliveryTimeText: str('deliveryTimeText') ?? DEFAULT_STORE_SETTINGS.deliveryTimeText,
+        recentlyViewed:
+            typeof data.recentlyViewed === 'boolean'
+                ? data.recentlyViewed
+                : DEFAULT_STORE_SETTINGS.recentlyViewed,
     };
 }
 

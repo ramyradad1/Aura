@@ -86,7 +86,7 @@ export default function Home() {
     url: 'https://www.aura-perfumes.online',
     logo: 'https://www.aura-perfumes.online/icon.png',
     image: 'https://www.aura-perfumes.online/og-image.jpg',
-    telephone: '+201234567890',
+    telephone: '+201030769960',
     email: 'info@aura-perfumes.online',
     address: {
       '@type': 'PostalAddress',

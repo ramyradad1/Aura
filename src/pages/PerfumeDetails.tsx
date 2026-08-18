@@ -10,11 +10,13 @@ import { useStoreSettings } from '../context/StoreSettingsContext';
 import { ArrowRight, ShoppingCart, Sparkles, Star, Droplets, Wind, Leaf, Check, Heart, ChevronDown, Minus, Plus, AlertCircle } from 'lucide-react';
 import { fastPerfumeRecommendation } from '../utils/geminiUtils';
 import AIRecommendations from '../components/AIRecommendations';
+import RecentlyViewed from '../components/RecentlyViewed';
 import { useUserPreferences } from '../context/UserPreferencesContext';
 import { handleFirestoreError, OperationType } from '../utils/firebaseUtils';
 import { extractIdFromSlug, generateProductSlug } from '../utils/slugUtils';
 import SEOHead from '../components/SEOHead';
 import Breadcrumbs, { generateBreadcrumbSchema } from '../components/Breadcrumbs';
+import { mockPerfumes } from '../data/mockData';
 
 import { useTranslation } from '../context/TranslationContext';
 
@@ -39,7 +41,20 @@ export default function PerfumeDetails() {
   const { settings, formatPrice } = useStoreSettings();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
+  const [showStickyBar, setShowStickyBar] = useState(false);
   const isOutOfStock = perfume?.stock !== undefined && perfume.stock <= 0;
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 450) {
+        setShowStickyBar(true);
+      } else {
+        setShowStickyBar(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleAddToCart = () => {
     if (isOutOfStock) {
@@ -81,15 +96,7 @@ export default function PerfumeDetails() {
         if (docSnap.exists()) {
           fetchedPerfume = { id: docSnap.id, ...docSnap.data() };
         } else {
-          const mockData = [
-            { id: '1', name: 'Velvet Crimson', price: 85, category: 'women', inspiredBy: 'Baccarat Rouge 540', imageUrl: 'https://picsum.photos/seed/perfume1/800/800', images: ['https://picsum.photos/seed/perfume1/800/800', 'https://picsum.photos/seed/perfume1_2/800/800'], description: 'عطر نسائي فخم يجمع بين الأناقة والغموض.', notes: { top: 'زعفران، ياسمين', middle: 'خشب العنبر', base: 'راتنج التنوب، أرز' }, sizes: ['50ml', '100ml'] },
-            { id: '2', name: 'Imperial Oud', price: 92, category: 'men', inspiredBy: 'Tom Ford Oud Wood', imageUrl: 'https://picsum.photos/seed/perfume2/800/800', description: 'عطر شرقي أصيل بنفحات العود.', notes: { top: 'خشب الورد، هيل', middle: 'عود، خشب الصندل', base: 'تونكا، عنبر' }, sizes: ['50ml', '100ml'] },
-            { id: '3', name: 'Sovereign', price: 78, category: 'unisex', inspiredBy: 'Creed Aventus', imageUrl: 'https://picsum.photos/seed/perfume3/800/800', description: 'عطر رجالي فخم يجمع بين القوة والأناقة.', notes: { top: 'أناناس، برغموت', middle: 'باتشولي، ياسمين', base: 'مسك، طحلب البلوط' }, sizes: ['50ml', '100ml'] },
-            { id: '4', name: "L'Eternel", price: 89, category: 'women', inspiredBy: 'Chanel No. 5', imageUrl: 'https://picsum.photos/seed/perfume4/800/800', description: 'عطر كلاسيكي ناعم.', notes: { top: 'ألدهيدات، يلانغ يلانغ', middle: 'ورد، ياسمين', base: 'خشب الصندل، فانيليا' }, sizes: ['50ml', '100ml'] },
-            { id: '5', name: 'Midnight Bleu', price: 95, category: 'men', inspiredBy: 'Bleu de Chanel', imageUrl: 'https://picsum.photos/seed/perfume5/800/800', description: 'عطر منعش وحيوي.', notes: { top: 'جريب فروت، ليمون', middle: 'زنجبيل، جوزة الطيب', base: 'بخور، خشب الأرز' }, sizes: ['50ml', '100ml'] },
-            { id: '6', name: 'Aurelia Gold', price: 110, category: 'unisex', inspiredBy: 'Amouage Reflection', imageUrl: 'https://picsum.photos/seed/perfume6/800/800', description: 'عطر فاخر للمناسبات الخاصة.', notes: { top: 'إكليل الجبل، فلفل أحمر', middle: 'جذور السوسن، ياسمين', base: 'خشب الصندل، نجيل الهند' }, sizes: ['50ml', '100ml'] },
-          ];
-          fetchedPerfume = mockData.find(p => p.id === id);
+          fetchedPerfume = mockPerfumes.find(p => p.id === id) || mockPerfumes[0];
         }
 
         if (fetchedPerfume) {
@@ -735,7 +742,66 @@ export default function PerfumeDetails() {
 
         {/* AI-Powered Related Products */}
         <AIRecommendations variant="detail" currentPerfumeId={id} />
+
+        {/* Recently Viewed Products */}
+        <RecentlyViewed currentProductId={id} />
       </div>
+
+      {/* Mobile Sticky Add-to-Cart Bar */}
+      <AnimatePresence>
+        {showStickyBar && perfume && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-outline-variant/15 px-4 py-3 shadow-2xl flex items-center justify-between gap-3"
+            dir={dir}
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <img
+                src={selectedImage || (perfume.images && perfume.images[0]) || perfume.imageUrl || `https://picsum.photos/seed/${perfume.id}/80/80`}
+                alt=""
+                className="w-12 h-12 rounded-xl object-cover bg-surface-container-low shrink-0 border border-outline-variant/10"
+              />
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-primary truncate">{perfume.name}</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-xs font-bold font-mono text-tertiary">{formatPrice(perfume.price)}</span>
+                  {selectedSize && (
+                    <span className="text-[10px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded font-medium">
+                      {selectedSize}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              disabled={isOutOfStock}
+              onClick={handleAddToCart}
+              className={`py-3 px-5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shrink-0 cursor-pointer shadow-md ${
+                isOutOfStock
+                  ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                  : 'bg-primary text-white shadow-primary/20 hover:opacity-95'
+              }`}
+            >
+              {isOutOfStock ? (
+                <>
+                  <AlertCircle className="h-4 w-4" />
+                  <span>{t('نفذ')}</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="h-4 w-4" />
+                  <span>{t('أضف للسلة')}</span>
+                </>
+              )}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
